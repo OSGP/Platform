@@ -87,8 +87,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
-        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                "Unexpected exception while retrieving response message", e);
+        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
                 protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, e);

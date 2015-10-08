@@ -21,11 +21,15 @@ import org.springframework.jms.core.MessageCreator;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 /**
- * This class sends protocol request messages to the requests queue for the specific version of the protocol
+ * This class sends protocol request messages to the requests queue for the
+ * specific version of the protocol
  */
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
@@ -38,7 +42,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
     private Long getPowerUsageHistoryRequestTimeToLive;
 
     @Override
-    public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) {
+    public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) throws FunctionalException {
         LOGGER.info("Sending protocol request message for device [{}] using protocol [{}] with version [{}]",
                 message.getDeviceIdentification(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
 
@@ -51,39 +55,50 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
         this.sendMessage(message, jmsTemplate);
     }
 
-    private void sendMessage(final ProtocolRequestMessage requestMessage, final JmsTemplate jmsTemplate) {
-        LOGGER.info("Sending request message to protocol requests queue");
+    private void sendMessage(final ProtocolRequestMessage requestMessage, final JmsTemplate jmsTemplate)
+            throws FunctionalException {
 
-        final Long originalTimeToLive = jmsTemplate.getTimeToLive();
-        boolean isCustomTimeToLiveSet = false;
-        if (requestMessage.getMessageType().equals(DeviceFunction.GET_POWER_USAGE_HISTORY.toString())) {
-            jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
-            isCustomTimeToLiveSet = true;
-        }
+        if (jmsTemplate == null) {
 
-        jmsTemplate.send(new MessageCreator() {
+            LOGGER.error("JmsTemplate is null, throwing FunctionalException.");
 
-            @Override
-            public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-                objectMessage.setJMSType(requestMessage.getMessageType());
-                objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
-                objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
-                objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                        requestMessage.getOrganisationIdentification());
-                objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
-                        requestMessage.getDeviceIdentification());
-                objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
-                objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
-                objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
-                return objectMessage;
+            throw new FunctionalException(FunctionalExceptionType.JMS_TEMPLATE_NULL, ComponentType.OSGP_CORE);
+
+        } else {
+
+            LOGGER.info("Sending request message to protocol requests queue");
+
+            final Long originalTimeToLive = jmsTemplate.getTimeToLive();
+            boolean isCustomTimeToLiveSet = false;
+            if (requestMessage.getMessageType().equals(DeviceFunction.GET_POWER_USAGE_HISTORY.toString())) {
+                jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
+                isCustomTimeToLiveSet = true;
             }
 
-        });
+            jmsTemplate.send(new MessageCreator() {
 
-        if (isCustomTimeToLiveSet) {
-            jmsTemplate.setTimeToLive(originalTimeToLive);
+                @Override
+                public Message createMessage(final Session session) throws JMSException {
+                    final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
+                    objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
+                    objectMessage.setJMSType(requestMessage.getMessageType());
+                    objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
+                    objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
+                    objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                            requestMessage.getOrganisationIdentification());
+                    objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
+                            requestMessage.getDeviceIdentification());
+                    objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
+                    objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
+                    objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+                    return objectMessage;
+                }
+
+            });
+
+            if (isCustomTimeToLiveSet) {
+                jmsTemplate.setTimeToLive(originalTimeToLive);
+            }
         }
     }
 }
