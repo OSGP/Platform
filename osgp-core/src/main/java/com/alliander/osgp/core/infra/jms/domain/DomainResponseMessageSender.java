@@ -33,15 +33,15 @@ public class DomainResponseMessageSender implements DomainResponseService {
     private DomainResponseMessageJmsTemplateFactory factory;
 
     @Override
-    public void send(final ProtocolResponseMessage protocolResponseMessage) {
+    public void send(final ProtocolResponseMessage domainResponseMessageSender) {
 
-        final String key = DomainInfo.getKey(protocolResponseMessage.getDomain(),
-                protocolResponseMessage.getDomainVersion());
+        final String key = DomainInfo.getKey(domainResponseMessageSender.getDomain(),
+                domainResponseMessageSender.getDomainVersion());
         final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-        final ResponseMessage message = this.createResponseMessage(protocolResponseMessage);
+        final ResponseMessage message = this.createResponseMessage(domainResponseMessageSender);
 
-        this.send(message, protocolResponseMessage.getMessageType(), jmsTemplate);
+        this.send(message, domainResponseMessageSender.getMessageType(), jmsTemplate);
     }
 
     @Override
@@ -87,8 +87,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
-        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                "Unexpected exception while retrieving response message", e);
+        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN, e.getMessage(), e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
                 protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, e);
