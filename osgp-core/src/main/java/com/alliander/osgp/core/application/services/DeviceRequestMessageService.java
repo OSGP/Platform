@@ -36,7 +36,7 @@ public class DeviceRequestMessageService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private DomainResponseService domainResponseSender;
+    private DomainResponseService domainResponseMessageSender;
 
     @Autowired
     private ProtocolRequestService protocolRequestService;
@@ -80,7 +80,7 @@ public class DeviceRequestMessageService {
             this.protocolRequestService.send(message, protocolInfo);
 
         } catch (final FunctionalException e) {
-            this.domainResponseSender.send(message, e);
+            this.domainResponseMessageSender.send(message, e);
             throw e;
         }
     }

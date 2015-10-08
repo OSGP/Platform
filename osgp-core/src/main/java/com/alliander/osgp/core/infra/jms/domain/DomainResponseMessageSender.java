@@ -33,15 +33,15 @@ public class DomainResponseMessageSender implements DomainResponseService {
     private DomainResponseMessageJmsTemplateFactory factory;
 
     @Override
-    public void send(final ProtocolResponseMessage domainResponseMessageSender) {
+    public void send(final ProtocolResponseMessage protocolResponseMessage) {
 
-        final String key = DomainInfo.getKey(domainResponseMessageSender.getDomain(),
-                domainResponseMessageSender.getDomainVersion());
+        final String key = DomainInfo.getKey(protocolResponseMessage.getDomain(),
+                protocolResponseMessage.getDomainVersion());
         final JmsTemplate jmsTemplate = this.factory.getJmsTemplate(key);
 
-        final ResponseMessage message = this.createResponseMessage(domainResponseMessageSender);
+        final ResponseMessage message = this.createResponseMessage(protocolResponseMessage);
 
-        this.send(message, domainResponseMessageSender.getMessageType(), jmsTemplate);
+        this.send(message, protocolResponseMessage.getMessageType(), jmsTemplate);
     }
 
     @Override
