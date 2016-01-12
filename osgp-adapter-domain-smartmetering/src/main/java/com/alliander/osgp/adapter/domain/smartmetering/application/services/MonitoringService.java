@@ -145,6 +145,33 @@ public class MonitoringService {
 
     }
 
+    public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final PeriodicMeterReadsQuery periodMeterReadsQuery) {
+
+        LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender
+                .send(new ResponseMessage(
+                        correlationUid,
+                        organisationIdentification,
+                        deviceIdentification,
+                        result,
+                        exception,
+                        this.monitoringMapper
+                                .map(periodMeterReadsQuery,
+                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class)),
+                        messageType);
+
+    }
+
     public void requestActualMeterReads(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,

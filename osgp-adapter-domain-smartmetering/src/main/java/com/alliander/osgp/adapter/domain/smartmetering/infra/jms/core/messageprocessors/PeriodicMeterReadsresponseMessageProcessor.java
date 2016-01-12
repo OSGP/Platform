@@ -16,7 +16,10 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
@@ -33,7 +36,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+            OsgpException osgpException) {
 
         if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainer) {
             final PeriodicMeterReadsContainer periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage
@@ -42,13 +45,28 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException,
                     periodicMeterReadsContainer);
-        } else {
+        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainerGas) {
             final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
                     .getDataObject();
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException,
                     periodicMeterReadsContainerGas);
+        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsQuery) {
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery = (PeriodicMeterReadsQuery) responseMessage
+                    .getDataObject();
+
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessage.getResult(), osgpException, periodicMeterReadsQuery);
+        } else {
+            if (osgpException == null) {
+                osgpException = new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
+                        "Technical Exception. Object of type " + responseMessage.getDataObject().getClass().getName()
+                                + "is not known.", new Throwable());
+            }
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessage.getResult(), osgpException,
+                    (PeriodicMeterReadsContainer) null);
         }
     }
 }
