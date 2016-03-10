@@ -16,7 +16,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDTO;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
 
 // To find out if mapping works bidirectional, and if null values are returned.
 public class SmsDetailsMapperTest {
@@ -37,8 +37,8 @@ public class SmsDetailsMapperTest {
 
         final SmsDetails smsDetailsValueObject = new SmsDetails(deviceIdentification, smsMsgId, status,
                 smsMsgAttemptStatus, msgType);
-        final SmsDetailsDTO smsDetailsDTO = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
-                SmsDetailsDTO.class);
+        final SmsDetailsDto smsDetailsDTO = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         assertEquals(deviceIdentification, smsDetailsDTO.getDeviceIdentification());
         assertEquals(smsMsgId, smsDetailsDTO.getSmsMsgId());
@@ -58,7 +58,7 @@ public class SmsDetailsMapperTest {
         final String smsMsgAttemptStatus = "ok";
         final String msgType = "sms";
 
-        final SmsDetailsDTO smsDetailsDTO = new SmsDetailsDTO(deviceIdentification, smsMsgId, status,
+        final SmsDetailsDto smsDetailsDTO = new SmsDetailsDto(deviceIdentification, smsMsgId, status,
                 smsMsgAttemptStatus, msgType);
         final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDTO, SmsDetails.class);
 
@@ -74,8 +74,8 @@ public class SmsDetailsMapperTest {
     public void testNullSmsDetails() {
 
         final SmsDetails smsDetailsValueObject = null;
-        final SmsDetailsDTO smsDetailsDTO = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
-                SmsDetailsDTO.class);
+        final SmsDetailsDto smsDetailsDTO = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         assertNull(smsDetailsDTO);
     }
@@ -84,7 +84,7 @@ public class SmsDetailsMapperTest {
     @Test
     public void testNullSmsDetailsDTO() {
 
-        final SmsDetailsDTO smsDetailsDTO = null;
+        final SmsDetailsDto smsDetailsDTO = null;
         final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDTO, SmsDetails.class);
 
         assertNull(smsDetails);

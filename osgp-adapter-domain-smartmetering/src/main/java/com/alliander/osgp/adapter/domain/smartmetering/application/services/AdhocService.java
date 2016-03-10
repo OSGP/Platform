@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDTO;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -51,7 +51,7 @@ public class AdhocService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();;
+    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     public AdhocService() {
         // Parameterless constructor required for transactions...
@@ -94,15 +94,15 @@ public class AdhocService {
 
     public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final SmsDetailsDTO smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
-                SmsDetailsDTO.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
@@ -112,7 +112,7 @@ public class AdhocService {
     public void handleSendWakeupSmsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDTO smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto smsDetailsDto) {
 
         LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", messageType);
 
@@ -130,15 +130,15 @@ public class AdhocService {
 
     public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final SmsDetailsDTO smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
-                SmsDetailsDTO.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
@@ -148,7 +148,7 @@ public class AdhocService {
     public void handleGetSmsDetailsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDTO smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto smsDetailsDto) {
 
         LOGGER.debug("handleGetSmsDetailsResponse for MessageType: {}", messageType);
 
