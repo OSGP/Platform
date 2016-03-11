@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = Slim-245_Slim-435_Refactoring

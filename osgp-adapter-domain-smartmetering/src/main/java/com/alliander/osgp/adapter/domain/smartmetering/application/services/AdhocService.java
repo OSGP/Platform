@@ -9,6 +9,9 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +19,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -48,7 +51,7 @@ public class AdhocService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private AdhocMapper adhocMapper;
+    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     public AdhocService() {
         // Parameterless constructor required for transactions...
@@ -98,8 +101,8 @@ public class AdhocService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
-                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
@@ -109,7 +112,7 @@ public class AdhocService {
     public void handleSendWakeupSmsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto smsDetailsDto) {
 
         LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", messageType);
 
@@ -119,7 +122,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+        final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, smsDetails), messageType);
@@ -134,8 +137,8 @@ public class AdhocService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
-                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
@@ -145,7 +148,7 @@ public class AdhocService {
     public void handleGetSmsDetailsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto smsDetailsDto) {
 
         LOGGER.debug("handleGetSmsDetailsResponse for MessageType: {}", messageType);
 
@@ -154,8 +157,7 @@ public class AdhocService {
             LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
-
-        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+        final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, smsDetails), messageType);
