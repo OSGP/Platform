@@ -14,6 +14,10 @@ import java.util.List;
 
 public class DayProfile implements Comparable<DayProfile>, Serializable {
 
+    public void setDayProfileActionList(final List<DayProfileAction> dayProfileActionList) {
+        this.dayProfileActionList = dayProfileActionList;
+    }
+
     private static final long serialVersionUID = 3513563551917685789L;
 
     private Integer dayId;

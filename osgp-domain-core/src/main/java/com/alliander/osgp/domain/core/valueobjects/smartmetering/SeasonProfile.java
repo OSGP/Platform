@@ -11,6 +11,10 @@ import java.io.Serializable;
 
 public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
+    public void setWeekProfile(final WeekProfile weekProfile) {
+        this.weekProfile = weekProfile;
+    }
+
     private static final long serialVersionUID = -9110599718005128216L;
 
     private String seasonProfileName;

@@ -26,12 +26,12 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
 
     public static final int DEVIATION_NOT_SPECIFIED = 0x8000;
 
-    private final CosemDate date;
-    private final CosemTime time;
+    private CosemDate date;
+    private CosemTime time;
 
-    private final int deviation;
+    private int deviation;
 
-    private final ClockStatus clockStatus;
+    private ClockStatus clockStatus;
 
     public CosemDateTime(final CosemDate date, final CosemTime time, final int deviation, final ClockStatus clockStatus) {
         Objects.requireNonNull(date, "date must not be null");

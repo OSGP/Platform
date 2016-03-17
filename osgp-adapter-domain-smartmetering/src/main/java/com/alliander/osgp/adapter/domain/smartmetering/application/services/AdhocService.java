@@ -25,7 +25,7 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -69,7 +69,7 @@ public class AdhocService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final SynchronizeTimeRequest synchronizeTimeRequestDto = new SynchronizeTimeRequest(
+        final SynchronizeTimeRequestDto synchronizeTimeRequestDto = new SynchronizeTimeRequestDto(
                 synchronizeTimeRequestValueObject.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
@@ -175,7 +175,7 @@ public class AdhocService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest requestDto = new com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto requestDto = new com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto(
                 request.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,

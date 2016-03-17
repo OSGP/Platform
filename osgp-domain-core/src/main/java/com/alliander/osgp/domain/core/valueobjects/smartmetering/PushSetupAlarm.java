@@ -16,9 +16,9 @@ public class PushSetupAlarm implements Serializable {
     private static final long serialVersionUID = -3541154908239512383L;
 
     private final CosemObisCode logicalName;
-    private final List<CosemObjectDefinition> pushObjectList;
+    private List<CosemObjectDefinition> pushObjectList;
     private final SendDestinationAndMethod sendDestinationAndMethod;
-    private final List<WindowElement> communicationWindow;
+    private List<WindowElement> communicationWindow;
     private final Integer randomisationStartInterval;
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;
@@ -75,7 +75,7 @@ public class PushSetupAlarm implements Serializable {
         }
     }
 
-    private PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
+    public PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
             final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
             final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
         this.checkRandomisationStartInterval(randomisationStartInterval);
@@ -166,6 +166,10 @@ public class PushSetupAlarm implements Serializable {
         return new ArrayList<>(this.pushObjectList);
     }
 
+    public void setPushObjectList(final List<CosemObjectDefinition> pushObjectList) {
+        this.pushObjectList = pushObjectList;
+    }
+
     public boolean hasSendDestinationAndMethod() {
         return this.sendDestinationAndMethod != null;
     }
@@ -183,6 +187,10 @@ public class PushSetupAlarm implements Serializable {
             return null;
         }
         return new ArrayList<>(this.communicationWindow);
+    }
+
+    public void setCommunicationWindow(final List<WindowElement> communicationWindow) {
+        this.communicationWindow = communicationWindow;
     }
 
     public boolean hasRandomisationStartInterval() {
@@ -208,4 +216,5 @@ public class PushSetupAlarm implements Serializable {
     public Integer getRepetitionDelay() {
         return this.repetitionDelay;
     }
+
 }

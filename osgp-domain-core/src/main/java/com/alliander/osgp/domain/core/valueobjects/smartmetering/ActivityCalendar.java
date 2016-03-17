@@ -85,4 +85,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         }
         return true;
     }
+
+    public void setSeasonProfileList(final List<SeasonProfile> seasonProfileList) {
+        this.seasonProfileList = seasonProfileList;
+    }
 }

@@ -18,23 +18,23 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasDto;
 
 @Component
 public class PeriodicMeterReadsGasResponseConverter
         extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto, PeriodicMeterReadsContainerGas> {
 
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
     @Override
     public PeriodicMeterReadsContainerGas convert(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto source,
             final Type<? extends PeriodicMeterReadsContainerGas> destinationType) {
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(
                 source.getMeterReadsGas().size());
-        for (final PeriodicMeterReadsGas pmr : source.getMeterReadsGas()) {
+        for (final PeriodicMeterReadsGasDto pmr : source.getMeterReadsGas()) {
 
             final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
                     AmrProfileStatusCode.class);

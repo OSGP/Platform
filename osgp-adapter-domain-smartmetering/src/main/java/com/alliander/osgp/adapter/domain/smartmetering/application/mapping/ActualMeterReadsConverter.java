@@ -17,13 +17,13 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 
 @Component
 public class ActualMeterReadsConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDto, ActualMeterReads> {
 
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
+    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDto source,
             final Type<? extends ActualMeterReads> destinationType) {
         return new ActualMeterReads(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
                 source.getActiveEnergyImport(), source), this.standardUnitConverter.calculateStandardizedValue(
