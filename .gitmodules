@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = development
+	branch = FLEX-1803_Rename_Dto_Classes_Using_Dto_Postfix
 
