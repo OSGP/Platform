@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -48,11 +51,31 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final EventNotification eventNotification = (EventNotification) dataObject;
 
-            this.eventNotificationMessageService.handleEvent(deviceIdentification,
-                    com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
-                            .name()), eventNotification.getDescription(), eventNotification.getIndex());
+            if (dataObject instanceof EventNotification) {
+
+                final EventNotification eventNotification = (EventNotification) dataObject;
+
+                Date dateTime;
+                if (eventNotification.getDateTime() == null) {
+                    LOGGER.warn("Event Notification for device {} did not contain date/time, using new Date().",
+                            deviceIdentification);
+                    dateTime = new Date();
+                } else {
+                    dateTime = eventNotification.getDateTime().toDate();
+                }
+
+                this.eventNotificationMessageService.handleEvent(deviceIdentification, dateTime,
+                        com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
+                                .name()), eventNotification.getDescription(), eventNotification.getIndex());
+
+            } else if (dataObject instanceof List) {
+
+                @SuppressWarnings("unchecked")
+                final List<EventNotification> eventNotifications = (List<EventNotification>) dataObject;
+                this.eventNotificationMessageService.handleEvents(deviceIdentification, eventNotifications);
+            }
+
         } catch (final UnknownEntityException e) {
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
