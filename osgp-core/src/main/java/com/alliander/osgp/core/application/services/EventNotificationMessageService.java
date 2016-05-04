@@ -33,7 +33,7 @@ import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.EventNotification;
+import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 
 @Service
 @Transactional
@@ -73,7 +73,7 @@ public class EventNotificationMessageService {
     }
 
     @Transactional(value = "transactionManager")
-    public void handleEvents(final String deviceIdentification, final List<EventNotification> eventNotifications)
+    public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
             throws UnknownEntityException {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -90,7 +90,7 @@ public class EventNotificationMessageService {
 
         final List<Event> lightSwitchingEvents = new ArrayList<>();
 
-        for (final EventNotification eventNotification : eventNotifications) {
+        for (final EventNotificationDto eventNotification : eventNotifications) {
 
             final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
             final Event event = new Event(device, eventNotification.getDateTime().toDate(), eventType,

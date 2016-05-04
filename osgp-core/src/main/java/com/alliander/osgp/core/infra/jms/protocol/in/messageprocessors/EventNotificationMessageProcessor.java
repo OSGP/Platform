@@ -22,7 +22,7 @@ import com.alliander.osgp.core.application.services.EventNotificationMessageServ
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.EventNotification;
+import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -52,9 +52,9 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
 
         try {
 
-            if (dataObject instanceof EventNotification) {
+            if (dataObject instanceof EventNotificationDto) {
 
-                final EventNotification eventNotification = (EventNotification) dataObject;
+                final EventNotificationDto eventNotification = (EventNotificationDto) dataObject;
 
                 Date dateTime;
                 if (eventNotification.getDateTime() == null) {
@@ -72,7 +72,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
             } else if (dataObject instanceof List) {
 
                 @SuppressWarnings("unchecked")
-                final List<EventNotification> eventNotifications = (List<EventNotification>) dataObject;
+                final List<EventNotificationDto> eventNotifications = (List<EventNotificationDto>) dataObject;
                 this.eventNotificationMessageService.handleEvents(deviceIdentification, eventNotifications);
             }
 
