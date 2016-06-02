@@ -99,6 +99,7 @@
         <module>osgp-adapter-ws-shared-db</module>
         <module>osgp-adapter-ws-core</module>
         <module>osgp-adapter-ws-admin</module>
+        <module>osgp-adapter-ws-microgrids</module>
         <module>osgp-adapter-ws-publiclighting</module>
         <module>osgp-adapter-ws-tariffswitching</module>
         <module>osgp-adapter-ws-smartmetering</module>

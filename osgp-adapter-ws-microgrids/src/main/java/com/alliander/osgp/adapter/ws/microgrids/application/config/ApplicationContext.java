@@ -1,0 +1,52 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.adapter.ws.microgrids.application.config;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+/**
+ * An application context Java configuration class. The usage of Java
+ * configuration requires Spring Framework 3.0
+ */
+@Configuration
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
+        "com.alliander.osgp.domain.logging" })
+@ImportResource("classpath:applicationContext.xml")
+// @Import({ PersistenceConfig.class, WritablePersistenceConfig.class,
+// ReadOnlyLoggingConfig.class })
+@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
+public class ApplicationContext {
+
+    @Resource
+    private Environment environment;
+
+    @Bean
+    public LocalValidatorFactoryBean validator() {
+        final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
+        localValidatorFactoryBean.setMappingLocations(resources);
+        return localValidatorFactoryBean;
+    }
+
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
+        m.setValidatorFactory(this.validator());
+        return m;
+    }
+}
