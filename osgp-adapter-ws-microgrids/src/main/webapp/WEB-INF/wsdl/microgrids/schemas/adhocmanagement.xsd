@@ -88,12 +88,10 @@
 	</xsd:element>
 
 	<xsd:complexType name="SystemMeasurementIdentifier">
+		<xsd:element name="Measurement" type="tns:MeasurementIdentifier" minOccurs="0" maxOccurs="unbounded"/>
 		<xsd:attribute name="id" type="xsd:string" use="required"/>
 		<xsd:attribute name="type" type="xsd:string" use="required"/>
 		<xsd:attribute name="all" type="xsd:boolean" use="optional"/>
-		<xsd:sequence>
-			<xsd:element name="Measurement" type="tns:MeasurementIdentifier" minOccurs="0" maxOccurs="unbounded"/>
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="MeasurementIdentifier">
@@ -110,11 +108,9 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="SystemSetPointIdentifier">
+		<xsd:element name="SetPoint" type="tns:SetPoint" minOccurs="1" maxOccurs="1"/>
 		<xsd:attribute name="id" type="xsd:string" use="required"/>
 		<xsd:attribute name="type" type="xsd:string" use="required"/>
-		<xsd:sequence>
-			<xsd:element name="SetPoint" type="tns:SetPoint" minOccurs="1" maxOccurs="1"/>
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="SetPoint">
