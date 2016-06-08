@@ -43,7 +43,7 @@ public class AdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06";
-    private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
+    private static final ComponentType COMPONENT_WS_MICROGRIDS = ComponentType.WS_MICROGRIDS;
 
     private static final String EXCEPTION_OCCURRED = "Exception Occurred";
 
@@ -52,8 +52,8 @@ public class AdHocManagementEndpoint {
 
     @Autowired
     public AdHocManagementEndpoint(
-            @Qualifier("wsPublicLightingAdHocManagementService") final AdHocManagementService adHocManagementService,
-            @Qualifier("publicLightingAdhocManagementMapper") final AdHocManagementMapper adHocManagementMapper) {
+            @Qualifier("wsMicrogridsAdHocManagementService") final AdHocManagementService adHocManagementService,
+            @Qualifier("microgridsAdhocManagementMapper") final AdHocManagementMapper adHocManagementMapper) {
         this.adHocManagementService = adHocManagementService;
         this.adHocManagementMapper = adHocManagementMapper;
     }
@@ -195,7 +195,7 @@ public class AdHocManagementEndpoint {
         if (e instanceof OsgpException) {
             throw (OsgpException) e;
         } else {
-            throw new TechnicalException(COMPONENT_WS_PUBLIC_LIGHTING, e);
+            throw new TechnicalException(COMPONENT_WS_MICROGRIDS, e);
         }
     }
 }
