@@ -6,13 +6,13 @@ import java.util.List;
 
 public class DataRequest {
 
-    private List<SystemFilter> systemFilter;
+    private List<SystemFilter> systemFilters;
 
-    public DataRequest(final List<SystemFilter> systemFilter) {
-        this.systemFilter = new ArrayList<SystemFilter>(systemFilter);
+    public DataRequest(final List<SystemFilter> systemFilters) {
+        this.systemFilters = new ArrayList<SystemFilter>(systemFilters);
     }
 
-    public List<SystemFilter> getSystemFilter() {
-        return Collections.unmodifiableList(this.systemFilter);
+    public List<SystemFilter> getSystemFilters() {
+        return Collections.unmodifiableList(this.systemFilters);
     }
 }

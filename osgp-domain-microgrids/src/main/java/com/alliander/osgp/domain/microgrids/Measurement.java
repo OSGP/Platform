@@ -1,14 +1,15 @@
 package com.alliander.osgp.domain.microgrids;
 
 import java.math.BigInteger;
-import java.util.Date;
+
+import org.joda.time.DateTime;
 
 public class Measurement extends MeasurementIdentifier {
     private BigInteger qualifier;
-    private Date time;
-l    private double value;
+    private DateTime time;
+    private double value;
 
-    public Measurement(final int id, final String node, final BigInteger qualifier, final Date time,
+    public Measurement(final int id, final String node, final BigInteger qualifier, final DateTime time,
             final double value) {
         super(id, node);
         this.qualifier = qualifier;
@@ -20,7 +21,7 @@ l    private double value;
         return this.qualifier;
     }
 
-    public Date getTime() {
+    public DateTime getTime() {
         return this.time;
     }
 

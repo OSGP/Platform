@@ -7,8 +7,8 @@ import java.util.List;
 public class MeasurementResultSystemIdentifier {
     private List<Measurement> measurements;
 
-    public MeasurementResultSystemIdentifier(final List<Measurement> measurement) {
-        this.measurements = new ArrayList<Measurement>(measurement);
+    public MeasurementResultSystemIdentifier(final List<Measurement> measurements) {
+        this.measurements = new ArrayList<Measurement>(measurements);
     }
 
     public List<Measurement> getMeasurements() {
