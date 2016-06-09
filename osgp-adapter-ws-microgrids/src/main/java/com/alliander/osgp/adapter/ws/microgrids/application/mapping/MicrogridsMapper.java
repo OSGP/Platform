@@ -11,8 +11,8 @@ import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
-@Component(value = "microgridsAdhocManagementMapper")
-public class AdHocManagementMapper extends ConfigurableMapper {
+@Component
+public class MicrogridsMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
