@@ -13,20 +13,20 @@
 
     <sws:annotation-driven/>
 
- 	<sws:static-wsdl id="AdHocManagement" location="/WEB-INF/wsdl/common/AdHocManagement.wsdl"/>
+ 	<sws:static-wsdl id="AdHocManagement" location="/WEB-INF/wsdl/microgrids/AdHocManagement.wsdl"/>
 
     <bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/common.xsd" />
+        <property name="xsd" value="/WEB-INF/wsdl/microgrids/schemas/common.xsd" />
     </bean>
 
     <bean id="adhocmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
-        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/adhocmanagement.xsd" />
+        <property name="xsd" value="/WEB-INF/wsdl/microgrids/schemas/adhocmanagement.xsd" />
     </bean>
 
 	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
 		<property name="schemas">
 			<list>
-				<value>/WEB-INF/wsdl/common/schemas/*.xsd</value>
+				<value>/WEB-INF/wsdl/microgrids/schemas/*.xsd</value>
 			</list>			
 		</property>
 		<property name="validateRequest" value="true" />

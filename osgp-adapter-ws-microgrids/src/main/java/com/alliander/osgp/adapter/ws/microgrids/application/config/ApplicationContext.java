@@ -25,10 +25,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
-        "com.alliander.osgp.domain.logging" })
+        "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
-// @Import({ PersistenceConfig.class, WritablePersistenceConfig.class,
-// ReadOnlyLoggingConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
 public class ApplicationContext {
 

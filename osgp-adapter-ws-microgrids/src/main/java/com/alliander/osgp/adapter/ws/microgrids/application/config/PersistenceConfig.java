@@ -25,12 +25,12 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-        DeviceRepository.class })
+        com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
+        com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
 @Configuration
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
 public class PersistenceConfig {
