@@ -1,7 +1,15 @@
 package com.alliander.osgp.adapter.ws.microgrids.application.services;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +23,12 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.DataRequest;
 import com.alliander.osgp.domain.microgrids.DataResponse;
-import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
+import com.alliander.osgp.domain.microgrids.Measurement;
+import com.alliander.osgp.domain.microgrids.MeasurementFilter;
+import com.alliander.osgp.domain.microgrids.MeasurementResultSystemIdentifier;
+import com.alliander.osgp.domain.microgrids.SystemFilter;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
@@ -44,6 +54,8 @@ public class MicrogridsService {
     @Autowired
     private MicrogridsResponseMessageFinder responseMessageFinder;
 
+    private Map<String, DataRequest> mockRequestHolder = new HashMap<>();
+
     public MicrogridsService() {
         // Parameterless constructor required for transactions
     }
@@ -53,9 +65,13 @@ public class MicrogridsService {
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
+        // TODO disabled for mock responses (for now)
+        // final RtuDevice device =
+        // this.domainHelperService.findDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_DATA);
+        // TODO disabled for mock responses (for now)
+        // this.domainHelperService.isAllowed(organisation, device,
+        // DeviceFunction.GET_DATA);
 
         LOGGER.debug("enqueueGetDataRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -71,11 +87,43 @@ public class MicrogridsService {
         //
         // this.requestMessageSender.send(message);
 
+        this.mockRequestHolder.put(correlationUid, dataRequest);
+
         return correlationUid;
     }
 
     public DataResponse dequeueGetDataResponse(final String correlationUid) {
-        return null;
+        // Send fake response, depending on requested data
+        if (!this.mockRequestHolder.containsKey(correlationUid)) {
+            return null;
+        }
+
+        final List<MeasurementResultSystemIdentifier> results = new ArrayList<>();
+        final DataRequest request = this.mockRequestHolder.get(correlationUid);
+        for (final SystemFilter systemFilter : request.getSystemFilters()) {
+            final List<Measurement> measurements = new ArrayList<>();
+
+            if (systemFilter.isAll()) {
+                measurements.add(new Measurement(1, "somenode", BigInteger.ZERO, new DateTime(DateTimeZone.UTC), 33.0));
+                measurements
+                        .add(new Measurement(1, "somenode2", BigInteger.ZERO, new DateTime(DateTimeZone.UTC), 44.0));
+            } else {
+                for (final MeasurementFilter measurementFilter : systemFilter.getMeasurementFilters()) {
+                    measurements.add(new Measurement(1, measurementFilter.getNode(), BigInteger.ZERO,
+                            new DateTime(DateTimeZone.UTC), 99.0));
+                }
+            }
+
+            results.add(
+                    new MeasurementResultSystemIdentifier(systemFilter.getId(), systemFilter.getType(), measurements));
+        }
+
+        this.mockRequestHolder.remove(correlationUid);
+
+        return new DataResponse(results);
+
+        // final DataResponse response = new DataResponse();
+
         // TODO
         // return this.responseMessageFinder.findMessage(correlationUid);
 

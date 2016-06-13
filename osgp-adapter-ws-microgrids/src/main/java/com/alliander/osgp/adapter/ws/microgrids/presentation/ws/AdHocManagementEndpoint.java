@@ -122,11 +122,12 @@ public class AdHocManagementEndpoint {
                     .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
+            } else {
+                // Temporary mock response, without a queue
+                response.setResult(OsgpResultType.NOT_FOUND);
             }
 
-        } catch (
-
-        final Exception e) {
+        } catch (final Exception e) {
             this.handleException(e);
         }
 
