@@ -16,7 +16,7 @@ public class SystemFilter extends SystemIdentifier {
     }
 
     public List<MeasurementFilter> getMeasurementFilters() {
-        return Collections.unmodifiableList(this.measurementFilters);
+        return this.measurementFilters;
     }
 
     public boolean isAll() {

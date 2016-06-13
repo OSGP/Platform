@@ -1,7 +1,6 @@
 package com.alliander.osgp.domain.microgrids;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DataRequest {
@@ -13,6 +12,6 @@ public class DataRequest {
     }
 
     public List<SystemFilter> getSystemFilters() {
-        return Collections.unmodifiableList(this.systemFilters);
+        return this.systemFilters;
     }
 }
