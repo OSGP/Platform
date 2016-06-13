@@ -121,7 +121,7 @@
     <xsd:complexContent>
       <xsd:extension base="tns:MeasurementIdentifier">
         <xsd:sequence>
-          <xsd:element name="Qualifier" type="xsd:integer" />
+          <xsd:element name="Qualifier" type="xsd:int" />
           <xsd:element name="Time" type="xsd:dateTime" />
           <xsd:element name="Value" type="xsd:double" />
         </xsd:sequence>

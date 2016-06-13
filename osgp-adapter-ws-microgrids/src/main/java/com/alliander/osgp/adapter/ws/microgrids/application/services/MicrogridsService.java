@@ -1,6 +1,5 @@
 package com.alliander.osgp.adapter.ws.microgrids.application.services;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,17 +99,20 @@ public class MicrogridsService {
 
         final List<MeasurementResultSystemIdentifier> results = new ArrayList<>();
         final DataRequest request = this.mockRequestHolder.get(correlationUid);
+        final DateTime sampleTime = new DateTime(DateTimeZone.UTC);
+
+        // Use original filters to fake responses
         for (final SystemFilter systemFilter : request.getSystemFilters()) {
             final List<Measurement> measurements = new ArrayList<>();
 
             if (systemFilter.isAll()) {
-                measurements.add(new Measurement(1, "somenode", BigInteger.ZERO, new DateTime(DateTimeZone.UTC), 33.0));
-                measurements
-                        .add(new Measurement(1, "somenode2", BigInteger.ZERO, new DateTime(DateTimeZone.UTC), 44.0));
+                measurements.add(new Measurement(1, "actualpower", 0, sampleTime, 33.0));
+                measurements.add(new Measurement(1, "UL", 0, sampleTime, 44.0));
+                measurements.add(new Measurement(2, "UL", 0, sampleTime, 55.0));
+                measurements.add(new Measurement(3, "UL", 0, sampleTime, 66.0));
             } else {
                 for (final MeasurementFilter measurementFilter : systemFilter.getMeasurementFilters()) {
-                    measurements.add(new Measurement(1, measurementFilter.getNode(), BigInteger.ZERO,
-                            new DateTime(DateTimeZone.UTC), 99.0));
+                    measurements.add(new Measurement(1, measurementFilter.getNode(), 0, sampleTime, 99.0));
                 }
             }
 
