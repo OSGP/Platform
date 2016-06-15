@@ -91,6 +91,7 @@
 
         <module>osgp-adapter-domain-admin</module>
         <module>osgp-adapter-domain-core</module>
+        <module>osgp-adapter-domain-microgrids</module>
         <module>osgp-adapter-domain-publiclighting</module>
         <module>osgp-adapter-domain-tariffswitching</module>
         <module>osgp-adapter-domain-smartmetering</module>
