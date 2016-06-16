@@ -29,8 +29,8 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPoi
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
-import com.alliander.osgp.domain.microgrids.DataRequest;
-import com.alliander.osgp.domain.microgrids.DataResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;

@@ -1,4 +1,4 @@
-package com.alliander.osgp.domain.microgrids;
+package com.alliander.osgp.domain.microgrids.valueobjects;
 
 public class MeasurementIdentifier {
     private int id;

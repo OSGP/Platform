@@ -1,4 +1,4 @@
-package com.alliander.osgp.domain.microgrids;
+package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -2,10 +2,10 @@ package com.alliander.osgp.adapter.ws.microgrids.application.mapping;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.domain.microgrids.DataRequest;
-import com.alliander.osgp.domain.microgrids.DataResponse;
-import com.alliander.osgp.domain.microgrids.MeasurementResultSystemIdentifier;
-import com.alliander.osgp.domain.microgrids.SystemFilter;
+import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementResultSystemIdentifier;
+import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 import ma.glasnost.orika.MapperFactory;
