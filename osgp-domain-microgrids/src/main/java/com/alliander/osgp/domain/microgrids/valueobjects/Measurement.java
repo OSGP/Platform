@@ -1,8 +1,15 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
-public class Measurement extends MeasurementIdentifier {
+public class Measurement extends MeasurementIdentifier implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3315719218127525093L;
+
     private int qualifier;
     private DateTime time;
     private double value;

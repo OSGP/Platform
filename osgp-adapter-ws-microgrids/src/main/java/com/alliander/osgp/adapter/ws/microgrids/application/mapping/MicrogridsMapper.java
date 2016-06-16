@@ -16,8 +16,10 @@ public class MicrogridsMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
-        mapperFactory.classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SystemFilter.class,
-                SystemFilter.class).field("measurementFilter", "measurementFilters").byDefault().register();
+        mapperFactory
+                .classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SystemFilter.class,
+                        SystemFilter.class)
+                .field("type", "systemType").field("measurementFilter", "measurementFilters").byDefault().register();
 
         mapperFactory.classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest.class,
                 DataRequest.class).field("system", "systemFilters").byDefault().register();

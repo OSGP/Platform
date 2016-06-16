@@ -167,8 +167,8 @@ public class MicrogridsService {
                 }
             }
 
-            results.add(
-                    new MeasurementResultSystemIdentifier(systemFilter.getId(), systemFilter.getType(), measurements));
+            results.add(new MeasurementResultSystemIdentifier(systemFilter.getId(), systemFilter.getSystemType(),
+                    measurements));
         }
 
         this.mockRequestHolder.remove(correlationUid);

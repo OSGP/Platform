@@ -7,5 +7,7 @@ import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 
 @Repository
 public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
+    RtuDevice findById(long id);
+
     RtuDevice findByDeviceIdentification(String deviceIdentification);
 }

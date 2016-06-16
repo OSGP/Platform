@@ -1,19 +1,27 @@
 package com.alliander.osgp.domain.microgrids.valueobjects;
 
-public class SystemIdentifier {
-    private int id;
-    private String type;
+import java.io.Serializable;
 
-    public SystemIdentifier(final int id, final String type) {
+public class SystemIdentifier implements Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3313598698244220718L;
+
+    private int id;
+    private String systemType;
+
+    public SystemIdentifier(final int id, final String systemType) {
         this.id = id;
-        this.type = type;
+        this.systemType = systemType;
     }
 
     public int getId() {
         return this.id;
     }
 
-    public String getType() {
-        return this.type;
+    public String getSystemType() {
+        return this.systemType;
     }
 }

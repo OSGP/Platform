@@ -11,9 +11,9 @@ public class SystemFilter extends SystemIdentifier implements Serializable {
     private List<MeasurementFilter> measurementFilters;
     private boolean all;
 
-    public SystemFilter(final int id, final String type, final List<MeasurementFilter> measurementFilters,
+    public SystemFilter(final int id, final String systemType, final List<MeasurementFilter> measurementFilters,
             final boolean all) {
-        super(id, type);
+        super(id, systemType);
         this.measurementFilters = new ArrayList<MeasurementFilter>(measurementFilters);
         this.all = all;
     }

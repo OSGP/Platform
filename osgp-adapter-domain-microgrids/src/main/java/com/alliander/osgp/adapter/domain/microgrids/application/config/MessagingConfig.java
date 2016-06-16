@@ -15,6 +15,8 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,8 @@ import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRespo
 @Configuration
 @PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
 public class MessagingConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
@@ -140,6 +144,9 @@ public class MessagingConfig {
 
     @Bean(destroyMethod = "stop")
     public PooledConnectionFactory pooledConnectionFactory() {
+
+        LOGGER.info("Initializing Messaging Config Pooled Connection Factory");
+
         final PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(this.connectionFactory());
         return pooledConnectionFactory;
@@ -147,6 +154,9 @@ public class MessagingConfig {
 
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
+
+        LOGGER.info("Initializing Messaging Config Connection Factory");
+
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.redeliveryPolicyMap());
         activeMQConnectionFactory
