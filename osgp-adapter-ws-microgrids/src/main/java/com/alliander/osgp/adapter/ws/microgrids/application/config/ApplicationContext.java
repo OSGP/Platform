@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -30,15 +29,19 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
 public class ApplicationContext {
 
+    private final static String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
+
     @Resource
     private Environment environment;
 
     @Bean
+    public boolean stubResponses() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_STUB_RESPONSES));
+    }
+
+    @Bean
     public LocalValidatorFactoryBean validator() {
-        final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
-        localValidatorFactoryBean.setMappingLocations(resources);
-        return localValidatorFactoryBean;
+        return new LocalValidatorFactoryBean();
     }
 
     @Bean

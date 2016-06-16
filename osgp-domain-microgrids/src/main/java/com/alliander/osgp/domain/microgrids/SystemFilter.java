@@ -1,10 +1,13 @@
 package com.alliander.osgp.domain.microgrids;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class SystemFilter extends SystemIdentifier {
+public class SystemFilter extends SystemIdentifier implements Serializable {
+
+    private static final long serialVersionUID = 2069822566541617223L;
+
     private List<MeasurementFilter> measurementFilters;
     private boolean all;
 

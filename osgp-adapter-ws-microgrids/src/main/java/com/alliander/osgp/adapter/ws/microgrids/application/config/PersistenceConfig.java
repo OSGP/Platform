@@ -117,8 +117,8 @@ public class PersistenceConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_ADAPTER_MICROGRIDS");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean
-                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(
+                this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN).split(","));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

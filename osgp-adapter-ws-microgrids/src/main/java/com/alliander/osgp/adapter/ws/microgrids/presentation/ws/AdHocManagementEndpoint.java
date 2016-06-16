@@ -16,6 +16,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
 import com.alliander.osgp.adapter.ws.microgrids.application.mapping.MicrogridsMapper;
 import com.alliander.osgp.adapter.ws.microgrids.application.services.MicrogridsService;
 import com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
@@ -40,22 +41,12 @@ public class AdHocManagementEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementEndpoint.class);
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/microgrids/adhocmanagement/2016/06";
-    private static final ComponentType COMPONENT_WS_MICROGRIDS = ComponentType.WS_MICROGRIDS;
 
     @Autowired
     private MicrogridsService service;
 
     @Autowired
     private MicrogridsMapper mapper;
-
-    // @Autowired
-    // public AdHocManagementEndpoint(
-    // final AdHocManagementService adHocManagementService,
-    // @Qualifier("microgridsAdhocManagementMapper") final AdHocManagementMapper
-    // adHocManagementMapper) {
-    // this.adHocManagementService = adHocManagementService;
-    // this.adHocManagementMapper = adHocManagementMapper;
-    // }
 
     // === GET DATA ===
 
@@ -97,36 +88,18 @@ public class AdHocManagementEndpoint {
 
         try {
 
-            // final ResponseMessage message = this.service
-            // .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
-            // if (message != null) {
-            // response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            //
-            // if (message.getDataObject() != null) {
-            // final List<MeasurementResultSystemIdentifier> identifiers = new
-            // ArrayList<>();
-            // if (message.getDataObject() instanceof ArrayList<?>) {
-            // for (final Object item : (ArrayList<?>) message.getDataObject())
-            // {
-            // if (item instanceof MeasurementResultSystemIdentifier) {
-            // identifiers.add((MeasurementResultSystemIdentifier) item);
-            // }
-            // }
-            // }
-            // response.getSystem().addAll(this.mapper.mapAsList(identifiers,
-            // com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.MeasurementResultSystemIdentifier.class));
-            //
-            // }
-
             final DataResponse dataResponse = this.service
                     .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
+
             } else {
                 // Temporary mock response, without a queue
                 response.setResult(OsgpResultType.NOT_FOUND);
             }
 
+        } catch (final ResponseNotFoundException e) {
+            response.setResult(OsgpResultType.NOT_FOUND);
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -138,7 +111,7 @@ public class AdHocManagementEndpoint {
 
     @PayloadRoot(localPart = "SetSetPointsRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetSetPointsAsyncResponse setTransition(@OrganisationIdentification final String organisationIdentification,
+    public SetSetPointsAsyncResponse setSetPoints(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSetPointsRequest request) throws OsgpException {
 
         LOGGER.info("Set Transition Request received from organisation: {} for device: {}.", organisationIdentification,
@@ -147,22 +120,6 @@ public class AdHocManagementEndpoint {
         final SetSetPointsAsyncResponse response = new SetSetPointsAsyncResponse();
 
         try {
-            // final TransitionMessageDataContainer
-            // transitionMessageDataContainer = new
-            // TransitionMessageDataContainer();
-
-            // if (request.getTransitionType() != null) {
-            // transitionMessageDataContainer.setTransitionType(this.adHocManagementMapper.map(
-            // request.getTransitionType(),
-            // com.alliander.osgp.domain.core.valueobjects.TransitionType.class));
-            // }
-            // DateTime dateTime = null;
-            // if (request.getTime() != null) {
-            // dateTime = new
-            // DateTime(request.getTime().toGregorianCalendar().getTime());
-            // }
-            // transitionMessageDataContainer.setDateTime(dateTime);
-
             // TODO - Replace object with "real SetPointsRequestData" class
             final Object requestData = null;
             final String correlationUid = this.service.enqueueSetSetPointsRequest(organisationIdentification,
@@ -195,22 +152,21 @@ public class AdHocManagementEndpoint {
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
+
         } catch (final Exception e) {
             this.handleException(e);
         }
-
         return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
+        // exception, otherwise throw new technical exception.
         LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {
             throw (OsgpException) e;
         } else {
-            throw new TechnicalException(COMPONENT_WS_MICROGRIDS, e);
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
         }
     }
 }

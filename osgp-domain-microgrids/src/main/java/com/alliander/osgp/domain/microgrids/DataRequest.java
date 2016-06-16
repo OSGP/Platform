@@ -1,9 +1,12 @@
 package com.alliander.osgp.domain.microgrids;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataRequest {
+public class DataRequest implements Serializable {
+
+    private static final long serialVersionUID = 4776483459295815846L;
 
     private List<SystemFilter> systemFilters;
 
