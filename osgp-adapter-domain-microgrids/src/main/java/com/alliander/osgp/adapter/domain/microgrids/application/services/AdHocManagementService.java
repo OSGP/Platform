@@ -16,9 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainMicrogridsAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -66,59 +73,32 @@ public class AdHocManagementService extends AbstractService {
                 device.getIpAddress());
     }
 
-    // public void handleGetDataResponse(final
-    // com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
-    // final DomainType allowedDomainType, final String deviceIdentification,
-    // final String organisationIdentification, final String correlationUid,
-    // final String messageType,
-    // final ResponseMessageResultType deviceResult, final OsgpException
-    // exception) {
-    //
-    // LOGGER.info("handleResponse for MessageType: {}", messageType);
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException osgpException = exception;
-    // DeviceStatusMapped deviceStatusMapped = null;
-    //
-    // try {
-    // if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException !=
-    // null) {
-    // LOGGER.error("Device Response not ok.", osgpException);
-    // throw osgpException;
-    // }
-    //
-    // final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto,
-    // DeviceStatus.class);
-    //
-    // final Ssld device =
-    // this.RtuDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    //
-    // final List<DeviceOutputSetting> deviceOutputSettings =
-    // device.getOutputSettings();
-    //
-    // final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-    // for (final DeviceOutputSetting dos : deviceOutputSettings) {
-    // dosMap.put(dos.getExternalId(), dos);
-    // }
-    //
-    // deviceStatusMapped = new
-    // DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-    // allowedDomainType), filterLightValues(status.getLightValues(), dosMap,
-    // allowedDomainType),
-    // status.getPreferredLinkType(), status.getActualLinkType(),
-    // status.getLightType(),
-    // status.getEventNotificationsMask());
-    //
-    // } catch (final Exception e) {
-    // LOGGER.error("Unexpected Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // osgpException = new TechnicalException(ComponentType.UNKNOWN,
-    // "Exception occurred while getting device status", e);
-    // }
-    //
-    // this.webServiceResponseMessageSender.send(new
-    // ResponseMessage(correlationUid, organisationIdentification,
-    // deviceIdentification, result, osgpException, deviceStatusMapped));
-    // }
+    public void handleGetDataResponse(final DataResponseDto dataResponseDto, final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, OsgpException osgpException) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        DataResponse dataResponse = null;
+
+        try {
+            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+
+            dataResponse = this.mapper.map(dataResponseDto, DataResponse.class);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Exception occurred while getting device status", e);
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, dataResponse));
+    }
 
 }
