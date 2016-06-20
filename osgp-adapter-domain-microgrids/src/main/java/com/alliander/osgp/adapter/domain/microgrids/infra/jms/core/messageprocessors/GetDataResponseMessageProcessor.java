@@ -36,7 +36,7 @@ public class GetDataResponseMessageProcessor extends OsgpCoreResponseMessageProc
     private static final Logger LOGGER = LoggerFactory.getLogger(GetDataResponseMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainPublicLightingAdHocManagementService")
+    @Qualifier("domainMicrogridsAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
     protected GetDataResponseMessageProcessor() {

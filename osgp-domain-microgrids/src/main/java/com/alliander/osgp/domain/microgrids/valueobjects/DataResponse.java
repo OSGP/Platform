@@ -2,7 +2,6 @@ package com.alliander.osgp.domain.microgrids.valueobjects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DataResponse implements Serializable {
@@ -17,7 +16,7 @@ public class DataResponse implements Serializable {
     }
 
     public List<MeasurementResultSystemIdentifier> getMeasurementResultSystemIdentifiers() {
-        return Collections.unmodifiableList(this.measurementResultSystemIdentifiers);
+        return new ArrayList<>(this.measurementResultSystemIdentifiers);
     }
 
 }
