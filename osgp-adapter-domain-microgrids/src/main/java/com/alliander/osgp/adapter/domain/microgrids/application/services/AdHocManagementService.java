@@ -13,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
+import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -26,7 +27,7 @@ public class AdHocManagementService extends AbstractService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DomainMicrogridsMapper mapper;
 
     /**
      * Constructor
@@ -53,12 +54,16 @@ public class AdHocManagementService extends AbstractService {
             final String correlationUid, final String messageType, final DataRequest dataRequest)
             throws FunctionalException {
 
+        LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
+        final DataRequestDto dto = this.mapper.map(dataRequest, DataRequestDto.class);
+
         this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dataRequest),
-                messageType, device.getIpAddress());
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
     }
 
     // public void handleGetDataResponse(final
