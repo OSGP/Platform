@@ -17,8 +17,12 @@ import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMi
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.dto.valueobjects.microgrids.DataRequestDto;
 import com.alliander.osgp.dto.valueobjects.microgrids.DataResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.EmptyResponseDto;
+import com.alliander.osgp.dto.valueobjects.microgrids.SetPointsRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -45,18 +49,6 @@ public class AdHocManagementService extends AbstractService {
 
     // === GET DATA ===
 
-    /**
-     * Retrieve data from of device
-     *
-     * @param organisationIdentification
-     *            identification of organisation
-     * @param deviceIdentification
-     *            identification of device
-     *
-     * @return status of device
-     *
-     * @throws FunctionalException
-     */
     public void getData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final DataRequest dataRequest)
             throws FunctionalException {
@@ -101,4 +93,49 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, result, osgpException, dataResponse));
     }
 
+    // === SET SETPOINTS ===
+
+    public void handleSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final SetPointsRequest setPointsRequest)
+            throws FunctionalException {
+
+        LOGGER.info("Set setpoints for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        final SetPointsRequestDto dto = this.mapper.map(setPointsRequest, SetPointsRequestDto.class);
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
+                device.getIpAddress());
+    }
+
+    public void handleSetPointsResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, OsgpException osgpException) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        EmptyResponse emptyResponse = null;
+
+        try {
+            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+
+            emptyResponse = this.mapper.map(emptyResponseDto, EmptyResponse.class);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Exception occurred while getting device status", e);
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, emptyResponse));
+    }
 }
