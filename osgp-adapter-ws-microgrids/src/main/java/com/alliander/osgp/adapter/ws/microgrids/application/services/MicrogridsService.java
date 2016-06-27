@@ -29,9 +29,11 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.microgrids.entities.RtuDevice;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.Measurement;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementFilter;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementResultSystemIdentifier;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -63,7 +65,7 @@ public class MicrogridsService {
     @Autowired
     private MicrogridsResponseMessageFinder responseMessageFinder;
 
-    private Map<String, DataRequest> mockRequestHolder = new HashMap<>();
+    private Map<String, Object> mockRequestHolder = new HashMap<>();
 
     public MicrogridsService() {
         // Parameterless constructor required for transactions
@@ -133,14 +135,62 @@ public class MicrogridsService {
     }
 
     public String enqueueSetSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
-            final Object requestData) {
-        // TODO Auto-generated method stub
-        return null;
+            final SetPointsRequest setPointsRequest) throws OsgpException {
+
+        LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        if (this.stubResponses) {
+            this.mockRequestHolder.put(correlationUid, setPointsRequest);
+            return correlationUid;
+        }
+
+        final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SETPOINTS);
+
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(
+                MicrogridsRequestMessageType.SET_SETPOINTS, correlationUid, organisationIdentification,
+                deviceIdentification, setPointsRequest, null);
+
+        try {
+            this.requestMessageSender.send(message);
+        } catch (final ArgumentNullOrEmptyException e) {
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
+        }
+
+        return correlationUid;
     }
 
-    public ResponseMessage dequeueSetSetPointsResponse(final String correlationUid) {
-        // TODO Auto-generated method stub
-        return null;
+    public EmptyResponse dequeueSetSetPointsResponse(final String correlationUid)
+            throws OsgpException, ResponseNotFoundException {
+
+        LOGGER.debug("dequeueSetSetPointsRequest called with correlation uid {}", correlationUid);
+
+        if (this.stubResponses) {
+            return this.getStubbedSetSetPointsResponse(correlationUid);
+        }
+        final ResponseMessage response = this.responseMessageFinder.findMessage(correlationUid);
+
+        switch (response.getResult()) {
+        case NOT_FOUND:
+            throw new ResponseNotFoundException();
+        case NOT_OK:
+            if (response.getOsgpException() != null) {
+                throw response.getOsgpException();
+            }
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
+        case OK:
+            return new EmptyResponse();
+        default:
+            // Should not get here
+            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
+        }
+
     }
 
     private DataResponse getStubbedGetDataResponse(final String correlationUid) {
@@ -149,7 +199,7 @@ public class MicrogridsService {
             return null;
         }
         final List<MeasurementResultSystemIdentifier> results = new ArrayList<>();
-        final DataRequest request = this.mockRequestHolder.get(correlationUid);
+        final DataRequest request = (DataRequest) this.mockRequestHolder.get(correlationUid);
         final DateTime sampleTime = new DateTime(DateTimeZone.UTC);
 
         // Use original filters to fake responses
@@ -175,6 +225,10 @@ public class MicrogridsService {
 
         return new DataResponse(results);
 
+    }
+
+    private EmptyResponse getStubbedSetSetPointsResponse(final String correlationUid) {
+        return new EmptyResponse();
     }
 
 }

@@ -31,10 +31,11 @@ import com.alliander.osgp.adapter.ws.schema.microgrids.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.microgrids.common.OsgpResultType;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Endpoint
 public class AdHocManagementEndpoint {
@@ -55,7 +56,7 @@ public class AdHocManagementEndpoint {
     public GetDataAsyncResponse getData(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetDataRequest request) throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification,
+        LOGGER.info("Get Data Request received from organisation: {} for device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
         final GetDataAsyncResponse response = new GetDataAsyncResponse();
@@ -81,7 +82,7 @@ public class AdHocManagementEndpoint {
     public GetDataResponse getGetDataResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetDataAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Status Response received from organisation: {} for correlationUid: {}.",
+        LOGGER.info("Get Data Response received from organisation: {} for correlationUid: {}.",
                 organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         GetDataResponse response = new GetDataResponse();
@@ -92,9 +93,9 @@ public class AdHocManagementEndpoint {
                     .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
+                response.setResult(OsgpResultType.OK);
 
             } else {
-                // Temporary mock response, without a queue
                 response.setResult(OsgpResultType.NOT_FOUND);
             }
 
@@ -107,23 +108,22 @@ public class AdHocManagementEndpoint {
         return response;
     }
 
-    // === SET TRANSITION ===
+    // === SET SETPOINTS ===
 
     @PayloadRoot(localPart = "SetSetPointsRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetSetPointsAsyncResponse setSetPoints(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSetPointsRequest request) throws OsgpException {
 
-        LOGGER.info("Set Transition Request received from organisation: {} for device: {}.", organisationIdentification,
+        LOGGER.info("Set SetPoints Request received from organisation: {} for device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
         final SetSetPointsAsyncResponse response = new SetSetPointsAsyncResponse();
 
         try {
-            // TODO - Replace object with "real SetPointsRequestData" class
-            final Object requestData = null;
+            final SetPointsRequest setPointsRequest = this.mapper.map(request, SetPointsRequest.class);
             final String correlationUid = this.service.enqueueSetSetPointsRequest(organisationIdentification,
-                    request.getDeviceIdentification(), requestData);
+                    request.getDeviceIdentification(), setPointsRequest);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -141,17 +141,21 @@ public class AdHocManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSetPointsAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set Transition Response received from organisation: {} with correlationUid: {}.",
+        LOGGER.info("Get Set SetPoints Response received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetSetPointsResponse response = new SetSetPointsResponse();
 
         try {
-            final ResponseMessage message = this.service
+            final EmptyResponse setPointsResponse = this.service
                     .dequeueSetSetPointsResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            if (setPointsResponse != null) {
+                response.setResult(OsgpResultType.OK);
+            } else {
+                response.setResult(OsgpResultType.NOT_FOUND);
             }
+        } catch (final ResponseNotFoundException e) {
+            response.setResult(OsgpResultType.NOT_FOUND);
 
         } catch (final Exception e) {
             this.handleException(e);

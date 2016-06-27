@@ -7,6 +7,8 @@ import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.Measurement;
 import com.alliander.osgp.domain.microgrids.valueobjects.MeasurementResultSystemIdentifier;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetPointSystemIdentifier;
+import com.alliander.osgp.domain.microgrids.valueobjects.SetPointsRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.SystemFilter;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
@@ -42,6 +44,15 @@ public class MicrogridsMapper extends ConfigurableMapper {
                 .classMap(DataResponse.class,
                         com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse.class)
                 .field("measurementResultSystemIdentifiers", "system").byDefault().register();
+
+        mapperFactory
+                .classMap(com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SetSetPointsRequest.class,
+                        SetPointsRequest.class)
+                .field("system", "setPointSystemIdentifiers").byDefault().register();
+
+        mapperFactory.classMap(
+                com.alliander.osgp.adapter.ws.schema.microgrids.adhocmanagement.SystemSetPointIdentifier.class,
+                SetPointSystemIdentifier.class).field("type", "systemType").byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }
