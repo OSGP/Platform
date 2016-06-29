@@ -9,7 +9,7 @@
 -->
 <xsd:schema 
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	xmlns:tns="http://www.alliander.com/schemas/osgp/microgrids/notification/2014/10"
+	xmlns:tns="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
 	attributeFormDefault="unqualified"
 	elementFormDefault="qualified"
@@ -44,7 +44,7 @@
 	<xsd:simpleType name="NotificationType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="GET_DATA" />
-            <xsd:enumeration value="SET_DATA" />
+            <xsd:enumeration value="SET_SETPOINT" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

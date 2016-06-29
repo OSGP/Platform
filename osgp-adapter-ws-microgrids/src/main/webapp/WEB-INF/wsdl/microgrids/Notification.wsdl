@@ -3,7 +3,7 @@
 
 <wsdl:definitions 
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:sminst="http://www.alliander.com/schemas/osgp/microgrids/notification/2014/10"
+    xmlns:sminst="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
     xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.alliander.com/definitions/osgp/microgrids/notification-v1.0"
