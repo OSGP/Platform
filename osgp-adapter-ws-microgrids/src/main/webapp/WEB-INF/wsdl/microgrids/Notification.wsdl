@@ -3,7 +3,7 @@
 
 <wsdl:definitions 
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:sminst="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
+    xmlns:not="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06"
     xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.alliander.com/definitions/osgp/microgrids/notification-v1.0"
@@ -15,7 +15,7 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
             
             <xsd:import 
-                namespace="http://www.alliander.com/schemas/osgp/microgrids/notification/2014/10" 
+                namespace="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06" 
                 schemaLocation="schemas/notification.xsd" />
         </xsd:schema>
     </wsdl:types>    
@@ -26,11 +26,11 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     <wsdl:message name="SendNotificationResponse">
-        <wsdl:part element="sminst:SendNotificationResponse" name="SendNotificationResponse">
+        <wsdl:part element="not:SendNotificationResponse" name="SendNotificationResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SendNotificationRequest">
-        <wsdl:part element="sminst:SendNotificationRequest" name="SendNotificationRequest">
+        <wsdl:part element="not:SendNotificationRequest" name="SendNotificationRequest">
         </wsdl:part>
     </wsdl:message>
     

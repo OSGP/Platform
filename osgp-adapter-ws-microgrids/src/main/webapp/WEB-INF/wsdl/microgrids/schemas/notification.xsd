@@ -13,7 +13,7 @@
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
 	attributeFormDefault="unqualified"
 	elementFormDefault="qualified"
-	targetNamespace="http://www.alliander.com/schemas/osgp/microgrids/notification/2014/10">
+	targetNamespace="http://www.alliander.com/schemas/osgp/microgrids/notification/2016/06">
 
 	<xsd:import 
 		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
