@@ -10,17 +10,13 @@ package com.alliander.osgp.adapter.ws.microgrids.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.hibernate.ejb.HibernatePersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -28,17 +24,9 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-        com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
-        com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
-@Configuration
-@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
-public class PersistenceConfig {
+public abstract class PersistenceConfigBase {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
 
     private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
     private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
@@ -48,14 +36,25 @@ public class PersistenceConfig {
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
-    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceConfig.class);
-
-    @Resource
+    @Autowired
     private Environment environment;
 
+    protected final Logger logger;
+    private final String usernameProperty;
+    private final String passwordProperty;
+    private final String urlProperty;
+    private final String packagesToScanProperty;
+
     private HikariDataSource dataSource;
+
+    public PersistenceConfigBase(final String usernameProperty, final String passwordProperty, final String urlProperty,
+            final String packagesToScanProperty, final Class<?> loggerClass) {
+        this.logger = LoggerFactory.getLogger(loggerClass);
+        this.usernameProperty = usernameProperty;
+        this.passwordProperty = passwordProperty;
+        this.urlProperty = urlProperty;
+        this.packagesToScanProperty = packagesToScanProperty;
+    }
 
     /**
      * Method for creating the Data Source.
@@ -67,9 +66,9 @@ public class PersistenceConfig {
             final HikariConfig hikariConfig = new HikariConfig();
 
             hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(this.urlProperty));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(this.usernameProperty));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(this.passwordProperty));
 
             hikariConfig.setMaximumPoolSize(
                     Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
@@ -88,16 +87,15 @@ public class PersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean
-    public JpaTransactionManager transactionManager() throws PlatformException {
+    protected JpaTransactionManager createTransactionManager() throws PlatformException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
-            transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
+            transactionManager.setEntityManagerFactory(this.createEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
-            LOGGER.error(msg, e);
+            this.logger.error(msg, e);
             throw new PlatformException(msg, e);
         }
 
@@ -111,14 +109,13 @@ public class PersistenceConfig {
      * @throws ClassNotFoundException
      *             when class not found
      */
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
+    protected LocalContainerEntityManagerFactoryBean createEntityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_ADAPTER_MICROGRIDS");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean.setPackagesToScan(
-                this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN).split(","));
+        entityManagerFactoryBean
+                .setPackagesToScan(this.environment.getRequiredProperty(this.packagesToScanProperty).split(","));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();

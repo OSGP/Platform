@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataRequest;
 import com.alliander.osgp.domain.microgrids.valueobjects.DataResponse;
 import com.alliander.osgp.domain.microgrids.valueobjects.EmptyResponse;
@@ -39,6 +40,9 @@ public class AdHocManagementService extends AbstractService {
 
     @Autowired
     private DomainMicrogridsMapper mapper;
+
+    @Autowired
+    private CorrelationIdProviderService correlationIdProviderService;
 
     /**
      * Constructor
@@ -89,7 +93,14 @@ public class AdHocManagementService extends AbstractService {
                     "Exception occurred while getting device status", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+        // Support for Push messages, generate correlationUid
+        String actualCorrelationUid = correlationUid;
+        if (actualCorrelationUid.equals("no-correlationUid")) {
+            actualCorrelationUid = this.correlationIdProviderService.getCorrelationId("DeviceGenerated",
+                    deviceIdentification);
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, dataResponse));
     }
 

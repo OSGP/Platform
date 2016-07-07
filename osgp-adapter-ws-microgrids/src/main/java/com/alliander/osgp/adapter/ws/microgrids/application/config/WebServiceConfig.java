@@ -24,6 +24,7 @@ import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapt
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -33,6 +34,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInter
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
+import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTemplateFactory;
 
 @Configuration
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
@@ -41,6 +44,7 @@ public class WebServiceConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_AD_HOC_MANAGEMENT = "jaxb2.marshaller.context.path.microgrids.adhocmanagement";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION = "jaxb2.marshaller.context.path.microgrids.notification";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
@@ -51,6 +55,8 @@ public class WebServiceConfig {
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
+
+    private static final String WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME = "web.service.notification.url";
 
     @Resource
     private Environment environment;
@@ -99,7 +105,7 @@ public class WebServiceConfig {
 
         final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
+        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
         // Add Public Lighting Marshalling Payload Method Processors to Method
         // Argument Resolvers
@@ -110,7 +116,7 @@ public class WebServiceConfig {
                 OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
+        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
         // Add Public Lighting Marshalling Payload Method Processors to Method
         // Return Value Handlers
@@ -172,4 +178,31 @@ public class WebServiceConfig {
                 APPLICATION_NAME_HEADER);
     }
 
+    @Bean
+    public String notificationURL() {
+        return this.environment.getRequiredProperty(WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME);
+    }
+
+    @Bean
+    public SaajSoapMessageFactory messageFactory() {
+        return new SaajSoapMessageFactory();
+    }
+
+    @Bean
+    public Jaxb2Marshaller notificationSenderMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setContextPath(
+                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
+        return marshaller;
+    }
+
+    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), "ZownStream");
+    }
+
+    @Bean
+    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+    }
 }
