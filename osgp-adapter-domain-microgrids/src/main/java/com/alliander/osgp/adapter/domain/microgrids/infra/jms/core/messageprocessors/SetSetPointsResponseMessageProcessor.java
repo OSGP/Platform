@@ -40,7 +40,7 @@ public class SetSetPointsResponseMessageProcessor extends OsgpCoreResponseMessag
     private AdHocManagementService adHocManagementService;
 
     protected SetSetPointsResponseMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINTS);
+        super(DeviceFunction.SET_SETPOINT);
     }
 
     @Override

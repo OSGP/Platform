@@ -37,23 +37,26 @@ public abstract class PersistenceConfigBase {
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     @Autowired
-    private Environment environment;
+    protected Environment environment;
 
     protected final Logger logger;
     private final String usernameProperty;
     private final String passwordProperty;
     private final String urlProperty;
     private final String packagesToScanProperty;
+    private final String persistenceUnit;
 
     private HikariDataSource dataSource;
 
-    public PersistenceConfigBase(final String usernameProperty, final String passwordProperty, final String urlProperty,
-            final String packagesToScanProperty, final Class<?> loggerClass) {
+    public PersistenceConfigBase(final String persistenceUnit, final String usernameProperty,
+            final String passwordProperty, final String urlProperty, final String packagesToScanProperty,
+            final Class<?> loggerClass) {
         this.logger = LoggerFactory.getLogger(loggerClass);
         this.usernameProperty = usernameProperty;
         this.passwordProperty = passwordProperty;
         this.urlProperty = urlProperty;
         this.packagesToScanProperty = packagesToScanProperty;
+        this.persistenceUnit = persistenceUnit;
     }
 
     /**
@@ -93,6 +96,7 @@ public abstract class PersistenceConfigBase {
         try {
             transactionManager.setEntityManagerFactory(this.createEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
+            transactionManager.setPersistenceUnitName(this.persistenceUnit);
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             this.logger.error(msg, e);
@@ -112,7 +116,7 @@ public abstract class PersistenceConfigBase {
     protected LocalContainerEntityManagerFactoryBean createEntityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_ADAPTER_MICROGRIDS");
+        entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
         entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean
                 .setPackagesToScan(this.environment.getRequiredProperty(this.packagesToScanProperty).split(","));

@@ -37,7 +37,7 @@ public class SetSetPointsRequestMessageProcessor extends WebServiceRequestMessag
     private AdHocManagementService adHocManagementService;
 
     public SetSetPointsRequestMessageProcessor() {
-        super(DeviceFunction.SET_SETPOINTS);
+        super(DeviceFunction.SET_SETPOINT);
     }
 
     @Override

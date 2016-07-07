@@ -15,15 +15,18 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
 
 @Configuration
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
@@ -40,7 +43,7 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY = "jms.default.maximum.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY = "jms.default.redelivery.delay";
 
-    // JMS Settings: Public Lighting logging
+    // JMS Settings: Microgrids logging
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_LOGGING_QUEUE = "jms.microgrids.logging.queue";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_LOGGING_EXPLICIT_QOS_ENABLED = "jms.microgrids.logging.explicit.qos.enabled";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_LOGGING_DELIVERY_PERSISTENT = "jms.microgrids.logging.delivery.persistent";
@@ -53,7 +56,7 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_LOGGING_BACK_OFF_MULTIPLIER = "jms.microgrids.logging.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_LOGGING_USE_EXPONENTIAL_BACK_OFF = "jms.microgrids.logging.use.exponential.back.off";
 
-    // JMS Settings: Public Lighting requests
+    // JMS Settings: Microgrids requests
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_REQUESTS_QUEUE = "jms.microgrids.requests.queue";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_REQUESTS_EXPLICIT_QOS_ENABLED = "jms.microgrids.requests.explicit.qos.enabled";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_TIME_TO_LIVE = "jms.microgrids.responses.time.to.live";
@@ -68,7 +71,7 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_REQUESTS_BACK_OFF_MULTIPLIER = "jms.microgrids.requests.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_REQUESTS_USE_EXPONENTIAL_BACK_OFF = "jms.microgrids.requests.use.exponential.back.off";
 
-    // JMS Settings: Public Lighting responses
+    // JMS Settings: Microgrids responses
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_QUEUE = "jms.microgrids.responses.queue";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_EXPLICIT_QOS_ENABLED = "jms.microgrids.responses.explicit.qos.enabled";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_DELIVERY_PERSISTENT = "jms.microgrids.responses.delivery.persistent";
@@ -80,6 +83,9 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_REDELIVERY_DELAY = "jms.microgrids.responses.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_BACK_OFF_MULTIPLIER = "jms.microgrids.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_MICROGRIDS_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.microgrids.responses.use.exponential.back.off";
+
+    @Autowired
+    public MicrogridsResponseMessageListener microgridsResponseMessageListener;
 
     // === JMS SETTINGS ===
 
@@ -127,7 +133,7 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    // === JMS SETTINGS: PUBLIC LIGHTING REQUESTS ===
+    // === JMS SETTINGS: Microgrids REQUESTS ===
 
     @Bean
     public ActiveMQDestination microgridsRequestsQueue() {
@@ -180,7 +186,7 @@ public class MessagingConfig {
         return new MicrogridsRequestMessageSender();
     }
 
-    // === JMS SETTINGS: PUBLIC LIGHTING RESPONSES ===
+    // === JMS SETTINGS: Microgrids RESPONSES ===
 
     /**
      * @return
@@ -234,7 +240,31 @@ public class MessagingConfig {
         return new MicrogridsResponseMessageFinder();
     }
 
-    // === JMS SETTINGS: PUBLIC LIGHTING LOGGING ===
+    @Bean(name = "wsMicrogridsResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer microgridsResponseMessageListenerContainer() {
+        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
+        messageListenerContainer.setDestination(this.microgridsResponsesQueue());
+
+        //
+        // TODO: add concurrent consumer properties.
+        //
+
+        // messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
+        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_CONCURRENT_CONSUMERS)));
+        // messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
+        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setMessageListener(this.microgridsResponseMessageListener);
+        messageListenerContainer.setSessionTransacted(true);
+        return messageListenerContainer;
+    }
+
+    @Bean
+    public MicrogridsResponseMessageListener microgridsResponseMessageListener() {
+        return new MicrogridsResponseMessageListener();
+    }
+
+    // === JMS SETTINGS: MICROGRIDS LOGGING ===
 
     @Bean
     public ActiveMQDestination microgridsLoggingQueue() {

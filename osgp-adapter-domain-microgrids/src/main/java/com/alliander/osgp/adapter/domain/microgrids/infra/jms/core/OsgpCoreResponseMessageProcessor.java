@@ -116,6 +116,6 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred",
                 e);
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e), messageType);
     }
 }

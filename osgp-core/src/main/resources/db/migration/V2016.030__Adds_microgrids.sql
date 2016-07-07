@@ -14,8 +14,8 @@ GRANT SELECT ON public.rtu_device TO osgp_read_only_ws_user;
 -- Inserts the device function mapping for microgrids functions
 insert into device_function_mapping  (function_group, function) values ('OWNER' ,'GET_DATA');
 insert into device_function_mapping  (function_group, function) values ('AD_HOC' ,'GET_DATA');
-insert into device_function_mapping  (function_group, function) values ('OWNER' ,'SET_SETPOINTS');
-insert into device_function_mapping  (function_group, function) values ('AD_HOC' ,'SET_SETPOINTS');
+insert into device_function_mapping  (function_group, function) values ('OWNER' ,'SET_SETPOINT');
+insert into device_function_mapping  (function_group, function) values ('AD_HOC' ,'SET_SETPOINT');
 
 
 -- Adds the incoming and outgoing queues for the microgrids domain queues

@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
+import com.alliander.osgp.adapter.ws.microgrids.domain.entities.RtuResponseData;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessage;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageType;
-import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
@@ -41,7 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service
-@Transactional(value = "transactionManager")
+@Transactional(value = "wsTransactionManager")
 @Validated
 public class MicrogridsService {
 
@@ -63,7 +63,7 @@ public class MicrogridsService {
     private MicrogridsRequestMessageSender requestMessageSender;
 
     @Autowired
-    private MicrogridsResponseMessageFinder responseMessageFinder;
+    private RtuResponseDataService responseDataService;
 
     private Map<String, Object> mockRequestHolder = new HashMap<>();
 
@@ -111,7 +111,9 @@ public class MicrogridsService {
         if (this.stubResponses) {
             return this.getStubbedGetDataResponse(correlationUid);
         }
-        final ResponseMessage response = this.responseMessageFinder.findMessage(correlationUid);
+
+        final RtuResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class);
+        final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
         switch (response.getResult()) {
         case NOT_FOUND:
@@ -151,11 +153,10 @@ public class MicrogridsService {
         }
 
         final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SETPOINTS);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SETPOINT);
 
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(
-                MicrogridsRequestMessageType.SET_SETPOINTS, correlationUid, organisationIdentification,
-                deviceIdentification, setPointsRequest, null);
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MicrogridsRequestMessageType.SET_SETPOINT,
+                correlationUid, organisationIdentification, deviceIdentification, setPointsRequest, null);
 
         try {
             this.requestMessageSender.send(message);
@@ -174,7 +175,9 @@ public class MicrogridsService {
         if (this.stubResponses) {
             return this.getStubbedSetSetPointsResponse(correlationUid);
         }
-        final ResponseMessage response = this.responseMessageFinder.findMessage(correlationUid);
+
+        final RtuResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class);
+        final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
         switch (response.getResult()) {
         case NOT_FOUND:

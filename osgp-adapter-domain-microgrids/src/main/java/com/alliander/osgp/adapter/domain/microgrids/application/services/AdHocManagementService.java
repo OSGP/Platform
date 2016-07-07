@@ -101,7 +101,7 @@ public class AdHocManagementService extends AbstractService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, dataResponse));
+                deviceIdentification, result, osgpException, dataResponse), messageType);
     }
 
     // === SET SETPOINTS ===
@@ -147,6 +147,6 @@ public class AdHocManagementService extends AbstractService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, emptyResponse));
+                deviceIdentification, result, osgpException, emptyResponse), messageType);
     }
 }

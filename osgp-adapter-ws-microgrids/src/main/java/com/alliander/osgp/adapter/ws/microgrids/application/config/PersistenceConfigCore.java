@@ -16,7 +16,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
+@EnableJpaRepositories(transactionManagerRef = "coreTransactionManager", entityManagerFactoryRef = "coreEntityManagerFactory", basePackageClasses = {
         com.alliander.osgp.domain.core.repositories.DeviceRepository.class,
         com.alliander.osgp.domain.microgrids.repositories.RtuDeviceRepository.class })
 @Configuration
@@ -29,16 +29,16 @@ public class PersistenceConfigCore extends PersistenceConfigBase {
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.core";
 
     public PersistenceConfigCore() {
-        super(PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PASSWORD, PROPERTY_NAME_DATABASE_URL,
-                PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class);
+        super("OSGP_CORE_MICROGRIDS", PROPERTY_NAME_DATABASE_USERNAME, PROPERTY_NAME_DATABASE_PASSWORD,
+                PROPERTY_NAME_DATABASE_URL, PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN, PersistenceConfigCore.class);
     }
 
-    @Bean
+    @Bean(name = "coreTransactionManager")
     public JpaTransactionManager coreTransactionManager() throws PlatformException {
         return this.createTransactionManager();
     }
 
-    @Bean
+    @Bean(name = "coreEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean coreEntityManagerFactory() throws ClassNotFoundException {
         return this.createEntityManagerFactory();
     }

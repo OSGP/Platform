@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.alliander.osgp.adapter.ws.microgrids.domain.entities.RtuResponseData;
 
 @Repository
-public interface MeterResponseDataRepository extends JpaRepository<RtuResponseData, Long> {
+public interface RtuResponseDataRepository extends JpaRepository<RtuResponseData, Long> {
 
     List<RtuResponseData> findByOrganisationIdentification(String organisationIdentification);
 
