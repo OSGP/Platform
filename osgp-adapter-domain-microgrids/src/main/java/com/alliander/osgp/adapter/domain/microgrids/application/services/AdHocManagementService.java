@@ -87,8 +87,7 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device status", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while getting data", e);
         }
 
         // Support for Push messages, generate correlationUid
@@ -139,8 +138,8 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Exception occurred while getting device status", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while setting setpoints",
+                    e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
