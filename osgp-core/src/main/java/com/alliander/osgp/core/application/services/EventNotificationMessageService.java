@@ -166,8 +166,8 @@ public class EventNotificationMessageService {
 
     private void updateRelayStatus(final int index, final Device device, final EventType eventType) {
 
-        final boolean isRelayOn = (EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType) || EventType.TARIFF_EVENTS_TARIFF_ON
-                .equals(eventType));
+        final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
+                || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         // Only handle the event if the relay doesn't have a status yet, or
         // if the state changed
