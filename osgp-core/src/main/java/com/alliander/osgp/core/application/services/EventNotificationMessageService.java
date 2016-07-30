@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 @Transactional
 public class EventNotificationMessageService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
