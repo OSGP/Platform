@@ -42,31 +42,24 @@
 							<clearOutputDir>true</clearOutputDir>
 						</configuration>
 					</execution>
+					<execution>
+						<id>notification</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<bindingDirectory>src/main/webapp/WEB-INF/wsdl/microgrids/schemas</bindingDirectory>
+							<bindingFiles>notification.xjb</bindingFiles>
+							<schemaDirectory>src/main/webapp/WEB-INF/wsdl/microgrids</schemaDirectory>
+							<schemaFiles>Notification.wsdl</schemaFiles>
+							<wsdl>true</wsdl>
+							<xmlschema>false</xmlschema>
+							<staleFile>${project.build.directory}/jaxb2/.schema-notification-stale-flag</staleFile>
+							<clearOutputDir>false</clearOutputDir>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>jaxb2-maven-plugin</artifactId>
-              <version>1.5</version>
-              <executions>
-                <execution>
-                  <id>notification</id>
-                  <goals>
-                    <goal>xjc</goal>
-                  </goals>
-                  <configuration>
-                    <bindingDirectory>src/main/webapp/WEB-INF/wsdl/microgrids/schemas</bindingDirectory>
-                    <bindingFiles>notification.xjb</bindingFiles>
-                    <schemaDirectory>src/main/webapp/WEB-INF/wsdl/microgrids</schemaDirectory>
-                    <schemaFiles>Notification.wsdl</schemaFiles>
-                    <wsdl>true</wsdl>
-                    <xmlschema>false</xmlschema>
-                    <staleFile>${project.build.directory}/jaxb2/.schema-notification-stale-flag</staleFile>
-                    <clearOutputDir>false</clearOutputDir>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
