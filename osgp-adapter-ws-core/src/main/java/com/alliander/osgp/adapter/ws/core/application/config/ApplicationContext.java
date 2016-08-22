@@ -39,9 +39,9 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
-        "com.alliander.osgp.domain.logging" })
+"com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class })
+@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsCore/config}")
 public class ApplicationContext {
 
@@ -52,7 +52,7 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
     private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
-    private static final String PROPERTY_NAME_FIRMWARE_FILE_EXTENSION = "firmware.fileExtension";
+    private static final String PROPERTY_NAME_FIRMWARE_DIRECTORY = "firmware.directory";
     private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
     private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
@@ -85,14 +85,18 @@ public class ApplicationContext {
     public PagingSettings pagingSettings() {
         return new PagingSettings(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     @Bean
     public FirmwareLocation firmwareLocation() {
         return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
-                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH),
-                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_FILE_EXTENSION));
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
+    }
+
+    @Bean
+    public String firmwareDirectory() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_DIRECTORY);
     }
 
     @Bean
@@ -140,4 +144,5 @@ public class ApplicationContext {
     public String netMangementOrganisation() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION);
     }
+
 }

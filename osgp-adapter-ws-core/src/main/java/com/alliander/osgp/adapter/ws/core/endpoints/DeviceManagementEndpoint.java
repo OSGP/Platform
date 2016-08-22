@@ -56,10 +56,12 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSs
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
+import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -207,7 +209,8 @@ public class DeviceManagementEndpoint {
             // Get all events matching the request.
             final Page<com.alliander.osgp.domain.core.entities.Event> result = this.deviceManagementService.findEvents(
                     organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
-                    request.getPage(), from, until);
+                    request.getPage(), from, until,
+                    this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
@@ -235,7 +238,7 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            final Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
+            Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
                     .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
@@ -247,6 +250,22 @@ public class DeviceManagementEndpoint {
                 response.getPage().setTotalPages(result.getTotalPages());
                 response.getPage().setCurrentPage(result.getNumber());
             }
+
+            if (request.isUsePages() != null && !request.isUsePages()) {
+                int calls = 0;
+                while ((calls += 1) < result.getTotalPages()) {
+                    request.setPage(calls);
+                    result = this.deviceManagementService.findDevices(organisationIdentification,  request.getPageSize(), request.getPage(),
+                            this.deviceManagementMapper.map(request.getDeviceFilter(),
+                                    com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
+                    response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+                }
+            }
+        } catch (final ArgumentNullOrEmptyException ane) {
+            //TODO: Instead of using this exception, a different solution should be found to avoid using Exceptions.
+            LOGGER.error("No results found when finding devices", ane);
+            response.setArgument(ane.getArgument());
+            response.setMessage(ane.getMessage());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

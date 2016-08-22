@@ -20,15 +20,19 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.DeviceFirmware;
+import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleFilterType;
 
 public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException {
-
         return new Specification<Device>() {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
@@ -41,7 +45,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException {
-
         if (organisation == null) {
             throw new ArgumentNullOrEmptyException("organisation");
         }
@@ -64,7 +67,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     @Override
     public Specification<Device> hasDeviceIdentification(final String deviceIdentification)
             throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(deviceIdentification)) {
             throw new ArgumentNullOrEmptyException("deviceIdentification");
         }
@@ -82,7 +84,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasCity(final String city) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(city)) {
             throw new ArgumentNullOrEmptyException("city");
         }
@@ -99,7 +100,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasPostalCode(final String postalCode) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(postalCode)) {
             throw new ArgumentNullOrEmptyException("postalCode");
         }
@@ -116,7 +116,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasStreet(final String street) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(street)) {
             throw new ArgumentNullOrEmptyException("street");
         }
@@ -133,7 +132,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasNumber(final String number) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(number)) {
             throw new ArgumentNullOrEmptyException("number");
         }
@@ -150,7 +148,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(municipality)) {
             throw new ArgumentNullOrEmptyException("municipality");
         }
@@ -167,7 +164,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException {
-
         if (StringUtils.isEmpty(alias)) {
             throw new ArgumentNullOrEmptyException("alias");
         }
@@ -209,7 +205,6 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
 
     @Override
     public Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException {
-
         if (activated == null) {
             throw new ArgumentNullOrEmptyException("activated");
         }
@@ -219,7 +214,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.and(cb.equal(deviceRoot.<Boolean> get("isActivated"), activated));
+                return cb.equal(deviceRoot.<Boolean> get("isActivated"), activated);
             }
         };
     }
@@ -235,7 +230,133 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.and(cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance));
+                return cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forOwner(final String organisation) throws ArgumentNullOrEmptyException {
+        if (organisation == null) {
+            throw new ArgumentNullOrEmptyException("owner");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+                subquery.select(deviceAuthorizationRoot.get("device").get("id").as(Long.class));
+                subquery.where(cb.and(cb.like(
+                        cb.upper(deviceAuthorizationRoot.get("organisation").<String> get("name")),
+                        organisation.toUpperCase()), cb.equal(deviceAuthorizationRoot.get("functionGroup"),
+                                DeviceFunctionGroup.OWNER.ordinal())));
+                return cb.in(deviceRoot.get("id")).value(subquery);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forDeviceType(final String deviceType) throws ArgumentNullOrEmptyException {
+        if (deviceType == null) {
+            throw new ArgumentNullOrEmptyException("deviceType");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceType")), deviceType.toUpperCase());
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forDeviceModel(final String deviceModel) throws ArgumentNullOrEmptyException {
+        if (deviceModel == null) {
+            throw new ArgumentNullOrEmptyException("deviceModel");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+                return cb.like(cb.upper(deviceRoot.<String> get("deviceModel").get("modelCode").as(String.class)),
+                        deviceModel.toUpperCase());
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException {
+        if (manufacturer == null) {
+            throw new ArgumentNullOrEmptyException("manufacturer");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceModel> deviceModelRoot = subquery.from(DeviceModel.class);
+                subquery.select(deviceModelRoot.get("id").as(Long.class));
+                subquery.where(cb.equal(cb.upper(deviceModelRoot.get("manufacturerId").<String> get("name")),
+                        manufacturer.getName().toUpperCase()));
+                return cb.in(deviceRoot.get("deviceModel").get("id").as(Long.class)).value(subquery);
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> forFirmwareModuleVersion(final FirmwareModuleFilterType firmwareModuleFilterType,
+            final String firmwareModuleVersion) throws ArgumentNullOrEmptyException {
+        if (StringUtils.isEmpty(firmwareModuleVersion)) {
+            throw new ArgumentNullOrEmptyException("firmwareModuleVersion");
+        }
+        if (firmwareModuleFilterType == null) {
+            throw new ArgumentNullOrEmptyException("firmwareModuleType");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+                String moduleFieldName = "";
+                switch (firmwareModuleFilterType) {
+                case COMMUNICATION:
+                    moduleFieldName = "moduleVersionComm";
+                    break;
+                case FUNCTIONAL:
+                    moduleFieldName = "moduleVersionFunc";
+                    break;
+                case SECURITY:
+                    moduleFieldName = "moduleVersionSec";
+                    break;
+                case M_BUS:
+                    moduleFieldName = "moduleVersionMbus";
+                    break;
+                case MODULE_ACTIVE:
+                    moduleFieldName = "moduleVersionMa";
+                    break;
+                case ACTIVE_FIRMWARE:
+                    break;
+
+                default:
+                    break;
+                }
+
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceFirmware> deviceFirmwareRoot = subquery.from(DeviceFirmware.class);
+                subquery.select(deviceFirmwareRoot.get("device").get("id").as(Long.class));
+                subquery.where(cb.and(
+                        cb.like(cb.upper(deviceFirmwareRoot.get("firmware").<String> get(moduleFieldName)),
+                                firmwareModuleVersion.toUpperCase()), 
+                        cb.equal(deviceFirmwareRoot.<Boolean> get("active"), true)));
+                return cb.in(deviceRoot.get("id").as(Long.class)).value(subquery);
             }
         };
     }

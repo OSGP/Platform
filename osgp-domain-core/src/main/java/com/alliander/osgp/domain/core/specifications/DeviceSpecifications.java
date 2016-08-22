@@ -10,8 +10,10 @@ package com.alliander.osgp.domain.core.specifications;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleFilterType;
 
 public interface DeviceSpecifications {
     Specification<Device> forOrganisation(final Organisation organisation) throws ArgumentNullOrEmptyException;
@@ -39,4 +41,14 @@ public interface DeviceSpecifications {
 
     Specification<Device> hasTechnicalInstallationDate() throws ArgumentNullOrEmptyException;
 
+    Specification<Device> forOwner(final String organisation) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forDeviceType(final String deviceType) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forDeviceModel(final String deviceModel) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forManufacturer(final Manufacturer manufacturer) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> forFirmwareModuleVersion(FirmwareModuleFilterType firmwareModuleFilterType,
+            String firmwareModuleVersion) throws ArgumentNullOrEmptyException;
 }

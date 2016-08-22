@@ -249,10 +249,9 @@ public class DeviceManagementEndpoint {
             @RequestPayload final UpdateDeviceAuthorisationsRequest request) throws OsgpException {
 
         LOGGER.info("Update device autorisations for organisation: {}.", organisationIdentification);
-
         try {
             for (final DeviceAuthorisation authorization : request.getDeviceAuthorisations()) {
-                if (authorization.isRevoked()) {
+                if (authorization.isRevoked() != null && authorization.isRevoked()) {
                     this.deviceManagementService
                             .removeDeviceAuthorization(organisationIdentification, authorization
                                     .getOrganisationIdentification(), authorization.getDeviceIdentification(),
@@ -385,7 +384,7 @@ public class DeviceManagementEndpoint {
 
         try {
             this.deviceManagementService.updateKey(organisationIdentification, request.getDeviceIdentification(),
-                    request.getPublicKey());
+                    request.getPublicKey(), request.getProtocolInfoId());
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,

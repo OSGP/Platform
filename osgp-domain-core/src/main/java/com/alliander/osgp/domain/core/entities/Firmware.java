@@ -5,72 +5,178 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package com.alliander.osgp.domain.core.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
-
+import com.alliander.osgp.domain.core.valueobjects.FirmwareModuleData;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * Firmware entity class
+ * Firmware entity class holds information about the device model or type
  */
 @Entity
 public class Firmware extends AbstractEntity {
 
-    private static final long serialVersionUID = 5003530514434626119L;
+    private static final long serialVersionUID = 3479817855083883103L;
 
     @ManyToOne()
-    @JoinColumn
+    @JoinColumn(name = "device_model_id")
     private DeviceModel deviceModel;
 
-    @Column(nullable = false)
-    private int firmwareVersion;
+    @Column()
+    private String filename;
 
-    @Column(length = 255)
+    @Column(length = 100)
     private String description;
 
-    @Lob
-    @Fetch(FetchMode.SELECT)
-    @Type(type = "org.hibernate.type.PrimitiveByteArrayBlobType")
-    byte[] installationFile;
+    @Column()
+    private boolean pushToNewDevices;
 
-    public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {
+    @Column(length = 100)
+    private String moduleVersionComm;
+
+    @Column(length = 100)
+    private String moduleVersionFunc;
+
+    @Column(length = 100)
+    private String moduleVersionMa;
+
+    @Column(length = 100)
+    private String moduleVersionMbus;
+
+    @Column(length = 100)
+    private String moduleVersionSec;
+
+    @Lob
+    @Column()
+    private byte file[];
+
+    @Column()
+    private String hash;
+
+    public Firmware() {
+        // Default constructor
+    }
+
+    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
+            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData) {
         this.deviceModel = deviceModel;
-        this.firmwareVersion = firmwareVersion;
+        this.filename = filename;
         this.description = description;
+        this.pushToNewDevices = pushToNewDevices;
+        this.updateFirmwareModuleData(firmwareModuleData);
+    }
+
+    public Firmware(final DeviceModel deviceModel, final String filename, final String description,
+            final boolean pushToNewDevices, final FirmwareModuleData firmwareModuleData, final byte[] file,
+            final String hash) {
+        this(deviceModel, filename, description, pushToNewDevices, firmwareModuleData);
+        this.file = file;
+        this.hash = hash;
+    }
+
+    public void updateFirmwareModuleData(final FirmwareModuleData firmwareModuleData) {
+        this.moduleVersionComm = firmwareModuleData.getModuleVersionComm();
+        this.moduleVersionFunc = firmwareModuleData.getModuleVersionFunc();
+        this.moduleVersionMa = firmwareModuleData.getModuleVersionMa();
+        this.moduleVersionMbus = firmwareModuleData.getModuleVersionMbus();
+        this.moduleVersionSec = firmwareModuleData.getModuleVersionSec();
     }
 
     public DeviceModel getDeviceModel() {
         return this.deviceModel;
     }
 
-    public int getFirmwareVersion() {
-        return this.firmwareVersion;
+    public String getFilename() {
+        return this.filename;
     }
 
     public String getDescription() {
         return this.description;
     }
 
+    public boolean getPushToNewDevices() {
+        return this.pushToNewDevices;
+    }
+
+    public String getModuleVersionComm() {
+        return this.moduleVersionComm;
+    }
+
+    public String getModuleVersionFunc() {
+        return this.moduleVersionFunc;
+    }
+
+    public String getModuleVersionSec() {
+        return this.moduleVersionSec;
+    }
+
+    public String getModuleVersionMa() {
+        return this.moduleVersionMa;
+    }
+
+    public String getModuleVersionMbus() {
+        return this.moduleVersionMbus;
+    }
+
+    public void setDeviceModel(final DeviceModel deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public void setFilename(final String filename) {
+        this.filename = filename;
+    }
+
     public void setDescription(final String description) {
         this.description = description;
     }
 
-    public byte[] getInstallationFile() {
-        return this.installationFile;
+    public void setPushToNewDevices(final boolean pushToNewDevices) {
+        this.pushToNewDevices = pushToNewDevices;
     }
 
-    public void setInstallationFile(final byte[] installationFile) {
-        this.installationFile = installationFile;
+    public void setModuleVersionComm(final String moduleVersionComm) {
+        this.moduleVersionComm = moduleVersionComm;
     }
 
+    public void setModuleVersionFunc(final String moduleVersionFunc) {
+        this.moduleVersionFunc = moduleVersionFunc;
+    }
+
+    public void setModuleVersionMa(final String moduleVersionMa) {
+        this.moduleVersionMa = moduleVersionMa;
+    }
+
+    public void setModuleVersionMbus(final String moduleVersionMbus) {
+        this.moduleVersionMbus = moduleVersionMbus;
+    }
+
+    public void setModuleVersionSec(final String moduleVersionSec) {
+        this.moduleVersionSec = moduleVersionSec;
+    }
+
+    public String getHash() {
+        return this.hash;
+    }
+
+    public void setHash(final String hash) {
+        this.hash = hash;
+    }
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    public byte[] getFile() {
+        return this.file;
+    }
+
+    public void setFile(final byte[] file) {
+        this.file = file;
+    }
 }
