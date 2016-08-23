@@ -17,10 +17,14 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -30,6 +34,9 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 public class InstallationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -93,7 +100,12 @@ public class InstallationService {
      */
     public String enqueueCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
-            final short channel, final int messagePriority, final Long scheduleTime) {
+            final short channel, final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE);
 
         LOGGER.debug(
                 "enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {} on channel {}",
