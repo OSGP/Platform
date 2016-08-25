@@ -9,8 +9,6 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import java.util.List;
 
-import ma.glasnost.orika.MapperFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,7 @@ import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -40,6 +39,8 @@ import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+
+import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
@@ -82,8 +83,8 @@ public class InstallationService {
         LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceMessageMetadata
-                .getDeviceIdentification());
+        SmartMeter device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
         if (device == null) {
 
             /*
@@ -113,35 +114,21 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade().map(
-                smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
+                .map(smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(), deviceMessageMetadata
-                .getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                        deviceMessageMetadata.getOrganisationIdentification(),
+                        deviceMessageMetadata.getDeviceIdentification(), smartMeteringDeviceDto),
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         this.handleResponse("handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
-    }
-
-    private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
-        LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
     }
 
     /**
@@ -172,8 +159,8 @@ public class InstallationService {
 
             final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
 
-            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository.getMbusDevicesForGateway(gateway
-                    .getId());
+            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
+                    .getMbusDevicesForGateway(gateway.getId());
 
             for (final SmartMeter coupledDevice : alreadyCoupled) {
                 if (channel == coupledDevice.getChannel()) {
@@ -196,4 +183,66 @@ public class InstallationService {
         this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
     }
 
+    /**
+     * @param deviceMessageMetadata
+     *            the metadata of the message, including the correlationUid, the
+     *            deviceIdentification and the organization
+     * @param requestData
+     *            the requestData of the message, including the identification
+     *            of the m-bus device and the channel
+     * @throws FunctionalException
+     */
+    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceRequestData requestData) {
+
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
+        LOGGER.debug("deCoupleMbusDevice for organisationIdentification: {} for gateway: {}, m-bus device {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
+
+        OsgpException exception = null;
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+
+        try {
+            final SmartMeter gateway = this.domainHelperService.findActiveSmartMeter(deviceIdentification);
+
+            final SmartMeter mbusDevice = this.domainHelperService.findActiveSmartMeter(mbusDeviceIdentification);
+
+            final List<SmartMeter> alreadyCoupled = this.smartMeteringDeviceRepository
+                    .getMbusDevicesForGateway(gateway.getId());
+
+            if (alreadyCoupled.isEmpty()) {
+                throw new FunctionalException(FunctionalExceptionType.DEVICES_NOT_COUPLED,
+                        ComponentType.DOMAIN_SMART_METERING);
+            }
+
+            for (final SmartMeter coupledDevice : alreadyCoupled) {
+                if (coupledDevice.getDeviceIdentification().equals(mbusDevice.getDeviceIdentification())) {
+                    coupledDevice.updateGatewayDevice(null);
+                    this.smartMeteringDeviceRepository.save(coupledDevice);
+                }
+            }
+        } catch (final FunctionalException functionalException) {
+            exception = functionalException;
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    private void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+        LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
+    }
 }

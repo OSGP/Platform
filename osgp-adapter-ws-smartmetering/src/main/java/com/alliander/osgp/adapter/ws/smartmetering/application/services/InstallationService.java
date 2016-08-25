@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
@@ -116,13 +117,55 @@ public class InstallationService {
                 organisationIdentification, correlationUid,
                 SmartMeteringRequestMessageType.COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
 
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification, channel)).build();
+
         final CoupleMbusDeviceRequestData coupleMbusDeviceRequestData = new CoupleMbusDeviceRequestData(
                 mbusDeviceIdentification, channel);
         coupleMbusDeviceRequestData.validate();
 
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * @param organisationIdentification
+     *            the organisation requesting the decoupling of devices
+     * @param deviceIdentification
+     *            the identification of the master device
+     * @param mbusDeviceIdentification
+     *            the identifation of the m-bus device
+     * @param messagePriority
+     *            the priority of the message
+     * @param scheduleTime
+     *            the time the request should be carried out
+     * @return the correlationUid identifying the operation
+     * @throws FunctionalException
+     */
+    public String enqueueDeCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE);
+
+        LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+                organisationIdentification, deviceIdentification, mbusDeviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.DE_COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
+
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification, channel)).build();
+                .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

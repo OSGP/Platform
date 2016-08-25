@@ -15,23 +15,23 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 /**
  * this class holds functionality to implement the message handling of a request
- * to couple a device and a m-bus device
+ * to decouple a device and a m-bus device
  */
 @Component
-public class CoupleMbusDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class DeCoupleMbusDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringInstallationService")
     private InstallationService installationService;
 
-    protected CoupleMbusDeviceRequestMessageProcessor() {
-        super(DeviceFunction.COUPLE_MBUS_DEVICE);
+    protected DeCoupleMbusDeviceRequestMessageProcessor() {
+        super(DeviceFunction.DE_COUPLE_MBUS_DEVICE);
     }
 
     /*
@@ -44,8 +44,8 @@ public class CoupleMbusDeviceRequestMessageProcessor extends WebServiceRequestMe
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
-        final CoupleMbusDeviceRequestData requestData = (CoupleMbusDeviceRequestData) dataObject;
-        this.installationService.coupleMbusDevice(deviceMessageMetadata, requestData);
+        final DeCoupleMbusDeviceRequestData requestData = (DeCoupleMbusDeviceRequestData) dataObject;
+        this.installationService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
 }

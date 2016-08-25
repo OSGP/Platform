@@ -14,8 +14,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -36,6 +34,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
@@ -77,6 +76,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestD
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
@@ -133,6 +134,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SetKeysRequestData.class, SetKeysRequestDto.class);
         CLASS_MAP.put(SpecificConfigurationObjectRequestData.class, SpecificConfigurationObjectRequestDto.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDto.class);
+        CLASS_MAP.put(CoupleMbusDeviceRequestData.class, GetAssociationLnObjectsRequestDto.class);
     }
 
     /**
@@ -190,8 +192,8 @@ public class ActionMapperService {
                     actionValueObjectDtoList.add(new ActionDto(this.performDefaultMapping(action, mapper, clazz)));
                 } else {
                     throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                            ComponentType.DOMAIN_SMART_METERING, new AssertionError("No mapper defined for class: "
-                                    + clazz.getName()));
+                            ComponentType.DOMAIN_SMART_METERING,
+                            new AssertionError("No mapper defined for class: " + clazz.getName()));
                 }
             }
         }

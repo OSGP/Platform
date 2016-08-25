@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 /**
- * Class for processing smart metering couple mbus device response messages
+ * Class for processing smart metering decouple mbus device response messages
  */
 @Component
-public class CoupleMbusDeviceResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class DeCoupleMbusDeviceResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected CoupleMbusDeviceResponseMessageProcessor() {
-        super(DeviceFunction.COUPLE_MBUS_DEVICE);
+    protected DeCoupleMbusDeviceResponseMessageProcessor() {
+        super(DeviceFunction.DE_COUPLE_MBUS_DEVICE);
     }
 
 }
