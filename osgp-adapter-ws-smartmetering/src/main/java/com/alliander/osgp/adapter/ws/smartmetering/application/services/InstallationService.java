@@ -61,10 +61,8 @@ public class InstallationService {
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
                 messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -117,6 +115,10 @@ public class InstallationService {
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
                 SmartMeteringRequestMessageType.COUPLE_MBUS_DEVICE.toString(), messagePriority, scheduleTime);
+
+        final CoupleMbusDeviceRequestData coupleMbusDeviceRequestData = new CoupleMbusDeviceRequestData(
+                mbusDeviceIdentification, channel);
+        coupleMbusDeviceRequestData.validate();
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)

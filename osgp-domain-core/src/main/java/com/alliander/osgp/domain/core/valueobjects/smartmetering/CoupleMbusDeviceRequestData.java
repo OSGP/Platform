@@ -22,11 +22,11 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
 
     private static final long serialVersionUID = 8993111326494612489L;
 
-    private String mbusDeviceIdentification;
+    private final String mbusDeviceIdentification;
     private static final short MIN_CHANNEL = 1;
     private static final short MAX_CHANNEL = 4;
 
-    private short channel;
+    private final short channel;
 
     /**
      * @param mbusDeviceIdentification
@@ -57,9 +57,10 @@ public class CoupleMbusDeviceRequestData implements Serializable, ActionRequest 
      */
     @Override
     public void validate() throws FunctionalException {
-        if (this.channel < MIN_CHANNEL || this.channel > MAX_CHANNEL) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
-                    new IllegalArgumentException("channel not in range [1,4]: " + this.channel));
+        if ((this.channel < MIN_CHANNEL) || (this.channel > MAX_CHANNEL)) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new IllegalArgumentException("channel not in range [1,4]: "
+                            + this.channel));
         }
 
     }
