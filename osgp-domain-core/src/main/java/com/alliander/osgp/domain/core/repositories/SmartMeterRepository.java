@@ -21,7 +21,7 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
 
     /**
      * @param deviceId
-     *            the id (primary key) of the gateway devce
+     *            the id (primary key) of the gateway device
      * @return the list of mbus devices coupled to the gateway device identified
      *         by deviceId
      */

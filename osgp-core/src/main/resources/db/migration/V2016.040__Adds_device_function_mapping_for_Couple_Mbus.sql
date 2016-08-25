@@ -1,0 +1,1 @@
+insert into device_function_mapping  (function_group, function) values ('OWNER' ,'COUPLE_MBUS_DEVICE');
