@@ -316,7 +316,7 @@ public class DeviceManagementService {
         // All checks pass, remove authorization
         device.removeAuthorization(organisation, group);
         this.deviceRepository.save(device);
-        this.authorizationRepository.deleteByDeviceAndFunctionGroup(device, group);
+        this.authorizationRepository.deleteByDeviceAndFunctionGroupAndOrganisation(device, group, organisation);
 
         LOGGER.info("Organisation {} now no longer has authorization for function group {} on device {}",
                 organisationIdentification, deviceIdentification, group);
@@ -578,6 +578,39 @@ public class DeviceManagementService {
 
         LOGGER.info("Organisation {} configured protocol: {}, version: {} on device {}", organisationIdentification,
                 protocol, protocolVersion, deviceIdentification);
+    }
+
+    public String enqueueActivateDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification) {
+
+        LOGGER.debug("enqueueActivateDevice called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final AdminRequestMessage message = new AdminRequestMessage(AdminRequestMessageType.ACTIVATE_DEVICE,
+                correlationUid, organisationIdentification, deviceIdentification, null);
+
+        this.adminRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public void activateDeviceRequest(final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
+
+        LOGGER.debug("Activating device [{}] on behalf of organisation [{}]", deviceIdentification,
+                organisationIdentification);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.ACTIVATE_DEVICE);
+
+        if (this.deviceRepository.findByDeviceIdentification(deviceIdentification) == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN);
+        }
+
+        this.enqueueActivateDeviceRequest(organisationIdentification, deviceIdentification);
     }
 
     public String enqueueDeactivateDeviceRequest(final String organisationIdentification,
