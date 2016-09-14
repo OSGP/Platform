@@ -48,4 +48,3 @@ VALUES (current_date
 			 ,'osgp-core.1_0.protocol-iec61850-rtu.1_0.responses'
 			 ,'osgp-core.1_0.protocol-iec61850-rtu.1_0.requests'
 			 ,'protocol-iec61850-rtu.1_0.osgp-core.1_0.responses');
-
