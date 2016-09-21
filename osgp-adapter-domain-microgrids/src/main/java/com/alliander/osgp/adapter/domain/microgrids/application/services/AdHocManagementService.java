@@ -53,7 +53,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void getData(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final DataRequest dataRequest)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("Get data for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -62,19 +62,19 @@ public class AdHocManagementService extends AbstractService {
 
         final DataRequestDto dto = this.mapper.map(dataRequest, DataRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
-                device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, dto), messageType, device.getIpAddress());
     }
 
     public void handleGetDataResponse(final DataResponseDto dataResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, OsgpException osgpException) {
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         DataResponse dataResponse = null;
+        OsgpException exception = null;
 
         try {
             if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
@@ -87,24 +87,25 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while getting data", e);
+            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS,
+                    "Exception occurred while getting data", e);
         }
 
         // Support for Push messages, generate correlationUid
         String actualCorrelationUid = correlationUid;
-        if (actualCorrelationUid.equals("no-correlationUid")) {
+        if ("no-correlationUid".equals(actualCorrelationUid)) {
             actualCorrelationUid = this.getCorrelationId("DeviceGenerated", deviceIdentification);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(actualCorrelationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, dataResponse), messageType);
+                deviceIdentification, result, exception, dataResponse), messageType);
     }
 
     // === SET SETPOINTS ===
 
     public void handleSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final SetPointsRequest setPointsRequest)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("Set setpoints for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
 
@@ -113,19 +114,19 @@ public class AdHocManagementService extends AbstractService {
 
         final SetPointsRequestDto dto = this.mapper.map(setPointsRequest, SetPointsRequestDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
-                device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, dto), messageType, device.getIpAddress());
     }
 
     public void handleSetPointsResponse(final EmptyResponseDto emptyResponseDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, OsgpException osgpException) {
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         EmptyResponse emptyResponse = null;
+        OsgpException exception = null;
 
         try {
             if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
@@ -138,12 +139,12 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while setting setpoints",
-                    e);
+            exception = new TechnicalException(ComponentType.DOMAIN_MICROGRIDS,
+                    "Exception occurred while setting setpoints", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, emptyResponse), messageType);
+                deviceIdentification, result, exception, emptyResponse), messageType);
     }
 
     private String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {

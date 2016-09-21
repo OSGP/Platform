@@ -62,8 +62,7 @@ public class WebServiceTemplateFactory {
             // organisation
             final String key = organisationIdentification.concat("-").concat(userName).concat(this.applicationName);
             if (!this.webServiceTemplates.containsKey(key)) {
-                this.webServiceTemplates.put(key,
-                        this.createTemplate(organisationIdentification, userName, notificationURL));
+                this.webServiceTemplates.put(key, this.createTemplate(notificationURL));
             }
 
             webServiceTemplate = this.webServiceTemplates.get(key);
@@ -75,26 +74,18 @@ public class WebServiceTemplateFactory {
         return webServiceTemplate;
     }
 
-    private WebServiceTemplate createTemplate(final String organisationIdentification, final String userName,
-            final String notificationUrl) throws WebServiceSecurityException {
+    private WebServiceTemplate createTemplate(final String notificationUrl) {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setDefaultUri(notificationUrl);
         webServiceTemplate.setMarshaller(this.marshaller);
         webServiceTemplate.setUnmarshaller(this.marshaller);
-
-        try {
-            webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
-        } catch (final WebServiceSecurityException e) {
-            LOGGER.warn("Security exception, cause: {}", e);
-            throw e;
-        }
+        webServiceTemplate.setMessageSender(this.webServiceMessageSender());
 
         return webServiceTemplate;
     }
 
-    private HttpComponentsMessageSender webServiceMessageSender(final String keystore)
-            throws WebServiceSecurityException {
+    private HttpComponentsMessageSender webServiceMessageSender() {
         return new HttpComponentsMessageSender();
     }
 }

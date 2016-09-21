@@ -29,7 +29,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
 public class ApplicationContext {
 
-    private final static String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
+    private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";
 
     @Resource
     private Environment environment;

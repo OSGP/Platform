@@ -45,7 +45,7 @@ public class NotificationService {
                 organisationIdentification, correlationUid, notificationType);
 
         final Notification notification = new Notification();
-        // TODO message is null, unless an error occurred
+        // Message is null, unless an error occurred.
         notification.setMessage(message);
         notification.setResult(result);
         notification.setDeviceIdentification(deviceIdentification);

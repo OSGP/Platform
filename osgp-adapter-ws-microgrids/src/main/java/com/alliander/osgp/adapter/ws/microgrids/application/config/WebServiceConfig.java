@@ -58,6 +58,8 @@ public class WebServiceConfig {
 
     private static final String WEB_SERVICE_NOTIFICATION_URL_PROPERTY_NAME = "web.service.notification.url";
 
+    private static final String SERVER = "SERVER";
+
     @Resource
     private Environment environment;
 
@@ -135,9 +137,9 @@ public class WebServiceConfig {
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
-        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", "SERVER");
-        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", "SERVER");
-        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", SERVER);
+        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", SERVER);
 
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
@@ -191,8 +193,8 @@ public class WebServiceConfig {
     @Bean
     public Jaxb2Marshaller notificationSenderMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath(
-                this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_MICROGRIDS_NOTIFICATION));
         return marshaller;
     }
 
@@ -202,7 +204,7 @@ public class WebServiceConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
+                .notificationSenderMarshaller()));
     }
 }
