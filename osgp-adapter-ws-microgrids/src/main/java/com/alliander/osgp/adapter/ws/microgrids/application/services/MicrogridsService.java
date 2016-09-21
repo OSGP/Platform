@@ -53,9 +53,6 @@ public class MicrogridsService {
     @Autowired
     private DomainHelperService domainHelperService;
 
-    // @Autowired
-    // private DeviceRepository deviceRepository;
-
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
@@ -103,8 +100,7 @@ public class MicrogridsService {
         return correlationUid;
     }
 
-    public DataResponse dequeueGetDataResponse(final String correlationUid)
-            throws OsgpException, ResponseNotFoundException {
+    public DataResponse dequeueGetDataResponse(final String correlationUid) throws OsgpException {
 
         LOGGER.debug("dequeueGetDataRequest called with correlation uid {}", correlationUid);
 
@@ -117,7 +113,7 @@ public class MicrogridsService {
 
         switch (response.getResult()) {
         case NOT_FOUND:
-            throw new ResponseNotFoundException();
+            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
         case NOT_OK:
             if (response.getOsgpException() != null) {
                 throw response.getOsgpException();
@@ -136,11 +132,11 @@ public class MicrogridsService {
 
     }
 
-    public String enqueueSetSetPointsRequest(final String organisationIdentification, final String deviceIdentification,
-            final SetPointsRequest setPointsRequest) throws OsgpException {
+    public String enqueueSetSetPointsRequest(final String organisationIdentification,
+            final String deviceIdentification, final SetPointsRequest setPointsRequest) throws OsgpException {
 
-        LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("enqueueSetSetPointsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -155,8 +151,9 @@ public class MicrogridsService {
         final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_SETPOINT);
 
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MicrogridsRequestMessageType.SET_SETPOINT,
-                correlationUid, organisationIdentification, deviceIdentification, setPointsRequest, null);
+        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(
+                MicrogridsRequestMessageType.SET_SETPOINT, correlationUid, organisationIdentification,
+                deviceIdentification, setPointsRequest, null);
 
         try {
             this.requestMessageSender.send(message);
@@ -167,8 +164,7 @@ public class MicrogridsService {
         return correlationUid;
     }
 
-    public EmptyResponse dequeueSetSetPointsResponse(final String correlationUid)
-            throws OsgpException, ResponseNotFoundException {
+    public EmptyResponse dequeueSetSetPointsResponse(final String correlationUid) throws OsgpException {
 
         LOGGER.debug("dequeueSetSetPointsRequest called with correlation uid {}", correlationUid);
 
@@ -181,7 +177,7 @@ public class MicrogridsService {
 
         switch (response.getResult()) {
         case NOT_FOUND:
-            throw new ResponseNotFoundException();
+            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
         case NOT_OK:
             if (response.getOsgpException() != null) {
                 throw response.getOsgpException();
@@ -231,6 +227,7 @@ public class MicrogridsService {
     }
 
     private EmptyResponse getStubbedSetSetPointsResponse(final String correlationUid) {
+        LOGGER.debug("getStubbedSetSetPointsResponse called with correlationUid: {}", correlationUid);
         return new EmptyResponse();
     }
 

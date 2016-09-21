@@ -89,8 +89,8 @@ public class AdHocManagementEndpoint {
 
         try {
 
-            final DataResponse dataResponse = this.service
-                    .dequeueGetDataResponse(request.getAsyncRequest().getCorrelationUid());
+            final DataResponse dataResponse = this.service.dequeueGetDataResponse(request.getAsyncRequest()
+                    .getCorrelationUid());
             if (dataResponse != null) {
                 response = this.mapper.map(dataResponse, GetDataResponse.class);
                 response.setResult(OsgpResultType.OK);
@@ -100,6 +100,7 @@ public class AdHocManagementEndpoint {
             }
 
         } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getGetDataResponse", e);
             response.setResult(OsgpResultType.NOT_FOUND);
         } catch (final Exception e) {
             this.handleException(e);
@@ -147,16 +148,16 @@ public class AdHocManagementEndpoint {
         final SetSetPointsResponse response = new SetSetPointsResponse();
 
         try {
-            final EmptyResponse setPointsResponse = this.service
-                    .dequeueSetSetPointsResponse(request.getAsyncRequest().getCorrelationUid());
+            final EmptyResponse setPointsResponse = this.service.dequeueSetSetPointsResponse(request.getAsyncRequest()
+                    .getCorrelationUid());
             if (setPointsResponse != null) {
                 response.setResult(OsgpResultType.OK);
             } else {
                 response.setResult(OsgpResultType.NOT_FOUND);
             }
         } catch (final ResponseNotFoundException e) {
+            LOGGER.warn("ResponseNotFoundException for getSetSetPointsResponse", e);
             response.setResult(OsgpResultType.NOT_FOUND);
-
         } catch (final Exception e) {
             this.handleException(e);
         }
