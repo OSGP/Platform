@@ -103,7 +103,7 @@
     <xsd:complexContent>
       <xsd:extension base="tns:SystemIdentifier">
         <xsd:sequence>
-          <xsd:element name="SetPoint" type="tns:SetPoint" minOccurs="1" maxOccurs="unbounded" />
+          <xsd:element name="SetPoint" type="tns:SetPoint" minOccurs="0" maxOccurs="unbounded" />
           <xsd:element name="Profile" type="tns:Profile" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:extension>
