@@ -88,6 +88,11 @@
     <xsd:attribute name="node" type="xsd:string" use="required" />
   </xsd:complexType>
 
+  <xsd:complexType name="SetPointIdentifier">
+    <xsd:attribute name="id" type="xsd:int" use="optional" />
+    <xsd:attribute name="node" type="xsd:string" use="required" />
+  </xsd:complexType>
+
   <xsd:complexType name="GetDataSystemIdentifier">
     <xsd:complexContent>
       <xsd:extension base="tns:SystemIdentifier">
@@ -168,12 +173,14 @@
   </xsd:complexType>
 
   <xsd:complexType name="SetPoint">
+  <xsd:complexContent>
+    <xsd:extension base="tns:SetPointIdentifier">
     <xsd:sequence>
       <xsd:element name="value" type="xsd:double" minOccurs="1" maxOccurs="1" />
       <xsd:element name="startTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
       <xsd:element name="endTime" type="xsd:dateTime" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
-    <xsd:attribute name="id" type="xsd:int" use="optional" />
-    <xsd:attribute name="node" type="xsd:string" use="required" />
+    </xsd:extension>
+  </xsd:complexContent>
   </xsd:complexType>
 </xsd:schema>
