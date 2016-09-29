@@ -19,9 +19,9 @@ import com.alliander.osgp.domain.core.entities.Organisation;
  */
 @Repository
 public interface OrganisationRepository extends JpaRepository<Organisation, Long> {
-    Organisation findByOrganisationIdentification(String organisationIdentification);
-	
-    Organisation findByName(String name);
-    
-    List<Organisation> findByEnabled(boolean enabled);
+	Organisation findByOrganisationIdentification(String organisationIdentification);
+
+	Organisation findByName(String name);
+
+	List<Organisation> findByEnabled(boolean enabled);
 }
