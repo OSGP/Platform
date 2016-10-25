@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -34,7 +35,11 @@ import com.googlecode.flyway.core.Flyway;
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = { MeterResponseDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+	@PropertySource(value = "${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class PersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";

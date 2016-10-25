@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.publiclighting" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainPublicLighting/config}")
-// @Import({ PersistenceConfig.class, MessagingConfig.class })
 public class ApplicationContext {
 
 }

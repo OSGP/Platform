@@ -68,9 +68,4 @@ public class OrganisationIdentificationClientInterceptor implements ClientInterc
     public boolean handleFault(final MessageContext messageContext) {
         return true;
     }
-
-    @Override
-    public void afterCompletion(final MessageContext messageContext, final Exception ex) {
-        // Nothing needed here.
-    }
 }

@@ -18,6 +18,7 @@ import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -26,7 +27,11 @@ import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingRequ
 import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsPublicLighting/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
+	@PropertySource(value = "${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class MessagingConfig {
 
     @Resource

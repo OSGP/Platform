@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -29,7 +30,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
-@PropertySource("file:${osp/osgpAdapterWsTariffSwitching/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
+	@PropertySource(value = "${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);

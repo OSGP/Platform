@@ -38,7 +38,7 @@ public class OsgpCoreInitializer implements WebApplicationInitializer {
 
             final Context initialContext = new InitialContext();
 
-            final String logLocation = (String) initialContext.lookup("java:comp/env/osp/osgpCore/log-config");
+            final String logLocation = (String) initialContext.lookup("java:comp/env/osgp/Core/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

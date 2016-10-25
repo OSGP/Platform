@@ -39,7 +39,7 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
             final Context initialContext = new InitialContext();
 
             final String logLocation = (String) initialContext
-                    .lookup("java:comp/env/osp/osgpAdapterDomainSmartMetering/log-config");
+                    .lookup("java:comp/env/osgp/AdapterDomainSmartMetering/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

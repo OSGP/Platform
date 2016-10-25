@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -37,7 +38,11 @@ import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
 @ComponentScan(basePackageClasses = { WebServiceMonitorLogItem.class, LoggingMessageListener.class })
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpLogging/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-logging.properties"),
+	@PropertySource(value = "${osgp/Logging/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 @Import({ LoggingConfig.class, ProtocolMessagingConfig.class })
 public class ApplicationContext {
 

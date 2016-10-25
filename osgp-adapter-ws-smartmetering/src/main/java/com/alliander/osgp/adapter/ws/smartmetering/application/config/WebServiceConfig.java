@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -48,7 +49,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServ
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
+	@PropertySource(value = "${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class WebServiceConfig {
 
     @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -29,7 +30,11 @@ import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMess
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+	@PropertySource(value = "${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class MessagingConfig {
 
     @Resource

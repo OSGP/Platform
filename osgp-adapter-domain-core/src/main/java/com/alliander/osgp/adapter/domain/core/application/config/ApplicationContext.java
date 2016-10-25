@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.core" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainCore/config}")
 public class ApplicationContext {
 
 }

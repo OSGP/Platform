@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
@@ -36,7 +37,11 @@ import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRespo
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+	@PropertySource(value = "${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class MessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);

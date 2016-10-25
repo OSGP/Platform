@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.smartmetering" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainSmartMetering/config}")
 public class ApplicationContext {
 
     @Bean

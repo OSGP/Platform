@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.domain.microgrids" })
 @EnableTransactionManagement
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
 public class ApplicationContext {
 
 }

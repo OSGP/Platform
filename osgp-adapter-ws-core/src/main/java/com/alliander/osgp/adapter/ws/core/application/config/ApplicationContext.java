@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -42,7 +43,11 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
-@PropertySource("file:${osp/osgpAdapterWsCore/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+	@PropertySource(value = "${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";

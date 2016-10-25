@@ -43,7 +43,7 @@ public class AdapterInitializer implements WebApplicationInitializer {
 
             final Context initialContext = new InitialContext();
 
-            final String logLocation = (String) initialContext.lookup("java:comp/env/osp/osgpAdapterWsCore/log-config");
+            final String logLocation = (String) initialContext.lookup("java:comp/env/osgp/AdapterWsCore/log-config");
             LogbackConfigurer.initLogging(logLocation);
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

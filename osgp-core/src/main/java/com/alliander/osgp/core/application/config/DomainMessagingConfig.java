@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
@@ -30,7 +31,11 @@ import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 
 @Configuration
-@PropertySource("file:${osp/osgpCore/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-core.properties"),
+	@PropertySource(value = "${osgp/Core/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class DomainMessagingConfig {
 
     // JMS Settings

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -26,7 +27,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.microgrids", "com.alliander.osgp.adapter.ws.microgrids",
         "com.alliander.osgp.domain.logging", "com.alliander.osgp.domain.core.services" })
 @ImportResource("classpath:applicationContext.xml")
-@PropertySource("file:${osp/osgpAdapterWsMicrogrids/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+	@PropertySource(value = "${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_STUB_RESPONSES = "stub.responses";

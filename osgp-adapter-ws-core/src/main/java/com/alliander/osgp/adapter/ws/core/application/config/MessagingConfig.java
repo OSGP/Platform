@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
@@ -28,7 +29,11 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 
 @Configuration
-@PropertySource("file:${osp/osgpAdapterWsCore/config}")
+@PropertySources({
+	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+	@PropertySource(value = "${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class MessagingConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
