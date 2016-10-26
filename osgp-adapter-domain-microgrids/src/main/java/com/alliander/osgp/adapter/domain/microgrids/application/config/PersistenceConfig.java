@@ -36,8 +36,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class PersistenceConfig {
 

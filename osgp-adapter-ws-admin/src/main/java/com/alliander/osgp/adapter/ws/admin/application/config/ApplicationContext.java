@@ -39,8 +39,8 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-	@PropertySource(value = "${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 

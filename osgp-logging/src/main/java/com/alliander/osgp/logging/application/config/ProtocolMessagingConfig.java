@@ -29,8 +29,8 @@ import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListene
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-logging.properties"),
-	@PropertySource(value = "${osgp/Logging/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ProtocolMessagingConfig {
 

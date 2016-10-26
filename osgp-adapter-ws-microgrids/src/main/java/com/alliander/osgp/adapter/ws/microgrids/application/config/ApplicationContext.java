@@ -29,8 +29,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @ImportResource("classpath:applicationContext.xml")
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
-	@PropertySource(value = "${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 

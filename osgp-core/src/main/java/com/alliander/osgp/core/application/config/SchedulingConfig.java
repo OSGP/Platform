@@ -26,8 +26,8 @@ import com.alliander.osgp.core.application.tasks.ScheduledTaskScheduler;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-core.properties"),
-	@PropertySource(value = "${osgp/Core/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class SchedulingConfig {
 

@@ -35,8 +35,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-domain-logging.properties"),
-	@PropertySource(value = "${osgp/DomainLogging/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/DomainLogging/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ReadOnlyLoggingConfig {
 

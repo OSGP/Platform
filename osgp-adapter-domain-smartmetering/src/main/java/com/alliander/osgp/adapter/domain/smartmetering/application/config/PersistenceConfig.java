@@ -34,8 +34,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-smartmetering.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class PersistenceConfig {
 

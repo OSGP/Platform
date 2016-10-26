@@ -33,8 +33,8 @@ import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMes
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-core.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainCore/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
     // JMS Settings

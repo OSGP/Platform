@@ -34,8 +34,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class PersistenceConfig {
 

@@ -33,8 +33,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
-	@PropertySource(value = "${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 

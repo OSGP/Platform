@@ -37,8 +37,8 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceR
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainPublicLighting/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
 

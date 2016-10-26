@@ -38,8 +38,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttr
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-admin.properties"),
-	@PropertySource(value = "${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsAdmin/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class WebServiceConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);

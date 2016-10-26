@@ -31,8 +31,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRespon
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-	@PropertySource(value = "${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
     // JMS Settings

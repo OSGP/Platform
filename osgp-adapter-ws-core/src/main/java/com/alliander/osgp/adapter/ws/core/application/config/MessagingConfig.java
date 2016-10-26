@@ -31,8 +31,8 @@ import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
-	@PropertySource(value = "${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);

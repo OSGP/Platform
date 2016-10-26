@@ -36,8 +36,8 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 @Import({ PersistenceConfig.class, CorePersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-smartmetering.properties"),
-	@PropertySource(value = "${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class ApplicationContext {
 

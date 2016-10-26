@@ -36,8 +36,8 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableTransactionManagement()
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-shared-db.properties"),
-	@PropertySource(value = "${osgp/AdapterWsSharedDb/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterWsSharedDb/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class WritablePersistenceConfig {
 

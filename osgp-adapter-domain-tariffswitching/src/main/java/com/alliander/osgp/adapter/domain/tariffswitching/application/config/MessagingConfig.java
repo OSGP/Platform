@@ -37,8 +37,8 @@ import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.ws.WebService
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-tariffswitching.properties"),
-	@PropertySource(value = "${osgp/AdapterDomainTariffSwitching/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "${osgp/Global/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/AdapterDomainTariffSwitching/config}", ignoreResourceNotFound = true),
+	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class MessagingConfig {
 
