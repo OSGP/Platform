@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 
 import javax.xml.namespace.QName;
 
+import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
@@ -67,5 +68,11 @@ public class OrganisationIdentificationClientInterceptor implements ClientInterc
     @Override
     public boolean handleFault(final MessageContext messageContext) {
         return true;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext arg0, Exception arg1) throws WebServiceClientException {
+        // TODO Auto-generated method stub
+        
     }
 }

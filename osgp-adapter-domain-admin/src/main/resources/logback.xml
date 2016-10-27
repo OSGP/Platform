@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/var/log/osp/logs/osgp-adapter-domain-admin_msi.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>/var/log/osp/logs/osgp-adapter-domain-admin.log.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+
+			<!-- keep X days' worth of history -->
+			<maxHistory>10</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<root level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+		<!-- <appender-ref ref="DB"/> -->
+	</root>
+
+</configuration>
