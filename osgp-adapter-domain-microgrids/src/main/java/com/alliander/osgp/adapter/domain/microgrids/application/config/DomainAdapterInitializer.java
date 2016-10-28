@@ -39,12 +39,13 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
 
             final Context initialContext = new InitialContext();
 
-            try{
-            final String logLocation = (String) initialContext
-                    .lookup("java:comp/env/osgp/AdapterDomainMicrogrids/log-config");
-            LogbackConfigurer.initLogging(logLocation);
+            try {
+                final String logLocation = (String) initialContext
+                        .lookup("java:comp/env/osgp/AdapterDomainMicrogrids/log-config");
+                LogbackConfigurer.initLogging(logLocation);
             } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
-                // Do nothing, if the file referred in context.xml is not found, the default logback.xml will be used.
+                // Do nothing, if the file referred in context.xml is not found,
+                // the default logback.xml will be used.
             }
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();

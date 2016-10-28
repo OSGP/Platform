@@ -33,7 +33,8 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
         try {
-            // Force the timezone of application to UTC (required for Hibernate/JDBC)
+            // Force the timezone of application to UTC (required for
+            // Hibernate/JDBC)
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
             final Context initialContext = new InitialContext();
@@ -43,7 +44,8 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
                         .lookup("java:comp/env/osgp/AdapterDomainAdmin/log-config");
                 LogbackConfigurer.initLogging(logLocation);
             } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
-                // Do nothing, if the file referred in context.xml is not found, the default logback.xml will be used.
+                // Do nothing, if the file referred in context.xml is not found,
+                // the default logback.xml will be used.
             }
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
