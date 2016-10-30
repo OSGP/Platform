@@ -18,6 +18,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -27,44 +29,45 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.ext.spring.LogbackConfigurer;
 
 /**
- * Web application Java configuration class. The usage of web application
- * initializer requires Spring Framework 3.1 and Servlet 3.0.
+ * Web application Java configuration class.
  */
 public class AdapterInitializer implements WebApplicationInitializer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+    
     private static final String DISPATCHER_SERVLET_NAME = "spring-ws";
     private static final String DISPATCHER_SERVLET_MAPPING = "/*";
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        try {
-            // Force the timezone of application to UTC (required for
-            // Hibernate/JDBC)
-            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        // Force the timezone of application to UTC (required for
+        // Hibernate/JDBC)
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-            final Context initialContext = new InitialContext();
-try{
+        Context initialContext;
+        try{
+            initialContext = new InitialContext();
             final String logLocation = (String) initialContext
                     .lookup("java:comp/env/osgp/AdapterWsMicrogrids/log-config");
             LogbackConfigurer.initLogging(logLocation);
-} catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
-    // Do nothing, if the file referred in context.xml is not found, the default logback.xml will be used.
-}
-
-            final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-            rootContext.register(ApplicationContext.class);
-
-            servletContext.addListener(new ContextLoaderListener(rootContext));
-
-            final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
-            servlet.setContextClass(AnnotationConfigWebApplicationContext.class);
-            servlet.setTransformWsdlLocations(true);
-
-            final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, servlet);
-            dispatcher.setLoadOnStartup(1);
-            dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
+        } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
+            // Do nothing, if the file referred in context.xml is not found, the default logback.xml will be used.
+            LOGGER.info("Using classpath logback.xml");
         } catch (final NamingException e) {
             throw new ServletException("naming exception", e);
         }
+
+        final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+        rootContext.register(ApplicationContext.class);
+
+        servletContext.addListener(new ContextLoaderListener(rootContext));
+
+        final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+        servlet.setContextClass(AnnotationConfigWebApplicationContext.class);
+        servlet.setTransformWsdlLocations(true);
+
+        final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, servlet);
+        dispatcher.setLoadOnStartup(1);
+        dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
     }
 }

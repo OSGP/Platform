@@ -17,6 +17,8 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -30,30 +32,30 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
  */
 public class OsgpCoreInitializer implements WebApplicationInitializer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
+
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
+        // Force the timezone of application to UTC (required for
+        // Hibernate/JDBC)
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+        Context initialContext;
         try {
-            // Force the timezone of application to UTC (required for
-            // Hibernate/JDBC)
-            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-            final Context initialContext = new InitialContext();
-
-            try {
-                final String logLocation = (String) initialContext.lookup("java:comp/env/osgp/Core/log-config");
-                LogbackConfigurer.initLogging(logLocation);
-            } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
-                // Do nothing, if the file referred in context.xml is not found,
-                // the default logback.xml will be used.
-            }
-
-            final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-            rootContext.register(ApplicationContext.class);
-
-            servletContext.addListener(new ContextLoaderListener(rootContext));
-
-        } catch (final NamingException e) {
+            initialContext = new InitialContext();
+            final String logLocation = (String) initialContext.lookup("java:comp/env/osgp/Core/log-config");
+            LogbackConfigurer.initLogging(logLocation);
+        } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
+            // Do nothing, if the file referred in context.xml is not found,
+            // the default logback.xml will be used.
+        } catch (NamingException e) {
             throw new ServletException("naming exception", e);
         }
+
+        final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+        rootContext.register(ApplicationContext.class);
+
+        servletContext.addListener(new ContextLoaderListener(rootContext));
+
     }
 }
