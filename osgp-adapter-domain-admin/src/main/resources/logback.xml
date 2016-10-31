@@ -35,7 +35,7 @@
 		</encoder>
 	</appender>
 
-	<root level="DEBUG" additivity="false">
+	<root level="INFO" additivity="false">
 		<!-- Currently switched off due to performance issues. -->
 		<!-- <appender-ref ref="DB"/> -->
 		<appender-ref ref="CONSOLE" />

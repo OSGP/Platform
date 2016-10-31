@@ -42,3 +42,4 @@ fitnesse/FitNesseRoot/files/
 .idea
 
 *~
+*.log
