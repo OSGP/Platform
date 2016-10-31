@@ -68,8 +68,6 @@ public class PersistenceConfig {
      */
     public DataSource getDataSource() {
         
-        System.out.println("MSI Username: [" + this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME) + "]");
-        
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
 

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,7 +31,11 @@ import com.alliander.osgp.adapter.domain.microgrids.application.tasks.Communicat
  */
 @Configuration
 @EnableScheduling
-@PropertySource("file:${osp/osgpAdapterDomainMicrogrids/config}")
+@PropertySources({
+    @PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+})
 public class CommunicationMonitoringConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
