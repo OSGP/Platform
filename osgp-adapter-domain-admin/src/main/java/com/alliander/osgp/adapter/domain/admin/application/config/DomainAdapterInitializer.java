@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.domain.admin.application.config;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.TimeZone;
 
@@ -44,7 +45,12 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
             initialContext = new InitialContext();
             final String logLocation = (String) initialContext
                     .lookup("java:comp/env/osgp/AdapterDomainAdmin/log-config");
-            LogbackConfigurer.initLogging(logLocation);
+            
+            if ((new File(logLocation).exists())) {
+                LogbackConfigurer.initLogging(logLocation);
+            } else {
+                LogbackConfigurer.initLogging("classpath:logback.xml");
+            }
         } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
             // Do nothing, if the file referred in context.xml is not found,
             // the default logback.xml will be used.

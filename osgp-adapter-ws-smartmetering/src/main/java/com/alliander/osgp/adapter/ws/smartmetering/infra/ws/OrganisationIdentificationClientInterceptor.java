@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 
 import javax.xml.namespace.QName;
 
-import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
