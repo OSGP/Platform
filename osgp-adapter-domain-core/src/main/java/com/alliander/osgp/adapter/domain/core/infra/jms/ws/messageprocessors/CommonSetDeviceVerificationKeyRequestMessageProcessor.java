@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.core.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.core.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsObjectMessageData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set device verification key request messages
@@ -31,7 +30,8 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")
@@ -45,35 +45,17 @@ public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebSe
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing common set device verification key message");
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        String verificationKey = null;
+        final JmsObjectMessageData messageData = this.getObjectMessageData(message);
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            verificationKey = (String) message.getObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
-        }
+            LOGGER.info("Calling application service function: {}", messageData.getMessageType());
 
-        try {
-            LOGGER.info("Calling application service function: {}", messageType);
-
-            this.deviceManagementService.setDeviceVerificationKey(organisationIdentification, deviceIdentification,
-                    correlationUid, verificationKey, messageType);
+            this.deviceManagementService.setDeviceVerificationKey(messageData.getOrganisationIdentification(),
+                    messageData.getDeviceIdentification(), messageData.getCorrelationUid(),
+                    messageData.getResultObject(), messageData.getMessageType());
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, messageData);
         }
     }
 }

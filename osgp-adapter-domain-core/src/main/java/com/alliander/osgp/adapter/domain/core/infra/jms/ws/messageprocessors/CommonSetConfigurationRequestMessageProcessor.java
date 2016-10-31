@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.core.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
@@ -18,15 +17,15 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.core.application.services.ConfigurationManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsScheduledMessageData;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set configuration request messages
- * 
+ *
  * @author CGI
- * 
+ *
  */
 @Component("domainCoreCommonSetConfigurationRequestMessageProcessor")
 public class CommonSetConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -47,43 +46,19 @@ public class CommonSetConfigurationRequestMessageProcessor extends WebServiceReq
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing common set configuration message");
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        Boolean isScheduled = null;
-        Long scheduleTime = null;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
-            if (message.propertyExists(Constants.SCHEDULE_TIME)) {
-                scheduleTime = message.getLongProperty(Constants.SCHEDULE_TIME);
-            }
-
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("isScheduled: {}", isScheduled);
-            return;
-        }
+        final JmsScheduledMessageData messageData = this.getScheduledMessageData(message);
 
         try {
             final Configuration configuration = (Configuration) message.getObject();
 
-            LOGGER.info("Calling application service function: {}", messageType);
+            LOGGER.info("Calling application service function: {}", messageData.getMessageType());
 
-            this.configurationManagementService.setConfiguration(organisationIdentification, deviceIdentification,
-                    correlationUid, configuration, scheduleTime, messageType);
+            this.configurationManagementService.setConfiguration(messageData.getOrganisationIdentification(),
+                    messageData.getDeviceIdentification(), messageData.getCorrelationUid(), configuration,
+                    messageData.getScheduleTime(), messageData.getMessageType());
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, messageData);
         }
     }
 }

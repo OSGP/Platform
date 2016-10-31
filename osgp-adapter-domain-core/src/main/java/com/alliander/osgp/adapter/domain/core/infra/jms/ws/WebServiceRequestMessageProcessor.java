@@ -8,6 +8,8 @@
 package com.alliander.osgp.adapter.domain.core.infra.jms.ws;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsMessageData;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsObjectMessageData;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsScheduledMessageData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -36,6 +42,8 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      * Logger for this class.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageProcessor.class);
+
+    private static final String JMS_EXCEPTION_MESSAGE = "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.";
 
     /**
      * This is the message sender needed for the message processor
@@ -104,7 +112,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
         LOGGER.error("Handling error for message type: " + messageType, e);
-        OsgpException osgpException = null;
+        OsgpException osgpException;
         if (e instanceof OsgpException) {
             osgpException = (OsgpException) e;
         } else {
@@ -113,4 +121,92 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
     }
+
+    /**
+     * In case of an error, this function can be used to send a response
+     * containing the exception to the web-service-adapter.
+     *
+     * @param e
+     *            The exception.
+     * @param messageData
+     *            An object containing correlationUid, messageType,
+     *            organisationIdentification and deviceIdentification of the
+     *            message
+     */
+    protected void handleError(final Exception e, final JmsMessageData messageData) {
+        this.handleError(e, messageData.getCorrelationUid(), messageData.getOrganisationIdentification(),
+                messageData.getDeviceIdentification(), messageData.getMessageType());
+    }
+
+    /**
+     *
+     * @param message
+     *            the message we are dealing with
+     * @return an object containing correlationUid, messageType,
+     *         organisationIdentification and deviceIdentification of the
+     *         message
+     */
+    protected JmsMessageData getMessageData(final ObjectMessage message) {
+        final JmsMessageData messageData = new JmsMessageData();
+
+        try {
+            messageData.setCorrelationUid(message.getJMSCorrelationID());
+            messageData.setMessageType(message.getJMSType());
+            messageData.setOrganisationIdentification(message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION));
+            messageData.setDeviceIdentification(message.getStringProperty(Constants.DEVICE_IDENTIFICATION));
+        } catch (final JMSException e) {
+            LOGGER.error(JMS_EXCEPTION_MESSAGE, e);
+            LOGGER.debug("correlationUid: {}", messageData.getCorrelationUid());
+            LOGGER.debug("messageType: {}", messageData.getMessageType());
+            LOGGER.debug("organisationIdentification: {}", messageData.getOrganisationIdentification());
+            LOGGER.debug("deviceIdentification: {}", messageData.getDeviceIdentification());
+        }
+
+        return messageData;
+    }
+
+    /**
+     *
+     * @param message
+     *            the message we are dealing with
+     * @return an object containing correlationUid, messageType,
+     *         organisationIdentification, deviceIdentification, isScheduled and
+     *         potentialy scheduleTime of the message
+     */
+    protected JmsScheduledMessageData getScheduledMessageData(final ObjectMessage message) {
+        final JmsScheduledMessageData messageData = (JmsScheduledMessageData) this.getMessageData(message);
+
+        try {
+            messageData.setIsScheduled(message.getBooleanProperty(Constants.IS_SCHEDULED));
+            if (message.propertyExists(Constants.SCHEDULE_TIME)) {
+                messageData.setScheduleTime(message.getLongProperty(Constants.SCHEDULE_TIME));
+            }
+        } catch (final JMSException e) {
+            LOGGER.error(JMS_EXCEPTION_MESSAGE, e);
+            LOGGER.debug("isScheduled: {}", messageData.getIsScheduled());
+        }
+
+        return messageData;
+    }
+
+    /**
+     *
+     * @param message
+     *            the message we are dealing with
+     * @return an object containing correlationUid, messageType,
+     *         organisationIdentification, deviceIdentification, getObject of
+     *         the message
+     */
+    protected JmsObjectMessageData getObjectMessageData(final ObjectMessage message) {
+        final JmsObjectMessageData messageData = (JmsObjectMessageData) this.getMessageData(message);
+
+        try {
+            messageData.setResultObject((String) message.getObject());
+        } catch (final JMSException e) {
+            LOGGER.error(JMS_EXCEPTION_MESSAGE, e);
+        }
+
+        return messageData;
+    }
+
 }
