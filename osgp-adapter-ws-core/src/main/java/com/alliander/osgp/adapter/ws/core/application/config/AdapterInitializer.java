@@ -51,6 +51,7 @@ public class AdapterInitializer implements WebApplicationInitializer {
             LogbackConfigurer.initLogging(logLocation);
         } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
             // Do nothing, if the file referred in context.xml is not found, the default logback.xml will be used.
+            LOGGER.info("Caught an exception [" + e.getMessage() + "]");
             LOGGER.info("Using classpath logback.xml");
         } catch (final NamingException e) {
             throw new ServletException("naming exception", e);
@@ -68,6 +69,5 @@ public class AdapterInitializer implements WebApplicationInitializer {
         final ServletRegistration.Dynamic dispatcher = servletContext.addServlet(DISPATCHER_SERVLET_NAME, servlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
-        
     }
 }

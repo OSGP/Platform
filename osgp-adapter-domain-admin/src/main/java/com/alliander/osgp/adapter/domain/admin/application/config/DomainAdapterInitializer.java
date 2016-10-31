@@ -48,7 +48,8 @@ public class DomainAdapterInitializer implements WebApplicationInitializer {
         } catch (final NameNotFoundException | FileNotFoundException | JoranException e) {
             // Do nothing, if the file referred in context.xml is not found,
             // the default logback.xml will be used.
-            LOGGER.info("Using classpath logback.xml");
+            LOGGER.info("Caught an exception [" + e.getMessage() + "]");
+            LOGGER.info("Using classpath logback.xml.");
         } catch (final NamingException e) {
             throw new ServletException("naming exception", e);
         }
