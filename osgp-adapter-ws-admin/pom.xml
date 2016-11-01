@@ -1,247 +1,388 @@
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+	License, Version 2.0 (the "License"); you may not use this file except in 
+	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>osgp-adapter-ws-admin</artifactId>
-  <name>osgp-adapter-ws-admin</name>
-  <packaging>war</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
-  <description>Web service module for management.</description>
+	<artifactId>osgp-adapter-ws-admin</artifactId>
+	<name>osgp-adapter-ws-admin</name>
+	<packaging>war</packaging>
+	<!-- Description element is needed for the maven-jxr-plugin to generate 
+		a maven site -->
+	<description>Web service module for management.</description>
 
-  <parent>
-    <groupId>com.alliander.osgp</groupId>
-    <artifactId>parent-platform</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
-    <relativePath>../parent-platform/pom.xml</relativePath>
-  </parent>
+	<parent>
+		<groupId>com.alliander.osgp</groupId>
+		<artifactId>parent-platform</artifactId>
+		<version>4.3.0-SNAPSHOT</version>
+		<relativePath>../parent-platform/pom.xml</relativePath>
+	</parent>
 
-  <properties>
-    <display.version>${project.version}-${BUILD_TAG}</display.version>
-  </properties>
+	<properties>
+		<display.version>${project.version}-${BUILD_TAG}</display.version>
+		<maven.rpm.prefix>/opt/osgp</maven.rpm.prefix>
+		<rpm.prefix>/opt/osgp</rpm.prefix>
+		<rpm.username>osgp_user</rpm.username>
+		<rpm.groupname>osgp</rpm.groupname>
+	</properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>device-management</id>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>src/main/webapp/WEB-INF/wsdl/admin/schemas</bindingDirectory>
-              <bindingFiles>devicemanagement.xjb</bindingFiles>
-              <schemaDirectory>src/main/webapp/WEB-INF/wsdl/admin</schemaDirectory>
-              <schemaFiles>DeviceManagement.wsdl</schemaFiles>
-<!--                             <packageName>com.alliander.osgp.adapter.ws.schema.admin.devicemanagement</packageName> -->
-              <wsdl>true</wsdl>
-              <xmlschema>false</xmlschema>
-              <staleFile>${project.build.directory}/jaxb2/.schema-device-management-stale-flag</staleFile>
-                            <!-- USE THIS ONLU FOR THE FIRST EXECUTION -->
-              <clearOutputDir>true</clearOutputDir>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <attachClasses>true</attachClasses>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
-          <nonFilteredFileExtensions>
-            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-            <nonFilteredFileExtension>png</nonFilteredFileExtension>
-            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-          </nonFilteredFileExtensions>
-          <webResources>
-            <resource>
-              <directory>src/main/webapp</directory>
-              <filtering>true</filtering>
-            </resource>
-          </webResources>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>device-management</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<bindingDirectory>src/main/webapp/WEB-INF/wsdl/admin/schemas</bindingDirectory>
+							<bindingFiles>devicemanagement.xjb</bindingFiles>
+							<schemaDirectory>src/main/webapp/WEB-INF/wsdl/admin</schemaDirectory>
+							<schemaFiles>DeviceManagement.wsdl</schemaFiles>
+							<!-- <packageName>com.alliander.osgp.adapter.ws.schema.admin.devicemanagement</packageName> -->
+							<wsdl>true</wsdl>
+							<xmlschema>false</xmlschema>
+							<staleFile>${project.build.directory}/jaxb2/.schema-device-management-stale-flag</staleFile>
+							<!-- USE THIS ONLU FOR THE FIRST EXECUTION -->
+							<clearOutputDir>true</clearOutputDir>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<attachClasses>true</attachClasses>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
+						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
+						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+						<nonFilteredFileExtension>png</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
 
-  <dependencies>
-        <!-- Alliander -->
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>shared</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-domain-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.alliander.osgp</groupId>
-      <artifactId>osgp-adapter-ws-shared</artifactId>
-    </dependency>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>regex-property</id>
+						<goals>
+							<goal>regex-property</goal>
+						</goals>
+						<configuration>
+							<name>packageVersion</name>
+							<value>${project.version}</value>
+							<regex>(\d+)\.(\d+)\.(\d+)-.*</regex>
+							<replacement>$1.$2.$3</replacement>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<version>2.1.5</version>
+				<executions>
+					<execution>
+						<id>generate-rpm</id>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<extensions>true</extensions>
+				<configuration>
+					<needarch>noarch</needarch>
+					<name>${project.name}</name>
+					<group>${rpm.groupname}</group>
+					<packager>CGI</packager>
+					<defaultFilemode>644</defaultFilemode>
+					<defaultDirmode>755</defaultDirmode>
+					<defaultUsername>${rpm.username}</defaultUsername>
+					<defaultGroupname>${rpm.groupname}</defaultGroupname>
+					<changelogFile>${project.basedir}/ChangeLog</changelogFile>
+					<prefix>${rpm.prefix}</prefix>
+					<mapping>
+						<directory>${rpm.prefix}/${packageVersion}</directory>
+					</mapping>
+					<mappings>
+						<mapping>
+							<directory>${rpm.prefix}/${packageVersion}/conf</directory>
+							<configuration>true</configuration>
+							<sources>
+								<source>
+									<location>src/main/resources</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>${rpm.prefix}/${packageVersion}/lib</directory>
+							<artifact />
+							<dependency />
+						</mapping>
+					</mappings>
+					<preinstallScriptlet>
+						<script>
+							echo "Creating group and user (if required) ...."
+							# Create
+							group if not exist.
+							id -g ${rpm.groupname} &amp;>/dev/null ||
+							groupadd ${rpm.groupname}
 
-        <!-- Spring Framework -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-    </dependency>
+							# Create user if not exists.
+							mkdir -p
+							${rpm.prefix}/home
+							id -u ${rpm.username} &amp;>/dev/null ||
+							useradd -g ${rpm.groupname} -d ${rpm.prefix}/home ${rpm.username}
+						</script>
+					</preinstallScriptlet>
+					<postinstallScriptlet>
+						<script>
+							# Remove the old and create the new current link
+							rm -f
+							${rpm.prefix}/current
+							rm -f /var/opt/${rpm.groupname}/current
 
-        <!-- Spring Data -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-    </dependency>
+							cd ${rpm.prefix}
+							ln -sf ${packageVersion} current
 
-        <!-- Spring WS -->
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.ws</groupId>
-      <artifactId>spring-ws-support</artifactId>
-    </dependency>
+							# Create the
+							logging directory
+							mkdir -p /var/opt/${rpm.groupname}/${packageVersion}/log
 
-        <!-- Joda Time (Date/Time util) -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
+							cd /var/opt/${rpm.groupname}
+							ln -sf ${packageVersion} current
+							chown -R
+							${rpm.username}:${rpm.groupname} /var/opt/${rpm.groupname}
 
-        <!-- Hikari connection pooling -->
-    <dependency>
-      <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-    </dependency>
+							chown -R ${rpm.username}:${rpm.groupname} ${rpm.prefix}
+						</script>
+					</postinstallScriptlet>
+					<!-- RPM Package Dependency -->
+					<provides>
+						<provide>${project.name}</provide>
+					</provides>
+					<requires />
+					<conflicts />
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.12,)
+										</versionRange>
+										<goals>
+											<goal>regex-property</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
-        <!-- Hibernate -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
+	<dependencies>
+		<!-- Alliander -->
+		<dependency>
+			<groupId>com.alliander.osgp</groupId>
+			<artifactId>shared</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alliander.osgp</groupId>
+			<artifactId>osgp-domain-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alliander.osgp</groupId>
+			<artifactId>osgp-domain-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alliander.osgp</groupId>
+			<artifactId>osgp-adapter-ws-shared</artifactId>
+		</dependency>
 
-        <!-- Hibernate validator -->
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
+		<!-- Spring Framework -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
 
-        <!-- Flyway (DB Migration) -->
-    <dependency>
-      <groupId>com.googlecode.flyway</groupId>
-      <artifactId>flyway-core</artifactId>
-    </dependency>
+		<!-- Spring Data -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
 
-        <!-- Logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.logback-extensions</groupId>
-      <artifactId>logback-ext-spring</artifactId>
-    </dependency>
+		<!-- Spring WS -->
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ws</groupId>
+			<artifactId>spring-ws-support</artifactId>
+		</dependency>
 
-        <!-- Servlet API 3.0 -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
+		<!-- Joda Time (Date/Time util) -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
 
-        <!-- Jakarta commons codec -->
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
+		<!-- Hikari connection pooling -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
 
-        <!-- Apache commons -->
-    <dependency>
-      <groupId>org.apache.ws.xmlschema</groupId>
-      <artifactId>xmlschema-core</artifactId>
-      <version>${apache.commons.schema}</version>
-    </dependency>
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
+		<!-- Hibernate validator -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
 
-        <!-- Orika (mapping framework) -->
-    <dependency>
-      <groupId>ma.glasnost.orika</groupId>
-      <artifactId>orika-core</artifactId>
-    </dependency>
+		<!-- Flyway (DB Migration) -->
+		<dependency>
+			<groupId>com.googlecode.flyway</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
 
-        <!--  Apache ActiveMQ -->
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-spring</artifactId>
-    </dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.logback-extensions</groupId>
+			<artifactId>logback-ext-spring</artifactId>
+		</dependency>
 
-        <!-- Testing dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-  </dependencies>
+		<!-- Servlet API 3.0 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Jakarta commons codec -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</dependency>
+
+		<!-- Apache commons -->
+		<dependency>
+			<groupId>org.apache.ws.xmlschema</groupId>
+			<artifactId>xmlschema-core</artifactId>
+			<version>${apache.commons.schema}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
+		<!-- Orika (mapping framework) -->
+		<dependency>
+			<groupId>ma.glasnost.orika</groupId>
+			<artifactId>orika-core</artifactId>
+		</dependency>
+
+		<!-- Apache ActiveMQ -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-spring</artifactId>
+		</dependency>
+
+		<!-- Testing dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
 </project>
