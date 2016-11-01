@@ -43,3 +43,4 @@ fitnesse/FitNesseRoot/files/
 
 *~
 *.log
+.checkstyle

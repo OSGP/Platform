@@ -13,8 +13,7 @@
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\)
-				%logger{36} - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -36,10 +35,10 @@
 	</appender>
 
 	<root level="INFO" additivity="false">
-		<!-- Currently switched off due to performance issues. -->
-		<!-- <appender-ref ref="DB"/> -->
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
+		<!-- Currently switched off due to performance issues. -->
+		<!-- <appender-ref ref="DB"/> -->
 	</root>
 
 </configuration>
