@@ -12,22 +12,22 @@ import javax.servlet.ServletException;
 
 import org.springframework.web.WebApplicationInitializer;
 
-import com.alliander.osgp.shared.application.config.AbstractAdapterInitializer;
+import com.alliander.osgp.shared.application.config.AbstractWsAdapterInitializer;
 
 /**
  * Web application Java configuration class.
  */
-public class OsgpLoggingInitializer extends AbstractAdapterInitializer implements WebApplicationInitializer {
+public class OsgpLoggingInitializer extends AbstractWsAdapterInitializer implements WebApplicationInitializer {
 
     public OsgpLoggingInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/Logging/log-config");
     }
     
     /**
-     * 
+     * Handles startup of Spring context.
      */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUpAdapter(servletContext);
+        startUp(servletContext);
     }
 }

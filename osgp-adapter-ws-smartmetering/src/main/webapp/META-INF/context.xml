@@ -29,11 +29,11 @@
   <!-- <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" 
     /> -->
 
-  <!-- App config files -->
   <!-- Global.properties -->
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
     type="java.lang.String" override="true" />
 
+  <!-- App config files -->
   <Environment name="osgp/AdapterWsSmartMetering/config"
     value="/etc/osp/osgp-adapter-ws-smartmetering.properties" type="java.lang.String"
     override="true" />

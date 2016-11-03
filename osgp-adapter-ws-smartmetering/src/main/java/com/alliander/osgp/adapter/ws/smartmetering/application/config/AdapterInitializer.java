@@ -12,23 +12,23 @@ import javax.servlet.ServletException;
 
 import org.springframework.web.WebApplicationInitializer;
 
-import com.alliander.osgp.shared.application.config.AbstractAdapterInitializer;
+import com.alliander.osgp.shared.application.config.AbstractWsAdapterInitializer;
 
 /**
  * Web application Java configuration class.
  */
-public class AdapterInitializer extends AbstractAdapterInitializer implements WebApplicationInitializer {
+public class AdapterInitializer extends AbstractWsAdapterInitializer implements WebApplicationInitializer {
 
     public AdapterInitializer() {
         super(ApplicationContext.class, "java:comp/env/osgp/AdapterWsSmartMetering/log-config");
     }
     
     /**
-     * 
+     * Handles startup of Spring context.
      */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
-        startUpAdapter(servletContext);
+        startUp(servletContext);
     }
 }
 

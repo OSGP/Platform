@@ -24,7 +24,7 @@ public class DomainAdapterInitializer extends AbstractApplicationInitializer imp
     }
     
     /**
-     * 
+     * Handles startup of Spring context.
      */
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
