@@ -23,8 +23,8 @@ import com.alliander.osgp.domain.core.exceptions.PlatformException;
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
 public class PersistenceConfigCore extends PersistenceConfigBase {
 

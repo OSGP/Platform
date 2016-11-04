@@ -32,11 +32,11 @@ import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareLocation;
 import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
@@ -45,10 +45,10 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class, WebServiceConfig.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class ApplicationContext {
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL = "default.protocol";
     private static final String PROPERTY_NAME_DEFAULT_PROTOCOL_VERSION = "default.protocol.version";

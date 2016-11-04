@@ -29,10 +29,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.alliander.osgp.logging.domain.entities.WebServiceMonitorLogItem;
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @ComponentScan(basePackageClasses = { WebServiceMonitorLogItem.class, LoggingMessageListener.class })
@@ -40,11 +40,11 @@ import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
 @EnableTransactionManagement
 @PropertySources({
 	@PropertySource("classpath:osgp-logging.properties"),
-	@PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true),
 })
 @Import({ LoggingConfig.class, ProtocolMessagingConfig.class })
-public class ApplicationContext {
+public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_JMS_LOGGING_QUEUE = "jms.logging.queue";
     private static final String PROPERTY_NAME_JMS_LOGGING_CONCURRENT_CONSUMERS = "jms.logging.concurrent.consumers";

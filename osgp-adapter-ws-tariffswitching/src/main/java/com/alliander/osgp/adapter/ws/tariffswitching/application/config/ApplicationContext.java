@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
+import com.alliander.osgp.shared.application.config.AbstractConfig;
+
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
@@ -32,10 +34,10 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class ApplicationContext {
+public class ApplicationContext extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 

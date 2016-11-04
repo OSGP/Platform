@@ -28,14 +28,15 @@ import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessageSender;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.microgrids.infra.jms.MicrogridsResponseMessageListener;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     @Resource
     private Environment environment;

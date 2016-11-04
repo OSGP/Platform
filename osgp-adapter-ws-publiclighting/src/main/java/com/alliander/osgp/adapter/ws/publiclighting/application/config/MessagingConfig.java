@@ -25,14 +25,15 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsPublicLighting/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     @Resource
     private Environment environment;

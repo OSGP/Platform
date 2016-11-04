@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.config;
 
-import javax.annotation.Resource;
-
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.command.ActiveMQDestination;
@@ -21,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -29,18 +26,18 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.OsgpCoreRequest
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageListener;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageListener;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-smartmetering.properties"),
-	@PropertySource(value = "file:${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterDomainSmartMetering/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
@@ -125,9 +122,6 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_OUTGOING_OSGP_CORE_RESPONSES_REDELIVERY_DELAY = "jms.outgoing.osgp.core.responses.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_OUTGOING_OSGP_CORE_RESPONSES_BACK_OFF_MULTIPLIER = "jms.outgoing.osgp.core.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_OUTGOING_OSGP_CORE_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.outgoing.osgp.core.responses.use.exponential.back.off";
-
-    @Resource
-    private Environment environment;
 
     @Autowired
     @Qualifier("domainSmartMeteringIncomingWebServiceRequestMessageListener")

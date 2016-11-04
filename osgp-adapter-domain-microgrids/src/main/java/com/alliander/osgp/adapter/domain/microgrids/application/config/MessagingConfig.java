@@ -31,18 +31,18 @@ import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreReque
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.core.OsgpCoreResponseMessageListener;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceRequestMessageListener;
 import com.alliander.osgp.adapter.domain.microgrids.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class.
  */
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-domain-microgrids.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 

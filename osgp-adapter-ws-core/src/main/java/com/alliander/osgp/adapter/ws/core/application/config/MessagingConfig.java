@@ -27,14 +27,15 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-core.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings

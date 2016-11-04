@@ -25,14 +25,15 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
 import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingResponseMessageFinder;
+import com.alliander.osgp.shared.application.config.AbstractConfig;
 
 @Configuration
 @PropertySources({
 	@PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 	@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true),
-	@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
 })
-public class MessagingConfig {
+public class MessagingConfig extends AbstractConfig {
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
 
