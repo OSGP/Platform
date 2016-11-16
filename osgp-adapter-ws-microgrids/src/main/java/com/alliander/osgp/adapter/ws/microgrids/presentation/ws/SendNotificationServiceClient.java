@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.microgrids.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.SendNotificationRequest;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
 
@@ -40,8 +42,12 @@ public class SendNotificationServiceClient {
 
         sendNotificationRequest.setNotification(notification);
 
-        this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
-                .marshalSendAndReceive(sendNotificationRequest);
-
+        try {
+            this.webServiceTemplateFactory
+                    .getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
+                    .marshalSendAndReceive(sendNotificationRequest);
+        } catch (final TechnicalException e) {
+            throw new WebServiceSecurityException(e.getMessage(), e);
+        }
     }
 }
