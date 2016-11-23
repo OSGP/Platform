@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,13 +77,19 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.keystore.location}")
     private String webserviceKeystoreLocation;
+
     @Value("${web.service.keystore.password}")
     private String webserviceKeystorePassword;
+
     @Value("${web.service.keystore.type}")
     private String webserviceKeystoreType;
 
     @Value("${web.service.notification.url:#{null}}")
     private String webserviceNotificationUrl;
+
+    @Value("${web.service.notification.username:#{null}}")
+    private String webserviceNotificationUsername;
+
     @Value("${application.name}")
     private String applicationName;
 
@@ -140,9 +147,14 @@ public class WebServiceConfig extends AbstractConfig {
     }
 
     @Bean
+    public String notificationUsername() {
+        return this.webserviceNotificationUsername;
+    }
+
+    @Bean
     public NotificationService wsSmartMeteringNotificationService() throws GeneralSecurityException {
-        if (this.notificationUrl() != null) {
-            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl());
+        if (!StringUtils.isEmpty(this.notificationUrl())) {
+            return new NotificationServiceWs(this.sendNotificationServiceClient(), this.notificationUrl(), this.notificationUsername());
         } else {
             return new NotificationServiceBlackHole();
         }
