@@ -33,8 +33,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttr
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.microgrids.application.exceptionhandling.SoapFaultMapper;
 import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.SendNotificationServiceClient;
-import com.alliander.osgp.adapter.ws.microgrids.presentation.ws.WebServiceTemplateFactory;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-microgrids.properties"),

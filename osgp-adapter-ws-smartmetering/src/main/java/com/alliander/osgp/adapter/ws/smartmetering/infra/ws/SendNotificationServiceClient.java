@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
-import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
+import com.alliander.osgp.shared.infra.ws.WebServiceTemplateFactory;
 
 public class SendNotificationServiceClient {
 
@@ -41,6 +42,6 @@ public class SendNotificationServiceClient {
         sendNotificationRequest.setNotification(notification);
 
         this.webServiceTemplateFactory.getTemplate(organisationIdentification, notificationUsername, notificationURL)
-        .marshalSendAndReceive(sendNotificationRequest);
+        	.marshalSendAndReceive(sendNotificationRequest);
     }
 }

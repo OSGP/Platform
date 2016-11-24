@@ -14,8 +14,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.exceptions.WebServiceSecurityException;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.shared.exceptionhandling.WebServiceSecurityException;
 
 @Transactional(value = "transactionManager")
 @Validated
