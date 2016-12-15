@@ -29,12 +29,12 @@ public class DeleteAllDevicesService {
     private DeviceFirmwareRepository deviceFirmwareRepository;
     
     public void deleteAllDevices() {
-        this.ssldRepository.deleteAllInBatch();
-        this.eventRepository.deleteAllInBatch();
-        this.deviceFirmwareRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllEans();
         this.deviceRepository.deleteDeviceOutputSettings();
-        this.deviceModelRepository.deleteAllInBatch();
+        this.deviceFirmwareRepository.deleteAllInBatch();
+        this.eventRepository.deleteAllInBatch();
+        this.ssldRepository.deleteAllInBatch();
         this.deviceRepository.deleteAllInBatch();
+        this.deviceModelRepository.deleteAllInBatch();
     }
 }
