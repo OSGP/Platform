@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.core.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
@@ -18,14 +17,14 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.core.application.services.DeviceInstallationService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.core.infra.jms.ws.data.JmsMessageData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common start device test request messages
- * 
+ *
  * @author CGI
- * 
+ *
  */
 @Component("domainCoreCommonStartDeviceTestRequestMessageProcessor")
 public class CommonStartDeviceTestRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -46,33 +45,17 @@ public class CommonStartDeviceTestRequestMessageProcessor extends WebServiceRequ
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing common start device test request message");
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+        final JmsMessageData messageData = this.getMessageData(message);
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
-        }
+            LOGGER.info("Calling application service function: {}", messageData.getMessageType());
 
-        try {
-            LOGGER.info("Calling application service function: {}", messageType);
-
-            this.deviceInstallationService.startSelfTest(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType);
+            this.deviceInstallationService.startSelfTest(messageData.getOrganisationIdentification(),
+                    messageData.getDeviceIdentification(), messageData.getCorrelationUid(),
+                    messageData.getMessageType());
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, messageData);
         }
     }
 }
