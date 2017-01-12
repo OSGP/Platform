@@ -9,17 +9,17 @@ package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-import ma.glasnost.orika.metadata.Type;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.impl.ConfigurableMapper;
+import ma.glasnost.orika.metadata.Type;
 
 @Component(value = "coreDeviceInstallationMapper")
 public class DeviceInstallationMapper extends ConfigurableMapper {
@@ -41,8 +41,8 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(
-                new DeviceConverter(this.ssldRepository, this.writableDeviceModelRepository));
+        mapperFactory.getConverterFactory()
+                .registerConverter(new DeviceConverter(this.ssldRepository, this.writableDeviceModelRepository));
     }
 
     private static class DeviceConverter extends
@@ -65,12 +65,12 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
             Device destination = null;
 
             if (source != null) {
-                destination = new Device(source.getDeviceIdentification(), source.getAlias(),
-                        source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                        source.getContainerNumber(), source.getContainerMunicipality(), source.getGpsLatitude(),
-                        source.getGpsLongitude());
-                destination.setDeviceModel(this.writableDeviceModelRepository.findByModelCode(source.getDeviceModel()
-                        .getModelCode()));
+                destination = new Device(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
+                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
+                        source.getContainerMunicipality(), source.getGpsLatitude(), source.getGpsLongitude());
+                destination.setDeviceModel(
+                        this.writableDeviceModelRepository.findByModelCode(source.getDeviceModel().getModelCode()));
+                destination.setActivated(source.isActivated());
 
                 return destination;
             }

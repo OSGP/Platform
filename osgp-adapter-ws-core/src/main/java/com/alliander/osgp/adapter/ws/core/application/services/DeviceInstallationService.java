@@ -105,8 +105,8 @@ public class DeviceInstallationService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
-                .getDeviceIdentification());
+        final Device existingDevice = this.writableDeviceRepository
+                .findByDeviceIdentification(newDevice.getDeviceIdentification());
 
         if (existingDevice == null) {
             final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
@@ -115,6 +115,8 @@ public class DeviceInstallationService {
                     newDevice.getGpsLongitude());
             ssld.setHasSchedule(false);
             ssld.setDeviceModel(newDevice.getDeviceModel());
+            ssld.setActivated(newDevice.isActivated());
+
             // device not created yet, add new device
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
@@ -125,16 +127,17 @@ public class DeviceInstallationService {
             LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
                     organisation.getOrganisationIdentification());
         } else {
-            final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                    existingDevice, DeviceFunctionGroup.OWNER);
+            final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                    .findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
+
             if (!owners.isEmpty()) {
                 // device is already registered to a different owner
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                         new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
             }
 
-            final Ssld ssld = this.writableSsldRepository.findByDeviceIdentification(existingDevice
-                    .getDeviceIdentification());
+            final Ssld ssld = this.writableSsldRepository
+                    .findByDeviceIdentification(existingDevice.getDeviceIdentification());
 
             // device is orphan, register for current owner
             final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
@@ -156,8 +159,9 @@ public class DeviceInstallationService {
     public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
-        final Ssld existingDevice = this.writableSsldRepository.findByDeviceIdentification(updateDevice
-                .getDeviceIdentification());
+        final Ssld existingDevice = this.writableSsldRepository
+                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
+
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
@@ -165,8 +169,8 @@ public class DeviceInstallationService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                existingDevice, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                .findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
 
         // Check organisation against owner of device
         boolean isOwner = false;
