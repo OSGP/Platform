@@ -34,12 +34,12 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(basePackageClasses = { DeviceRepository.class })
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
 public class PersistenceConfig extends AbstractConfig {
 
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
-    private static final String PROPERTY_NAME_DATABASE_PW = "db.password";
+    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.readonly.username";
+    private static final String PROPERTY_NAME_DATABASE_PW = "db.readonly.password";
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PROTOCOL = "db.protocol";
@@ -96,10 +96,10 @@ public class PersistenceConfig extends AbstractConfig {
                     .getRequiredProperty(PROPERTY_NAME_DATABASE_IDLE_TIMEOUT));
 
             final DefaultConnectionPoolFactory.Builder builder = new DefaultConnectionPoolFactory.Builder()
-            .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
-            .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
-            .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
-            .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
+                    .withUsername(username).withPassword(password).withDriverClassName(driverClassName)
+                    .withProtocol(databaseProtocol).withDatabaseHost(databaseHost).withDatabasePort(databasePort)
+                    .withDatabaseName(databaseName).withMinPoolSize(minPoolSize).withMaxPoolSize(maxPoolSize)
+                    .withAutoCommit(isAutoCommit).withIdleTimeout(idleTimeout);
             final DefaultConnectionPoolFactory factory = builder.build();
             this.dataSource = factory.getDefaultConnectionPool();
         }
