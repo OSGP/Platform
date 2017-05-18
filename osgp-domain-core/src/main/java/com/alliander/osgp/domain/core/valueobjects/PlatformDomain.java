@@ -26,5 +26,6 @@ public enum PlatformDomain {
      * schedules.
      */
     TARIFF_SWITCHING,
-    MICROGRIDS
+    MICROGRIDS,
+    SMART_METERING
 }
