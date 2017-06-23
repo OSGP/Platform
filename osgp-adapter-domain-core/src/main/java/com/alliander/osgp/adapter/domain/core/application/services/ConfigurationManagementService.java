@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -144,26 +145,19 @@ public class ConfigurationManagementService extends AbstractService {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
-            if (configurationDto.getRelayConfiguration() != null) {
-
-                final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> newRelayMap = new ArrayList<>();
-                final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> relayMapDto = configurationDto
-                        .getRelayConfiguration().getRelayMap();
-                for (final DeviceOutputSetting outputSetting : outputSettings) {
-                    for (final com.alliander.osgp.dto.valueobjects.RelayMapDto relaySettingDto : relayMapDto) {
-                        if (relaySettingDto.getIndex() == outputSetting.getExternalId()) {
-                            final com.alliander.osgp.dto.valueobjects.RelayMapDto newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMapDto(
-                                    outputSetting.getExternalId(), outputSetting.getInternalId(),
-                                    com.alliander.osgp.dto.valueobjects.RelayTypeDto
-                                            .valueOf(outputSetting.getOutputType().name()),
-                                    outputSetting.getAlias());
-                            newRelayMap.add(newRelayMapDto);
-                        }
-                    }
-                }
+            // Fall back to default output settings when no configuration available
+            if (configurationDto.getRelayConfiguration() == null) {
                 configurationDto.getRelayConfiguration().getRelayMap().clear();
-                configurationDto.getRelayConfiguration().getRelayMap().addAll(newRelayMap);
+
+                outputSettings.forEach(outputSetting -> {
+                    configurationDto.getRelayConfiguration().getRelayMap().add(
+                        new com.alliander.osgp.dto.valueobjects.RelayMapDto(
+                                outputSetting.getExternalId(), outputSetting.getInternalId(), 
+                                RelayTypeDto.valueOf(outputSetting.getOutputType().toString()),
+                                outputSetting.getAlias()));
+                });
             }
+
             configuration = this.domainCoreMapper.map(configurationDto, Configuration.class);
 
             // Make sure that a relay that has been configured with
