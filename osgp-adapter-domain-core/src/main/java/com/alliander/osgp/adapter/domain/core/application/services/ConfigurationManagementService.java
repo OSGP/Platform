@@ -195,12 +195,12 @@ public class ConfigurationManagementService extends AbstractService {
         List<RelayMapDto> relayMap = new ArrayList<>();
         RelayConfigurationDto relayConfig = new RelayConfigurationDto(relayMap);
 
-        outputSettings.forEach(outputSetting -> {
+        outputSettings.forEach(outputSetting ->
             relayMap.add(new com.alliander.osgp.dto.valueobjects.RelayMapDto(
                             outputSetting.getExternalId(), outputSetting.getInternalId(), 
                             RelayTypeDto.valueOf(outputSetting.getOutputType().toString()),
-                            outputSetting.getAlias()));
-        });
+                            outputSetting.getAlias()))
+        );
         
         // Override relay configuration based on default output settings
         return new ConfigurationDto(originalConfig.getLightType(), originalConfig.getDaliConfiguration(),
