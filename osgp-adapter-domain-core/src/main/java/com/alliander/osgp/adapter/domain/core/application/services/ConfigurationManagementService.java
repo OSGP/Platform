@@ -23,6 +23,9 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.RelayMapDto;
 import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -145,20 +148,7 @@ public class ConfigurationManagementService extends AbstractService {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
-            // Fall back to default output settings when no configuration available
-            if (configurationDto.getRelayConfiguration() == null) {
-                configurationDto.getRelayConfiguration().getRelayMap().clear();
-
-                outputSettings.forEach(outputSetting -> {
-                    configurationDto.getRelayConfiguration().getRelayMap().add(
-                        new com.alliander.osgp.dto.valueobjects.RelayMapDto(
-                                outputSetting.getExternalId(), outputSetting.getInternalId(), 
-                                RelayTypeDto.valueOf(outputSetting.getOutputType().toString()),
-                                outputSetting.getAlias()));
-                });
-            }
-
-            configuration = this.domainCoreMapper.map(configurationDto, Configuration.class);
+            configuration = this.domainCoreMapper.map(mergeOutputSettings(configurationDto, outputSettings), Configuration.class);
 
             // Make sure that a relay that has been configured with
             // TARIFF_REVERSED will be changed to the correct RelayType.
@@ -194,5 +184,28 @@ public class ConfigurationManagementService extends AbstractService {
         this.osgpCoreRequestMessageSender.send(
                 new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationBank),
                 messageType, device.getIpAddress());
+    }
+    
+    private ConfigurationDto mergeOutputSettings(final ConfigurationDto originalConfig, final List<DeviceOutputSetting> outputSettings) {
+        if (originalConfig.getRelayConfiguration() != null) {
+            return originalConfig;
+        }
+        
+        // Fall back to output settings when no relay configuration available to generate configuration
+        List<RelayMapDto> relayMap = new ArrayList<>();
+        RelayConfigurationDto relayConfig = new RelayConfigurationDto(relayMap);
+
+        outputSettings.forEach(outputSetting -> {
+            relayMap.add(new com.alliander.osgp.dto.valueobjects.RelayMapDto(
+                            outputSetting.getExternalId(), outputSetting.getInternalId(), 
+                            RelayTypeDto.valueOf(outputSetting.getOutputType().toString()),
+                            outputSetting.getAlias()));
+        });
+        
+        // Override relay configuration based on default output settings
+        return new ConfigurationDto(originalConfig.getLightType(), originalConfig.getDaliConfiguration(),
+                relayConfig, originalConfig.getShortTermHistoryIntervalMinutes(), 
+                originalConfig.getPreferredLinkType(), originalConfig.getMeterType(), originalConfig.getLongTermHistoryInterval(),
+                originalConfig.getLongTermHistoryIntervalType());
     }
 }
