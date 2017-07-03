@@ -82,12 +82,11 @@ public class ConfigurationManagementService extends AbstractService {
             }
         }
 
-        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper
-                .map(configuration, com.alliander.osgp.dto.valueobjects.ConfigurationDto.class);
+        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper.map(
+                configuration, com.alliander.osgp.dto.valueobjects.ConfigurationDto.class);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationDto),
-                messageType, device.getIpAddress(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, configurationDto), messageType, device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -106,7 +105,7 @@ public class ConfigurationManagementService extends AbstractService {
         final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
             outputSettings
-                    .add(new DeviceOutputSetting(rm.getAddress(), rm.getIndex(), rm.getRelayType(), rm.getAlias()));
+            .add(new DeviceOutputSetting(rm.getAddress(), rm.getIndex(), rm.getRelayType(), rm.getAlias()));
         }
 
         final Ssld ssld = this.findSsldForDevice(device);
@@ -125,9 +124,8 @@ public class ConfigurationManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 
     public void handleGetConfigurationResponse(
@@ -148,7 +146,8 @@ public class ConfigurationManagementService extends AbstractService {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
-            configuration = this.domainCoreMapper.map(mergeOutputSettings(configurationDto, outputSettings), Configuration.class);
+            configuration = this.domainCoreMapper.map(this.mergeOutputSettings(configurationDto, outputSettings),
+                    Configuration.class);
 
             // Make sure that a relay that has been configured with
             // TARIFF_REVERSED will be changed to the correct RelayType.
@@ -174,38 +173,43 @@ public class ConfigurationManagementService extends AbstractService {
 
     public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final String configurationBank)
-            throws FunctionalException {
+                    throws FunctionalException {
         LOGGER.debug("switchConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationBank),
-                messageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, configurationBank), messageType, device.getIpAddress());
     }
-    
-    private ConfigurationDto mergeOutputSettings(final ConfigurationDto originalConfig, final List<DeviceOutputSetting> outputSettings) {
-        if (originalConfig.getRelayConfiguration() != null) {
+
+    private ConfigurationDto mergeOutputSettings(final ConfigurationDto originalConfig,
+            final List<DeviceOutputSetting> outputSettings) {
+        // In case the relay map is not null or not empty, return it.
+        if (originalConfig.getRelayConfiguration() != null
+                && originalConfig.getRelayConfiguration().getRelayMap() != null
+                && !originalConfig.getRelayConfiguration().getRelayMap().isEmpty()) {
             return originalConfig;
         }
-        
-        // Fall back to output settings when no relay configuration available to generate configuration
-        List<RelayMapDto> relayMap = new ArrayList<>();
-        RelayConfigurationDto relayConfig = new RelayConfigurationDto(relayMap);
 
-        outputSettings.forEach(outputSetting ->
+        // Fall back to output settings when no relay configuration available to
+        // generate configuration
+        final List<RelayMapDto> relayMap = new ArrayList<>();
+
+        outputSettings.forEach(outputSetting -> 
             relayMap.add(new com.alliander.osgp.dto.valueobjects.RelayMapDto(
-                            outputSetting.getExternalId(), outputSetting.getInternalId(), 
-                            RelayTypeDto.valueOf(outputSetting.getOutputType().toString()),
-                            outputSetting.getAlias()))
+                outputSetting.getExternalId(), outputSetting.getInternalId(),
+                RelayTypeDto.valueOf(outputSetting.getOutputType().toString()), 
+                outputSetting.getAlias()))
         );
-        
+
+        final RelayConfigurationDto relayConfig = new RelayConfigurationDto(relayMap);
+
         // Override relay configuration based on default output settings
-        return new ConfigurationDto(originalConfig.getLightType(), originalConfig.getDaliConfiguration(),
-                relayConfig, originalConfig.getShortTermHistoryIntervalMinutes(), 
-                originalConfig.getPreferredLinkType(), originalConfig.getMeterType(), originalConfig.getLongTermHistoryInterval(),
+        return new ConfigurationDto(originalConfig.getLightType(), originalConfig.getDaliConfiguration(), relayConfig,
+                originalConfig.getShortTermHistoryIntervalMinutes(), originalConfig.getPreferredLinkType(),
+                originalConfig.getMeterType(), originalConfig.getLongTermHistoryInterval(),
                 originalConfig.getLongTermHistoryIntervalType());
     }
 }
