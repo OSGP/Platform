@@ -18,11 +18,12 @@ import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListene
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-logging.properties"),
-    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-    @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
+        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${osgp/Logging/config}", ignoreResourceNotFound = true), })
 public class ProtocolMessagingConfig extends AbstractMessagingConfig {
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.protocol.default.initial.redelivery.delay";
@@ -61,8 +62,8 @@ public class ProtocolMessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration protocolLogItemRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.protocol.log.item.requests",
-                this.protocolLogItemRequestMessageListener());
+        return jmsConfigurationFactory.initializeReceiveConfiguration(
+                JmsConfigurationNames.JMS_PROTOCOL_LOG_ITEM_REQUESTS, this.protocolLogItemRequestMessageListener());
     }
 
     @Bean

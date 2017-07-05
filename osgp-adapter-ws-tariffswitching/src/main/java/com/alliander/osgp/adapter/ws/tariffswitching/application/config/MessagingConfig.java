@@ -23,17 +23,14 @@ import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRe
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
+import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties"),
     @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
     @PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY = "jms.default.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY = "jms.default.redelivery.delay";
 
     @Resource
     private Environment environment;
@@ -45,13 +42,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
         redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }
@@ -61,7 +58,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration tariffSwitchingRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.tariffswitching.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_TARIFFSWITCHING_REQUESTS);
     }
 
     @Bean(name = "wsTariffSwitchingOutgoingRequestsJmsTemplate")
@@ -79,7 +76,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration tariffSwitchingResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.tariffswitching.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_TARIFFSWITCHING_RESPONSES);
     }
 
     @Bean(name = "wsTariffSwitchingIncomingResponsesJmsTemplate")
@@ -97,7 +94,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.tariffswitching.logging");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_TARIFFSWITCHING_LOGGING);
     }
 
     @Bean

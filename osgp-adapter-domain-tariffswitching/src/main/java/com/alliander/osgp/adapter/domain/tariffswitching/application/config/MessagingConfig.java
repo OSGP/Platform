@@ -24,6 +24,8 @@ import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.ws.WebService
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
+import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 /**
  * An application context Java configuration class.
@@ -33,11 +35,6 @@ import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterDomainTariffSwitching/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY = "jms.default.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY = "jms.default.redelivery.delay";
 
     @Autowired
     @Qualifier("domainTariffSwitchingIncomingWebServiceRequestMessageListener")
@@ -54,13 +51,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
         redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }
@@ -70,7 +67,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration incomingWebServiceRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.ws.requests",
+        return jmsConfigurationFactory.initializeReceiveConfiguration(JmsConfigurationNames.JMS_INCOMING_WS_REQUESTS,
                 this.incomingWebServiceRequestMessageListener);
     }
 
@@ -85,7 +82,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration outgoingWebServiceResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.ws.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_WS_RESPONSES);
     }
 
     @Bean(name = "domainTariffSwitchingOutgoingWebServiceResponsesJmsTemplate")
@@ -104,7 +101,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration outgoingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_REQUESTS);
     }
 
     @Bean(name = "domainTariffSwitchingOutgoingOsgpCoreRequestsJmsTemplate")
@@ -119,8 +116,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration incomingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.osgp.core.responses",
-                this.incomingOsgpCoreResponseMessageListener);
+        return jmsConfigurationFactory.initializeReceiveConfiguration(
+                JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_RESPONSES, this.incomingOsgpCoreResponseMessageListener);
     }
 
     @Bean(name = "domainTariffSwitchingIncomingOsgpCoreResponsesMessageListenerContainer")
@@ -135,8 +132,8 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration incomingOsgpCoreRequestsJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeReceiveConfiguration("jms.incoming.osgp.core.requests",
-                this.incomingWebServiceRequestMessageListener);
+        return jmsConfigurationFactory.initializeReceiveConfiguration(
+                JmsConfigurationNames.JMS_INCOMING_OSGP_CORE_REQUESTS, this.incomingWebServiceRequestMessageListener);
     }
 
     @Bean(name = "domainTariffSwitchingIncomingOsgpCoreRequestsMessageListenerContainer")
@@ -156,7 +153,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration outgoingOsgpCoreResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.outgoing.osgp.core.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_OUTGOING_OSGP_CORE_RESPONSES);
     }
 
     @Bean(name = "domainTariffSwitchingOutgoingOsgpCoreResponsesJmsTemplate")

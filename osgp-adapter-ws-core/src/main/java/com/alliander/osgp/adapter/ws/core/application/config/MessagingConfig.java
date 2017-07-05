@@ -23,17 +23,14 @@ import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
+import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-core.properties"),
         @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
         @PropertySource(value = "file:${osgp/AdapterWsCore/config}", ignoreResourceNotFound = true), })
 public class MessagingConfig extends AbstractMessagingConfig {
-
-    private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY = "jms.default.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY = "jms.default.redelivery.delay";
 
     @Resource
     private Environment environment;
@@ -45,13 +42,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
         redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }
@@ -60,7 +57,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration commonRequestsJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.common.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_COMMON_REQUESTS);
     }
 
     @Bean(name = "wsCoreOutgoingRequestsJmsTemplate")
@@ -77,7 +74,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration commonResponsesJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.common.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_COMMON_RESPONSES);
     }
 
     @Bean(name = "wsCoreIncomingResponsesJmsTemplate")
@@ -94,7 +91,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.common.logging");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_COMMON_LOGGING);
     }
 
     @Bean

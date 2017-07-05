@@ -23,6 +23,8 @@ import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingResp
 import com.alliander.osgp.shared.application.config.AbstractMessagingConfig;
 import com.alliander.osgp.shared.application.config.jms.JmsConfiguration;
 import com.alliander.osgp.shared.application.config.jms.JmsConfigurationFactory;
+import com.alliander.osgp.shared.application.config.jms.JmsConfigurationNames;
+import com.alliander.osgp.shared.application.config.jms.JmsPropertyNames;
 
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-ws-publiclighting.properties"),
@@ -33,11 +35,6 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Resource
     private Environment environment;
 
-    private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.default.initial.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.default.maximum.redeliveries";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY = "jms.default.maximum.redelivery.delay";
-    private static final String PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY = "jms.default.redelivery.delay";
-
     // === JMS SETTINGS ===
 
     @Override
@@ -45,13 +42,13 @@ public class MessagingConfig extends AbstractMessagingConfig {
     public RedeliveryPolicy defaultRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
         redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
         redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+                .getRequiredProperty(JmsPropertyNames.PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
 
         return redeliveryPolicy;
     }
@@ -60,7 +57,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration publicLightingRequestsJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.publiclighting.requests");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_PUBLICLIGHTING_REQUESTS);
     }
 
     @Bean(name = "wsPublicLightingOutgoingRequestsJmsTemplate")
@@ -78,7 +75,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean
     public JmsConfiguration publicLightingResponsesJmsConfiguration(
             final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.publiclighting.responses");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_PUBLICLIGHTING_RESPONSES);
     }
 
     @Bean(name = "wsPublicLightingIncomingResponsesJmsTemplate")
@@ -95,7 +92,7 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean
     public JmsConfiguration loggingJmsConfiguration(final JmsConfigurationFactory jmsConfigurationFactory) {
-        return jmsConfigurationFactory.initializeConfiguration("jms.publiclighting.logging");
+        return jmsConfigurationFactory.initializeConfiguration(JmsConfigurationNames.JMS_PUBLICLIGHTING_LOGGING);
     }
 
     @Bean
