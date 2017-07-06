@@ -77,19 +77,19 @@ public class RelayMap implements Serializable, Comparable<RelayMap> {
     }
 
     @Override
-    public int compareTo(final RelayMap o) {
-        // The construction below ensures RelayMap objects can be ordered and
-        // compared.
-        // The exact ordering is not important.
-        final String thisRelayMap = this.index + "-" + this.address + "-" + this.relayType + "-" + this.alias;
-        final String thatRelayMap = o.getIndex() + "-" + o.getAddress() + "-" + o.getRelayType() + "-" + o.getAlias();
+    public int compareTo(final RelayMap that) {
+        if (that == null) {
+            throw new NullPointerException();
+        }
 
-        return thisRelayMap.compareTo(thatRelayMap);
+        return this.toString().compareTo(that.toString());
     }
 
     @Override
     public String toString() {
-        return this.index + "-" + this.address + "-" + this.relayType + "-" + this.alias;
+        final StringBuilder sb = new StringBuilder();
+        return sb.append(this.index).append('-').append(this.address).append('-').append(this.relayType).append('-')
+                .append(this.alias).toString();
     }
 
 }
