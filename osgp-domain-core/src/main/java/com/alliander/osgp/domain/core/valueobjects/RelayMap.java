@@ -13,7 +13,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class RelayMap implements Serializable {
+public class RelayMap implements Serializable, Comparable<RelayMap> {
 
     /**
      * Serial Version UID.
@@ -61,4 +61,35 @@ public class RelayMap implements Serializable {
     public void changeRelayType(final RelayType relayType) {
         this.relayType = relayType;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null || !(o instanceof RelayMap)) {
+            return false;
+        }
+
+        return this.compareTo((RelayMap) o) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    @Override
+    public int compareTo(final RelayMap o) {
+        // The construction below ensures RelayMap objects can be ordered and
+        // compared.
+        // The exact ordering is not important.
+        final String thisRelayMap = this.index + "-" + this.address + "-" + this.relayType + "-" + this.alias;
+        final String thatRelayMap = o.getIndex() + "-" + o.getAddress() + "-" + o.getRelayType() + "-" + o.getAlias();
+
+        return thisRelayMap.compareTo(thatRelayMap);
+    }
+
+    @Override
+    public String toString() {
+        return this.index + "-" + this.address + "-" + this.relayType + "-" + this.alias;
+    }
+
 }
