@@ -80,7 +80,9 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean(name = "wsPublicLightingIncomingResponsesJmsTemplate")
     public JmsTemplate publicLightingResponsesJmsTemplate(final JmsConfiguration publicLightingResponsesJmsConfiguration) {
-        return publicLightingResponsesJmsConfiguration.getJmsTemplate();
+        final JmsTemplate jmsTemplate = publicLightingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(100);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsPublicLightingIncomingResponsesMessageFinder")
