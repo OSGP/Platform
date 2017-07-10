@@ -75,7 +75,9 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsAdminIncomingResponsesJmsTemplate")
     public JmsTemplate wsAdminIncomingResponsesJmsTemplate(
             final JmsConfiguration wsAdminIncomingResponsesJmsConfiguration) {
-        return wsAdminIncomingResponsesJmsConfiguration.getJmsTemplate();
+        final JmsTemplate jmsTemplate = wsAdminIncomingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(100);
+        return jmsTemplate;
     }
 
     @Bean

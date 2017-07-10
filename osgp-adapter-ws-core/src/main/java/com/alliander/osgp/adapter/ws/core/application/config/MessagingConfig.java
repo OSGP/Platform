@@ -79,7 +79,9 @@ public class MessagingConfig extends AbstractMessagingConfig {
 
     @Bean(name = "wsCoreIncomingResponsesJmsTemplate")
     public JmsTemplate commonResponsesJmsTemplate(final JmsConfiguration commonResponsesJmsConfiguration) {
-        return commonResponsesJmsConfiguration.getJmsTemplate();
+        final JmsTemplate jmsTemplate = commonResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(100);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsCoreIncomingResponsesMessageFinder")

@@ -82,7 +82,9 @@ public class MessagingConfig extends AbstractMessagingConfig {
     @Bean(name = "wsTariffSwitchingIncomingResponsesJmsTemplate")
     public JmsTemplate tariffSwitchingResponsesJmsTemplate(
             final JmsConfiguration tariffSwitchingResponsesJmsConfiguration) {
-        return tariffSwitchingResponsesJmsConfiguration.getJmsTemplate();
+        final JmsTemplate jmsTemplate = tariffSwitchingResponsesJmsConfiguration.getJmsTemplate();
+        jmsTemplate.setReceiveTimeout(100);
+        return jmsTemplate;
     }
 
     @Bean(name = "wsTariffSwitchingIncomingResponsesMessageFinder")
