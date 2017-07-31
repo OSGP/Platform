@@ -141,8 +141,8 @@ public class DeviceManagementService {
             if (ex.getCause() instanceof PersistenceException) {
                 LOGGER.error("Add organisation failure JpaSystemException", ex);
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_ORGANISATION, ComponentType.WS_ADMIN,
-                        new ExistingEntityException(Organisation.class, newOrganisation.getOrganisationIdentification(),
-                                ex));
+                        new ExistingEntityException(Organisation.class,
+                                newOrganisation.getOrganisationIdentification(), ex));
             }
         }
     }
@@ -163,10 +163,9 @@ public class DeviceManagementService {
                     .findByOrganisation(organisationToRemove);
             if (!deviceAuthorizations.isEmpty()) {
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_AUTHORIZATIONS,
-                        ComponentType.WS_ADMIN,
-                        new ValidationException(
-                                String.format("Device Authorizations are still present for the current organisation %s",
-                                        organisationToRemove.getOrganisationIdentification())));
+                        ComponentType.WS_ADMIN, new ValidationException(String.format(
+                                "Device Authorizations are still present for the current organisation %s",
+                                organisationToRemove.getOrganisationIdentification())));
             }
 
             organisationToRemove.setIsEnabled(false);
@@ -252,8 +251,8 @@ public class DeviceManagementService {
         // Check if group is already set on device
         for (final DeviceAuthorization authorization : device.getAuthorizations()) {
             if (authorization.getOrganisation() == organisation && authorization.getFunctionGroup() == group) {
-                LOGGER.info("Organisation {} already has authorization for group {} on device {}",
-                        new Object[] { organisationIdentification, deviceIdentification, group });
+                LOGGER.info("Organisation {} already has authorization for group {} on device {}", new Object[] {
+                        organisationIdentification, deviceIdentification, group });
                 // Ignore the request, the authorization is already available
                 return;
             }
@@ -293,7 +292,7 @@ public class DeviceManagementService {
         this.authorizationRepository.deleteByDeviceAndFunctionGroupAndOrganisation(device, group, organisation);
 
         LOGGER.info("Organisation {} now no longer has authorization for function group {} on device {}",
-                organisationIdentification, deviceIdentification, group);
+                organisationIdentification, group, deviceIdentification);
     }
 
     /**
@@ -333,10 +332,10 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
-        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}",
-                new Object[] { organisationIdentification, deviceIdentification, pageNumber });
+        LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
+                organisationIdentification, deviceIdentification, pageNumber });
 
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
@@ -356,13 +355,14 @@ public class DeviceManagementService {
     /**
      * @throws FunctionalException
      * @throws NotAuthorizedException
-     *             @throws FunctionalException Remove a device
+     * @throws FunctionalException
+     *             Remove a device
      *
      * @param organisationIdentification
      * @param deviceIdentification
-     *            @throws UnknownEntityException @throws
-     *            ArgumentNullOrEmptyException @throws
-     *            UnregisteredDeviceException @throws
+     * @throws UnknownEntityException
+     *             @throws ArgumentNullOrEmptyException @throws
+     *             UnregisteredDeviceException @throws
      */
     public void removeDevice(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
@@ -404,7 +404,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
+                    throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -528,7 +528,7 @@ public class DeviceManagementService {
 
     public void updateDeviceProtocol(final String organisationIdentification,
             @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
                 deviceIdentification, organisationIdentification, protocol, protocolVersion);
