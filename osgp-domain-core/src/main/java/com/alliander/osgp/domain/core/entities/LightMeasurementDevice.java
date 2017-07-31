@@ -51,6 +51,10 @@ public class LightMeasurementDevice extends Device {
         // Default constructor.
     }
 
+    public LightMeasurementDevice(final String deviceIdentification) {
+        super(deviceIdentification);
+    }
+
     public String getDescription() {
         return this.description;
     }

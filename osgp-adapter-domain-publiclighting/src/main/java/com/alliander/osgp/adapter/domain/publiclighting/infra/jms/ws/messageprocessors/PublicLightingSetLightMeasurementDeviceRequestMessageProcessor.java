@@ -37,7 +37,7 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
     private AdHocManagementService adHocManagementService;
 
     public PublicLightingSetLightMeasurementDeviceRequestMessageProcessor() {
-        super(DeviceFunction.SET_LIGHT_MEASURMENT_DEVICE);
+        super(DeviceFunction.SET_LIGHT_MEASUREMENT_DEVICE);
     }
 
     @Override

@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-//import com.alliander.osgp.core.application.tasks.EventRetrievalScheduledTask;
 import com.alliander.osgp.core.application.tasks.ScheduledTaskScheduler;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 
@@ -45,10 +44,10 @@ public class SchedulingConfig extends AbstractConfig {
     @Bean(destroyMethod = "shutdown")
     public TaskScheduler taskScheduler() {
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_POOL_SIZE)));
-        taskScheduler.setThreadNamePrefix(this.environment
-                .getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_THREAD_NAME_PREFIX));
+        taskScheduler.setPoolSize(Integer
+                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_POOL_SIZE)));
+        taskScheduler.setThreadNamePrefix(
+                this.environment.getRequiredProperty(PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_THREAD_NAME_PREFIX));
         taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
         taskScheduler.setAwaitTerminationSeconds(10);
         taskScheduler.initialize();

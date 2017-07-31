@@ -172,7 +172,7 @@ public class BaseTask {
         // Creating message with empty CorrelationUID, in order to prevent a
         // response.
         final String correlationUid = "";
-        final String deviceFunctionString = DeviceFunction.GET_STATUS.name();
+        final String deviceFunctionString = deviceFunction.name();
         final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
         String ipAddress = null;

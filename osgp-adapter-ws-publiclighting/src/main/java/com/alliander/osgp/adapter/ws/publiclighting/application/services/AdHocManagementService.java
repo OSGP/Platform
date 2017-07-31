@@ -145,7 +145,7 @@ public class AdHocManagementService {
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -212,7 +212,7 @@ public class AdHocManagementService {
      * @param lightMeasurementDeviceIdentification
      *            The light measurement device.
      *
-     * @return Correlation UID>
+     * @return Correlation UID.
      *
      * @throws FunctionalException
      *             In case the organization is not authorized or the SSLD can
@@ -225,13 +225,13 @@ public class AdHocManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_MEASURMENT_DEVICE);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_MEASUREMENT_DEVICE);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
-                PublicLightingRequestMessageType.SET_LIGHT_MEASURMENT_DEVICE, correlationUid,
+                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE, correlationUid,
                 organisationIdentification, deviceIdentification, lightMeasurementDeviceIdentification, null);
 
         this.publicLightingRequestMessageSender.send(message);
