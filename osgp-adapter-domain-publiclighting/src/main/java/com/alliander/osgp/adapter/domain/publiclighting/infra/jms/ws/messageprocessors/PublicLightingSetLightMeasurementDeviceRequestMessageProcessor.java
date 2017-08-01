@@ -68,7 +68,7 @@ public class PublicLightingSetLightMeasurementDeviceRequestMessageProcessor exte
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.adHocManagementService.coulpeLightMeasurementDeviceForSsld(organisationIdentification,
+            this.adHocManagementService.coupleLightMeasurementDeviceForSsld(organisationIdentification,
                     deviceIdentification, correlationUid, (String) dataObject, messageType);
 
         } catch (final Exception e) {

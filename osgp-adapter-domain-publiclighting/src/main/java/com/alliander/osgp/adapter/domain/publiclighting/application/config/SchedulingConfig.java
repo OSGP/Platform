@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -24,8 +24,8 @@ import com.alliander.osgp.shared.application.config.AbstractConfig;
 @EnableScheduling
 @Configuration
 @PropertySources({ @PropertySource("classpath:osgp-adapter-domain-publiclighting.properties"),
-        @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
+    @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true),
+    @PropertySource(value = "file:${osgp/Core/config}", ignoreResourceNotFound = true), })
 public class SchedulingConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_SCHEDULING_TASK_DEVICE_CONNECTION_CRON_EXPRESSION = "scheduling.task.device.connection.cron.expression";

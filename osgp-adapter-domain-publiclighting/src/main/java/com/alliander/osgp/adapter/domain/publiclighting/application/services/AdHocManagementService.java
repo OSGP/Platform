@@ -216,7 +216,7 @@ public class AdHocManagementService extends AbstractService {
      * @throws FunctionalException
      *             In case the organisation can not be found.
      */
-    public void coulpeLightMeasurementDeviceForSsld(final String organisationIdentification,
+    public void coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
             final String lightMeasurementDeviceIdentification, final String messageType) throws FunctionalException {
 

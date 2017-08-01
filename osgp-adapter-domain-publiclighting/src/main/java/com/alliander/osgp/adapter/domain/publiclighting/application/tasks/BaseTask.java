@@ -24,7 +24,6 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreR
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
-import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
@@ -96,18 +95,21 @@ public class BaseTask {
      * Try to find all devices which are not 'in maintenance' for a list of
      * device models.
      */
-    protected List<Device> findDevices(final List<DeviceModel> deviceModels) {
+    protected List<Device> findDevices(final List<DeviceModel> deviceModels, final String deviceType) {
         LOGGER.info("Trying to find devices for device models for manufacturer...");
         final List<Device> devices = new ArrayList<>();
         for (final DeviceModel deviceModel : deviceModels) {
             final List<Device> devs = this.deviceRepository.findByDeviceModelAndDeviceTypeAndInMaintenanceAndIsActive(
-                    deviceModel, Ssld.SSLD_TYPE, false, true);
+                    deviceModel, deviceType, false, true);
             devices.addAll(devs);
         }
         if (devices.isEmpty()) {
             LOGGER.warn("No devices found for device models for manufacturer");
         } else {
             LOGGER.info("{} devices found for device models for manufacturer", devices.size());
+            for (final Device device : devices) {
+                LOGGER.info(" device: {}", device.getDeviceIdentification());
+            }
         }
         return devices;
     }

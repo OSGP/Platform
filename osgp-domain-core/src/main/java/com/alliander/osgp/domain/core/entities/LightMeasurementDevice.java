@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.core.entities;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -27,6 +28,11 @@ public class LightMeasurementDevice extends Device {
      * Serial Version UID.
      */
     private static final long serialVersionUID = 3318500857714946908L;
+
+    /**
+     * Device type indicator for LMD
+     */
+    public static final String LMD_TYPE = "LMD";
 
     @Column
     private String description;
@@ -95,4 +101,20 @@ public class LightMeasurementDevice extends Device {
         this.lastCommunicationTime = lastCommunicationTime;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final LightMeasurementDevice device = (LightMeasurementDevice) o;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.deviceIdentification);
+    }
 }

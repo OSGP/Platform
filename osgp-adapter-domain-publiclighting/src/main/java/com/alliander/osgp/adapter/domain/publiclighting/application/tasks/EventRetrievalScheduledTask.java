@@ -18,12 +18,15 @@ import com.alliander.osgp.adapter.domain.publiclighting.application.config.Sched
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 /**
- * Periodic task to contact devices of a given manufacturer. See
- * {@link SchedulingConfig#deviceConnectionScheduledTaskCronTrigger()} and
- * {@link SchedulingConfig#deviceConnectionTaskScheduler()}.
+ * Periodic task to fetch events from devices of a manufacturer in case the
+ * devices only have events older than X hours. This ensures all devices are
+ * contacted, and are allowed to send any new events in their buffers.
+ * {@link SchedulingConfig#eventRetrievalScheduledTaskCronTrigger()} and
+ * {@link SchedulingConfig#eventRetrievalScheduler()}.
  */
 @Component
 public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
@@ -49,14 +52,14 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
                 return;
             }
 
-            final List<Device> devices = this.findDevices(deviceModels);
+            final List<Device> devices = this.findDevices(deviceModels, Ssld.SSLD_TYPE);
             if (devices.isEmpty()) {
                 return;
             }
 
             final List<Device> devicesToContact = this.findDevicesToContact(devices,
                     this.eventRetrievalScheduledTaskMaximumAllowedAge);
-            if (devicesToContact.isEmpty()) {
+            if (devicesToContact == null || devicesToContact.isEmpty()) {
                 return;
             }
 

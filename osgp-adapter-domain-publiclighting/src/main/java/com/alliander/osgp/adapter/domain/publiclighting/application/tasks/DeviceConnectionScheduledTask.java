@@ -17,15 +17,14 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.publiclighting.application.config.SchedulingConfig;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
+import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
 /**
- * Periodic task to fetch events from devices of a manufacturer in case the
- * devices have events older than X hours. This ensures all devices are
- * contacted, and are allowed to send any new events in their buffers. See
- * {@link SchedulingConfig#eventRetrievalScheduledTaskCronTrigger()} and
- * {@link SchedulingConfig#eventRetrievalScheduler()}.
+ * Periodic task to ensure active connection to devices of a given manufacturer.
+ * See {@link SchedulingConfig#deviceConnectionScheduledTaskCronTrigger()} and
+ * {@link SchedulingConfig#deviceConnectionTaskScheduler()}.
  */
 @Component
 public class DeviceConnectionScheduledTask extends BaseTask implements Runnable {
@@ -51,14 +50,14 @@ public class DeviceConnectionScheduledTask extends BaseTask implements Runnable 
                 return;
             }
 
-            final List<Device> devices = this.findDevices(deviceModels);
+            final List<Device> devices = this.findDevices(deviceModels, LightMeasurementDevice.LMD_TYPE);
             if (devices.isEmpty()) {
                 return;
             }
 
             final List<Device> devicesToContact = this.findDevicesToContact(devices,
                     this.deviceConnectionScheduledTaskMaximumAllowedAge);
-            if (devicesToContact.isEmpty()) {
+            if (devicesToContact == null || devicesToContact.isEmpty()) {
                 return;
             }
 

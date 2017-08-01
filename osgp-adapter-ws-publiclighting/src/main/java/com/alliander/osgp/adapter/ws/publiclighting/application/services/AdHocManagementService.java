@@ -145,7 +145,7 @@ public class AdHocManagementService {
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -215,17 +215,19 @@ public class AdHocManagementService {
      * @return Correlation UID.
      *
      * @throws FunctionalException
-     *             In case the organization is not authorized or the SSLD can
-     *             not be found.
+     *             In case the organization is not authorized or the SSLD or LMD
+     *             can not be found.
      */
     public String coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
             final String deviceIdentification, final String lightMeasurementDeviceIdentification)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_MEASUREMENT_DEVICE);
+
+        final Device lightMeasurementDevice = this.domainHelperService.findDevice(lightMeasurementDeviceIdentification);
+        LOGGER.info("Found lightMeasurementDevice: {}", lightMeasurementDevice.getDeviceIdentification());
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);

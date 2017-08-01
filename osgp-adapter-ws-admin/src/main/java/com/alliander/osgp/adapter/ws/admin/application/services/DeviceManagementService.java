@@ -37,8 +37,6 @@ import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
-import com.alliander.osgp.domain.core.exceptions.EmptyOwnerException;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
@@ -251,8 +249,8 @@ public class DeviceManagementService {
         // Check if group is already set on device
         for (final DeviceAuthorization authorization : device.getAuthorizations()) {
             if (authorization.getOrganisation() == organisation && authorization.getFunctionGroup() == group) {
-                LOGGER.info("Organisation {} already has authorization for group {} on device {}", new Object[] {
-                        organisationIdentification, deviceIdentification, group });
+                LOGGER.info("Organisation {} already has authorization for group {} on device {}",
+                        organisationIdentification, group, deviceIdentification);
                 // Ignore the request, the authorization is already available
                 return;
             }
@@ -264,7 +262,7 @@ public class DeviceManagementService {
         this.authorizationRepository.save(authorization);
 
         LOGGER.info("Organisation {} now has authorization for function group {} on device {}",
-                organisationIdentification, deviceIdentification, group);
+                organisationIdentification, group, deviceIdentification);
 
     }
 
@@ -299,12 +297,10 @@ public class DeviceManagementService {
      * Get all devices which have no owner.
      *
      * @return All devices which have no owner.
-     * @throws NotAuthorizedException
-     * @throws UnknownOrganisationException
-     * @throws EmptyOwnerException
-     * @throws UnknownEntityException
-     * @throws ArgumentNullOrEmptyException
-     * @throws ValidationException
+     *
+     * @throws FunctionalException
+     *             In case the organisation can not be found or the organisation
+     *             is not allowed to perform this action.
      */
     public List<Device> findDevicesWhichHaveNoOwner(@Identification final String organisationIdentification)
             throws FunctionalException {
@@ -353,16 +349,16 @@ public class DeviceManagementService {
     // === REMOVE DEVICE ===
 
     /**
-     * @throws FunctionalException
-     * @throws NotAuthorizedException
-     * @throws FunctionalException
-     *             Remove a device
+     * Removes a device.
      *
      * @param organisationIdentification
+     *            The organisation identification who performs the action
      * @param deviceIdentification
-     * @throws UnknownEntityException
-     *             @throws ArgumentNullOrEmptyException @throws
-     *             UnregisteredDeviceException @throws
+     *            The device identification of the device
+     *
+     * @throws FunctionalException
+     *             In case the device or organisation can not be found or the
+     *             organisation is not allowed to perform this action.
      */
     public void removeDevice(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
@@ -398,9 +394,10 @@ public class DeviceManagementService {
      *            The device identification of the device
      * @param newOwner
      *            The organisation identification of the new owner.
-     * @throws UnknownEntityException
-     * @throws NotAuthorizedException
+     *
      * @throws FunctionalException
+     *             In case the device or organisation can not be found or the
+     *             organisation is not allowed to perform this action.
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
