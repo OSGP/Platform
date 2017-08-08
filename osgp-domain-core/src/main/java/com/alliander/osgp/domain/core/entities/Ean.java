@@ -59,24 +59,21 @@ public class Ean extends AbstractEntity {
 
     @Override
     public boolean equals(final Object o) {
-
         if (this == o) {
             return true;
         }
-
-        boolean result = false;
-        if (o != null && o instanceof Ean) {
-            final Ean that = (Ean) o;
-
-            // "code" is a unique identifier for an EAN, so check
-            // equality for just that property:
-            result = Objects.equals(this.code, that.code);
+        if (!(o instanceof Ean)) {
+            return false;
         }
-        return result;
+        final Ean that = (Ean) o;
+
+        // "code" is a unique identifier for an EAN, so check
+        // equality for just that property:
+        return Objects.equals(this.code, that.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.device, this.code, this.description);
+        return Objects.hash(this.code);
     }
 }
