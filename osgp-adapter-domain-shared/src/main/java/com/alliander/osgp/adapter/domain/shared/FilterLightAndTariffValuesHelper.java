@@ -19,6 +19,10 @@ import com.alliander.osgp.domain.core.valueobjects.TariffValue;
 
 public class FilterLightAndTariffValuesHelper {
 
+    private FilterLightAndTariffValuesHelper() {
+        // Private constructor to prevent instantiating this class.
+    }
+
     /**
      * Filter light values based on PublicLighting domain. Only matching values
      * will be returned.
