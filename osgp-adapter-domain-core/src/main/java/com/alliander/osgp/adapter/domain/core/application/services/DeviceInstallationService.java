@@ -65,8 +65,8 @@ public class DeviceInstallationService extends AbstractService {
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
                 .name() : messageType;
 
-                this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                        deviceIdentification, null), actualMessageType, device.getIpAddress());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), actualMessageType, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
@@ -96,7 +96,7 @@ public class DeviceInstallationService extends AbstractService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, response.getResult(), response.getOsgpException(), response
-                .getDeviceStatusMapped()));
+                        .getDeviceStatusMapped()));
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
@@ -109,7 +109,7 @@ public class DeviceInstallationService extends AbstractService {
         } else {
             // No status received, create bad response.
             response.setDeviceStatusMapped(null);
-            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_PUBLIC_LIGHTING,
+            response.setOsgpException(new TechnicalException(ComponentType.DOMAIN_CORE,
                     "Light measurement device was not able to report light sensor status",
                     new NoDeviceResponseException()));
             response.setResult(ResponseMessageResultType.NOT_OK);
@@ -134,9 +134,9 @@ public class DeviceInstallationService extends AbstractService {
             final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
                     FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
                             DomainType.TARIFF_SWITCHING), FilterLightAndTariffValuesHelper.filterLightValues(
-                            status.getLightValues(), dosMap, DomainType.PUBLIC_LIGHTING),
-                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                    status.getEventNotificationsMask());
+                                    status.getLightValues(), dosMap, DomainType.PUBLIC_LIGHTING),
+                                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                                    status.getEventNotificationsMask());
 
             deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
             deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
