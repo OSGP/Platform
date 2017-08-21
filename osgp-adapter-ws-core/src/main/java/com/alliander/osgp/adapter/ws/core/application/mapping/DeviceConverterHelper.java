@@ -8,11 +8,13 @@
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceModel;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
 
@@ -87,8 +90,8 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         destination.setContainerMunicipality(source.getContainerMunicipality());
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
-
-        this.setTechnicalInstallationDate(source, destination);
+        destination.setTechnicalInstallationDate(
+                this.convertDateToXMLGregorianCalendar(source.getTechnicalInstallationDate()));
 
         if (source.getGpsLatitude() != null) {
             destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
@@ -104,7 +107,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
 
         destination.setInMaintenance(source.isInMaintenance());
 
-        final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
+        final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations = new ArrayList<>();
         for (final DeviceAuthorization deviceAuthorisation : source.getAuthorizations()) {
             final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
 
@@ -130,20 +133,67 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             destination.setDeviceModel(deviceModel);
         }
 
+        if (source instanceof LightMeasurementDevice) {
+            final LightMeasurementDevice sourceLmd = (LightMeasurementDevice) source;
+            final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice destinationLmd = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice();
+            destinationLmd.setDescription(sourceLmd.getDescription());
+            destinationLmd.setCode(sourceLmd.getCode());
+            destinationLmd.setColor(sourceLmd.getColor());
+            destinationLmd.setDigitalInput(new Integer(sourceLmd.getDigitalInput()));
+            destinationLmd.setLastCommunicationTime(
+                    this.convertDateToXMLGregorianCalendar(sourceLmd.getLastCommunicationTime()));
+            destination.setLightMeasurementDevice(destinationLmd);
+        }
+
         return destination;
     }
 
-    private void setTechnicalInstallationDate(final T source, final Device destination) {
-        if (source.getTechnicalInstallationDate() != null) {
-            final GregorianCalendar gCalendarTechnicalInstallation = new GregorianCalendar();
-            gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
+    // private void setLastCommunicationTime(final LightMeasurementDevice
+    // source,
+    // final
+    // com.alliander.osgp.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice
+    // destination) {
+    // if (source.getLastCommunicationTime() != null) {
+    // final GregorianCalendar gCalendarLastCommunicationTime = new
+    // GregorianCalendar();
+    // gCalendarLastCommunicationTime.setTime(source.getLastCommunicationTime());
+    // try {
+    // destination.setLastCommunicationTime(
+    // DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarLastCommunicationTime));
+    // } catch (final DatatypeConfigurationException e) {
+    // LOGGER.error("Bad date format in last communication time", e);
+    // }
+    // }
+    // }
+
+    // private void setTechnicalInstallationDate(final T source, final Device
+    // destination) {
+    // if (source.getTechnicalInstallationDate() != null) {
+    // final GregorianCalendar gCalendarTechnicalInstallation = new
+    // GregorianCalendar();
+    // gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
+    // try {
+    // destination.setTechnicalInstallationDate(
+    // DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarTechnicalInstallation));
+    // } catch (final DatatypeConfigurationException e) {
+    // LOGGER.error("Bad date format in technical installation date", e);
+    // }
+    // }
+    // }
+
+    private XMLGregorianCalendar convertDateToXMLGregorianCalendar(final Date date) {
+        XMLGregorianCalendar xmlCalendar = null;
+        if (date != null) {
+            final GregorianCalendar gCalendar = new GregorianCalendar();
+            gCalendar.setTime(date);
             try {
-                destination.setTechnicalInstallationDate(
-                        DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarTechnicalInstallation));
-            } catch (final DatatypeConfigurationException e) {
-                LOGGER.error("Bad date format in technical installation date", e);
+                xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
+            } catch (final DatatypeConfigurationException dce) {
+                LOGGER.error("Bad date format in 'date' parameter", dce);
             }
         }
+
+        return xmlCalendar;
     }
 
 }
