@@ -44,7 +44,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         if (source.getGpsLongitude() == null) {
             source.setGpsLongitude("0");
         }
-        T destination = null;
+        T destination;
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
             destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(),
                     source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
@@ -147,39 +147,6 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
 
         return destination;
     }
-
-    // private void setLastCommunicationTime(final LightMeasurementDevice
-    // source,
-    // final
-    // com.alliander.osgp.adapter.ws.schema.core.devicemanagement.LightMeasurementDevice
-    // destination) {
-    // if (source.getLastCommunicationTime() != null) {
-    // final GregorianCalendar gCalendarLastCommunicationTime = new
-    // GregorianCalendar();
-    // gCalendarLastCommunicationTime.setTime(source.getLastCommunicationTime());
-    // try {
-    // destination.setLastCommunicationTime(
-    // DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarLastCommunicationTime));
-    // } catch (final DatatypeConfigurationException e) {
-    // LOGGER.error("Bad date format in last communication time", e);
-    // }
-    // }
-    // }
-
-    // private void setTechnicalInstallationDate(final T source, final Device
-    // destination) {
-    // if (source.getTechnicalInstallationDate() != null) {
-    // final GregorianCalendar gCalendarTechnicalInstallation = new
-    // GregorianCalendar();
-    // gCalendarTechnicalInstallation.setTime(source.getTechnicalInstallationDate());
-    // try {
-    // destination.setTechnicalInstallationDate(
-    // DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendarTechnicalInstallation));
-    // } catch (final DatatypeConfigurationException e) {
-    // LOGGER.error("Bad date format in technical installation date", e);
-    // }
-    // }
-    // }
 
     private XMLGregorianCalendar convertDateToXMLGregorianCalendar(final Date date) {
         XMLGregorianCalendar xmlCalendar = null;
