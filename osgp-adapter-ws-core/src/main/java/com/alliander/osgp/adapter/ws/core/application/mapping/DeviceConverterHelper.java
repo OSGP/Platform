@@ -139,7 +139,7 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             destinationLmd.setDescription(sourceLmd.getDescription());
             destinationLmd.setCode(sourceLmd.getCode());
             destinationLmd.setColor(sourceLmd.getColor());
-            destinationLmd.setDigitalInput(new Integer(sourceLmd.getDigitalInput()));
+            destinationLmd.setDigitalInput(sourceLmd.getDigitalInput());
             destinationLmd.setLastCommunicationTime(
                     this.convertDateToXMLGregorianCalendar(sourceLmd.getLastCommunicationTime()));
             destination.setLightMeasurementDevice(destinationLmd);
