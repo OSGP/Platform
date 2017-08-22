@@ -11,8 +11,6 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +24,6 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "coreDeviceManagementMapper")
 public class DeviceManagementMapper extends ConfigurableMapper {
-
-    static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
     @Autowired
     private SsldRepository ssldRepository;
@@ -75,6 +71,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     @Override
     public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
         return super.equals(obj) && Objects.equals(this.ssldRepository, ((DeviceManagementMapper) obj).ssldRepository);
     }
 
