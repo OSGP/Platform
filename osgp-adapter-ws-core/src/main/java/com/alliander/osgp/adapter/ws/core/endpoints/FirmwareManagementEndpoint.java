@@ -657,6 +657,7 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
+            e.printStackTrace();
             this.handleException(e);
         }
 

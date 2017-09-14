@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,13 +56,13 @@ public class FirmwareFile extends AbstractEntity {
     @Column(unique = true, nullable = false, updatable = false)
     private String identification = newRandomIdentification();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(name = "device_model_firmware_file", joinColumns = @JoinColumn(name = "firmware_file_id"), inverseJoinColumns = @JoinColumn(name = "device_model_id"))
     @OrderBy("modelCode")
     @Sort(type = SortType.NATURAL)
     private SortedSet<DeviceModel> deviceModels = new TreeSet<>();
 
-    @OneToMany(mappedBy = "firmwareFile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "firmwareFile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<FirmwareFileFirmwareModule> firmwareModules = new HashSet<>();
 
     @Column()
@@ -113,9 +114,27 @@ public class FirmwareFile extends AbstractEntity {
     }
 
     public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
-        for (final FirmwareFileFirmwareModule firmwareFileFirmwareModule : this.firmwareModules) {
-            this.removeFirmwareModule(firmwareFileFirmwareModule.getFirmwareModule());
+        this.firmwareModules.clear();
+
+        for (final Entry<FirmwareModule, String> versionByModule : versionsByModule.entrySet()) {
+            this.addFirmwareModule(versionByModule.getKey(), versionByModule.getValue());
         }
+    }
+
+    public void updateFirmwareModuleData_v1(final Map<FirmwareModule, String> versionsByModule) {
+        final ArrayList<FirmwareFileFirmwareModule> itemsToRemove = new ArrayList<>();
+        for (final FirmwareFileFirmwareModule firmwareFileFirmwareModule : this.firmwareModules) {
+            final String newModuleVersion = versionsByModule.get(firmwareFileFirmwareModule.getFirmwareModule());
+            if (newModuleVersion == null) {
+                itemsToRemove.add(firmwareFileFirmwareModule);
+            } else if (!newModuleVersion.equals(firmwareFileFirmwareModule.getModuleVersion())) {
+                firmwareFileFirmwareModule.setModuleVersion(newModuleVersion);
+            }
+
+            versionsByModule.remove(firmwareFileFirmwareModule.getFirmwareModule());
+        }
+        this.firmwareModules.removeAll(itemsToRemove);
+
         for (final Entry<FirmwareModule, String> versionByModule : versionsByModule.entrySet()) {
             this.addFirmwareModule(versionByModule.getKey(), versionByModule.getValue());
         }
