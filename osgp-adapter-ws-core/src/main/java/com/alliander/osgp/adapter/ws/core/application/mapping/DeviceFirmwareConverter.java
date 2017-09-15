@@ -41,18 +41,6 @@ class DeviceFirmwareConverter extends
         this.firmwareFileRepository = firmwareFileRepository;
     }
 
-    public DeviceFirmwareFile convert(
-            final com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.DeviceFirmware source,
-            final Type<? extends DeviceFirmwareFile> destination, final MappingContext context) {
-
-        final Device device = this.deviceRepository.findByDeviceIdentification(source.getDeviceIdentification());
-        final FirmwareFile firmwareFile = this.firmwareFileRepository
-                .findOne(Long.valueOf(source.getFirmware().getId()));
-
-        return new DeviceFirmwareFile(device, firmwareFile,
-                source.getInstallationDate().toGregorianCalendar().getTime(), source.getInstalledBy());
-    }
-
     @Override
     public DeviceFirmwareFile convertTo(final DeviceFirmware source, final Type<DeviceFirmwareFile> destinationType,
             final MappingContext mappingContext) {
@@ -70,9 +58,7 @@ class DeviceFirmwareConverter extends
         final DeviceFirmware destination = new DeviceFirmware();
         destination.setDeviceIdentification(source.getDevice().getDeviceIdentification());
 
-        final FirmwareConverter firmwareConverter = new FirmwareConverter();
-        final Firmware firmware = firmwareConverter.convert(source.getFirmwareFile(), firmwareConverter.getBType(),
-                mappingContext);
+        final Firmware firmware = this.mapperFacade.map(source.getFirmwareFile(), Firmware.class, mappingContext);
         destination.setFirmware(firmware);
 
         final GregorianCalendar gCalendar = new GregorianCalendar();
