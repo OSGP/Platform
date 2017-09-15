@@ -445,7 +445,6 @@ public class FirmwareManagementService {
             final DeviceModel databaseDeviceModel = this.deviceModelRepository
                     .findByManufacturerAndModelCode(databaseManufacturer, modelCode);
             if (databaseDeviceModel != null) {
-                // TODO: kan dit worden opgelost zonder null check?
                 firmwareFiles = this.firmwareFileRepository.findByDeviceModel(databaseDeviceModel);
             }
         } else {

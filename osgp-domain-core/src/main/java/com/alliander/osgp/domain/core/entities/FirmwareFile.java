@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -115,25 +114,6 @@ public class FirmwareFile extends AbstractEntity {
 
     public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
         this.firmwareModules.clear();
-
-        for (final Entry<FirmwareModule, String> versionByModule : versionsByModule.entrySet()) {
-            this.addFirmwareModule(versionByModule.getKey(), versionByModule.getValue());
-        }
-    }
-
-    public void updateFirmwareModuleData_v1(final Map<FirmwareModule, String> versionsByModule) {
-        final ArrayList<FirmwareFileFirmwareModule> itemsToRemove = new ArrayList<>();
-        for (final FirmwareFileFirmwareModule firmwareFileFirmwareModule : this.firmwareModules) {
-            final String newModuleVersion = versionsByModule.get(firmwareFileFirmwareModule.getFirmwareModule());
-            if (newModuleVersion == null) {
-                itemsToRemove.add(firmwareFileFirmwareModule);
-            } else if (!newModuleVersion.equals(firmwareFileFirmwareModule.getModuleVersion())) {
-                firmwareFileFirmwareModule.setModuleVersion(newModuleVersion);
-            }
-
-            versionsByModule.remove(firmwareFileFirmwareModule.getFirmwareModule());
-        }
-        this.firmwareModules.removeAll(itemsToRemove);
 
         for (final Entry<FirmwareModule, String> versionByModule : versionsByModule.entrySet()) {
             this.addFirmwareModule(versionByModule.getKey(), versionByModule.getValue());
