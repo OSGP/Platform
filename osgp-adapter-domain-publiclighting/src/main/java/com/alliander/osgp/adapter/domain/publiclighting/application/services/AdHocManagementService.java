@@ -28,9 +28,12 @@ import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
+import com.alliander.osgp.domain.core.valueobjects.EventMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.TransitionType;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
@@ -110,7 +113,7 @@ public class AdHocManagementService extends AbstractService {
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
                 .name() : messageType;
 
-                this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                         deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
     }
 
@@ -240,6 +243,64 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, transitionMessageDataContainerDto), messageType, device.getIpAddress());
     }
 
+    // === TRANSITION MESSAGE FROM LIGHT MEASUREMENT DEVICE ===
+
+    /**
+     * Send transition message to SSLD's based on light measurement device
+     * trigger.
+     *
+     * @param organisationIdentification
+     *            Organization issuing the request.
+     * @param deviceIdentification
+     *            Light measurement device identification.
+     * @param correlationUid
+     *            The generated correlation UID.
+     * @param eventMessageDataContainer
+     *            List of {@link Event}s contained by
+     *            {@link EventMessageDataContainer}.
+     */
+    public void handleLightMeasurementDeviceTransition(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid,
+            final EventMessageDataContainer eventMessageDataContainer) {
+
+        final LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+        if (lmd == null) {
+            return;
+        }
+
+        final List<Ssld> ssldsToTransition = this.ssldRepository
+                .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
+                        lmd, DeviceLifecycleStatus.IN_USE);
+        if (ssldsToTransition == null) {
+            return;
+        }
+
+        LOGGER.info("For light measurement device: {}, {} SSLDs were found", deviceIdentification,
+                ssldsToTransition.size());
+
+        TransitionType transitionType;
+        final String transitionTypeFromLightMeasurementDevice = eventMessageDataContainer.getEvents().get(0)
+                .getEventType().name();
+        if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
+            transitionType = TransitionType.DAY_NIGHT;
+        } else {
+            transitionType = TransitionType.NIGHT_DAY;
+        }
+
+        final DateTime transitionTime = DateTime.now();
+        final String messageType = DeviceFunction.SET_TRANSITION.name();
+
+        for (final Ssld ssld : ssldsToTransition) {
+            try {
+                this.setTransition(organisationIdentification, ssld.getDeviceIdentification(), correlationUid,
+                        transitionType, transitionTime, messageType);
+            } catch (final FunctionalException e) {
+                LOGGER.error("Caught unexpected FunctionalException", e);
+            }
+        }
+    }
+
     // === SET LIGHT MEASUREMENT DEVICE ===
 
     /**
@@ -293,7 +354,7 @@ public class AdHocManagementService extends AbstractService {
      * Updates the relay overview from a device based on the given device
      * status.
      *
-     * @param deviceIdentification
+     * @param device
      *            The device to update.
      * @param deviceStatus
      *            The device status to update the relay overview with.
@@ -319,5 +380,26 @@ public class AdHocManagementService extends AbstractService {
         }
 
         this.ssldRepository.save(device);
+    }
+
+    /**
+     * Logs the response of SET_TRANSITION calls.
+     */
+    public void handleSetTransitionResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+
+        if (osgpException == null) {
+            LOGGER.info(
+                    "Received response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
+                    responseMessageResultType.getValue(), messageType, deviceIdentification,
+                    organisationIdentification, correlationUid);
+        } else {
+            LOGGER.error(
+                    "Exception: {} for response: {} for messageType: {}, deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}",
+                    osgpException.getMessage(), responseMessageResultType.getValue(), messageType,
+                    deviceIdentification, organisationIdentification, correlationUid);
+        }
+
     }
 }
