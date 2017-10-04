@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +24,12 @@ import com.alliander.osgp.adapter.domain.shared.FilterLightAndTariffValuesHelper
 import com.alliander.osgp.adapter.domain.shared.GetStatusResponse;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -54,6 +57,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class AdHocManagementService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
+
+    @Autowired
+    private EventRepository eventRepository;
 
     /**
      * Constructor
@@ -263,34 +269,69 @@ public class AdHocManagementService extends AbstractService {
             final String deviceIdentification, final String correlationUid,
             final EventMessageDataContainer eventMessageDataContainer) {
 
+        // Check the event and the LMD.
+        final Event event = eventMessageDataContainer.getEvents().get(0);
+        if (event == null) {
+            LOGGER.info("No event received for light measurement device: {}", deviceIdentification);
+            return;
+        }
         final LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (lmd == null) {
+            LOGGER.info("No light measurement device found: {}", deviceIdentification);
             return;
         }
 
+        // Determine if the event is a duplicate. If so, quit.
+        if (this.isDuplicateEvent(event, lmd)) {
+            LOGGER.info("Duplicate event detected for light measurement device: {}. Event[id:{} {} {} {} {}]",
+                    lmd.getDeviceIdentification(), event.getId(), event.getDateTime(), event.getDescription(),
+                    event.getEventType(), event.getIndex());
+            return;
+        }
+
+        // Find all SSLDs which need to receive a SET_TRANSITION message.
         final List<Ssld> ssldsToTransition = this.ssldRepository
                 .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
                         lmd, DeviceLifecycleStatus.IN_USE);
         LOGGER.info("For light measurement device: {}, {} SSLDs were found", deviceIdentification,
                 ssldsToTransition.size());
 
+        // Determine the transition type based on the event of the LMD.
+        final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
         TransitionType transitionType;
-        final String transitionTypeFromLightMeasurementDevice = eventMessageDataContainer.getEvents().get(0)
-                .getEventType().name();
         if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
             transitionType = TransitionType.DAY_NIGHT;
         } else {
             transitionType = TransitionType.NIGHT_DAY;
         }
 
-        final DateTime transitionTime = DateTime.now();
-        final String messageType = DeviceFunction.SET_TRANSITION.name();
+        // Send SET_TRANSITION messages to the SSLDs.
+        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType,
+                DateTime.now());
+    }
 
+    private boolean isDuplicateEvent(final Event event, final LightMeasurementDevice lmd) {
+        final List<Event> events = this.eventRepository.findTop2ByDeviceOrderByDateTimeDesc(lmd);
+        for (final Event e : events) {
+            if (event.getDateTime().equals(e.getDateTime())) {
+                // Exact match found, skip this event of the result set.
+                continue;
+            } else if (event.getEventType().equals(e.getEventType())) {
+                // If second event has same type, duplicate event has been
+                // detected.
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,
+            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime) {
         for (final Ssld ssld : ssldsToTransition) {
             try {
                 this.setTransition(organisationIdentification, ssld.getDeviceIdentification(), correlationUid,
-                        transitionType, transitionTime, messageType);
+                        transitionType, transitionTime, DeviceFunction.SET_TRANSITION.name());
             } catch (final FunctionalException e) {
                 LOGGER.error("Caught unexpected FunctionalException", e);
             }
