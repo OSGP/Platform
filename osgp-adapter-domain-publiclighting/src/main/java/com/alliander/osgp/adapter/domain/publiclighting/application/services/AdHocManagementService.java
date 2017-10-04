@@ -66,7 +66,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -102,7 +102,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -113,8 +113,8 @@ public class AdHocManagementService extends AbstractService {
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType()) ? DeviceFunction.GET_LIGHT_SENSOR_STATUS
                 .name() : messageType;
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                        deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
+                this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, allowedDomainTypeDto), actualMessageType, device.getIpAddress());
     }
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
@@ -145,7 +145,7 @@ public class AdHocManagementService extends AbstractService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, response.getResult(), response.getOsgpException(), response
-                        .getDeviceStatusMapped()));
+                .getDeviceStatusMapped()));
     }
 
     private void handleLmd(final DeviceStatus status, final GetStatusResponse response) {
@@ -183,8 +183,8 @@ public class AdHocManagementService extends AbstractService {
             final DeviceStatusMapped deviceStatusMapped = new DeviceStatusMapped(
                     FilterLightAndTariffValuesHelper.filterTariffValues(status.getLightValues(), dosMap,
                             allowedDomainType), FilterLightAndTariffValuesHelper.filterLightValues(
-                            status.getLightValues(), dosMap, allowedDomainType), status.getPreferredLinkType(),
-                    status.getActualLinkType(), status.getLightType(), status.getEventNotificationsMask());
+                                    status.getLightValues(), dosMap, allowedDomainType), status.getPreferredLinkType(),
+                                    status.getActualLinkType(), status.getLightType(), status.getEventNotificationsMask());
 
             // Update the relay overview with the relay information.
             this.updateDeviceRelayOverview(ssld, deviceStatusMapped);
@@ -204,7 +204,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -272,10 +272,6 @@ public class AdHocManagementService extends AbstractService {
         final List<Ssld> ssldsToTransition = this.ssldRepository
                 .findByLightMeasurementDeviceAndIsActivatedTrueAndInMaintenanceFalseAndProtocolInfoNotNullAndNetworkAddressNotNullAndTechnicalInstallationDateNotNullAndDeviceLifecycleStatus(
                         lmd, DeviceLifecycleStatus.IN_USE);
-        if (ssldsToTransition == null) {
-            return;
-        }
-
         LOGGER.info("For light measurement device: {}, {} SSLDs were found", deviceIdentification,
                 ssldsToTransition.size());
 

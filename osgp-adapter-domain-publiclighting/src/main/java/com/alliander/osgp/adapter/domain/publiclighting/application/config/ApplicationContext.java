@@ -27,7 +27,7 @@ public class ApplicationContext {
     @Resource
     private Environment environment;
 
-    private static final String PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE = "public.lighting.set.transtion.logs.response";
+    private static final String PROPERTY_NAME_SET_TRANSITION_LOGS_RESPONSE = "public.lighting.set.transition.logs.response";
 
     @Bean
     public Boolean isSetTransitionResponseLoggingEnabled() {

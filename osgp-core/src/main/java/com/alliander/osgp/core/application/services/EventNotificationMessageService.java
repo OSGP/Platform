@@ -286,7 +286,7 @@ public class EventNotificationMessageService {
 
     private void handleLightMeasurementDeviceEvents(final Device device, final List<Event> lightMeasurementDeviceEvents) {
         if (lightMeasurementDeviceEvents.isEmpty()) {
-            LOGGER.info("List of events is empty for device: {}, not able to process events.",
+            LOGGER.info("List of events is empty for device: {}, not needed to process events.",
                     device.getDeviceIdentification());
             return;
         }
@@ -316,8 +316,9 @@ public class EventNotificationMessageService {
 
             });
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception while handling events for light measurement device: {}",
-                    device.getDeviceIdentification());
+            LOGGER.error(
+                    String.format("Unexpected exception while handling events for light measurement device: %s",
+                            device.getDeviceIdentification()), e);
         }
     }
 }
