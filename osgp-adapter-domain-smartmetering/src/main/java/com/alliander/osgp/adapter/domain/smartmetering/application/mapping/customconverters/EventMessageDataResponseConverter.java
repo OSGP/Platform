@@ -36,10 +36,8 @@ public class EventMessageDataResponseConverter
                 convertedEvents.add(convertedEvent);
             }
 
-            final EventMessagesResponse eventMessagesResponse = new EventMessagesResponse(convertedEvents,
-                    OsgpResultType.valueOf(source.getResult().name()), source.getException(), source.getResultString());
-
-            return eventMessagesResponse;
+            return new EventMessagesResponse(convertedEvents, OsgpResultType.valueOf(source.getResult().name()),
+                    source.getException(), source.getResultString());
         }
         return null;
     }
