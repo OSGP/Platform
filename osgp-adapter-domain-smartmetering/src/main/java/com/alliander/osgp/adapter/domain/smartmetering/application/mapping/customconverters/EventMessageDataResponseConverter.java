@@ -30,14 +30,19 @@ public class EventMessageDataResponseConverter
             final List<EventDto> events = source.getEvents();
 
             final List<Event> convertedEvents = new ArrayList<>();
-            for (final EventDto event : events) {
-                final Event convertedEvent = new Event(event.getTimestamp(), event.getEventCode(),
-                        event.getEventCounter());
-                convertedEvents.add(convertedEvent);
-            }
+            if (events != null) {
+                for (final EventDto event : events) {
+                    final Event convertedEvent = new Event(event.getTimestamp(), event.getEventCode(),
+                            event.getEventCounter());
+                    convertedEvents.add(convertedEvent);
+                }
 
-            return new EventMessagesResponse(convertedEvents, OsgpResultType.valueOf(source.getResult().name()),
-                    source.getException(), source.getResultString());
+                return new EventMessagesResponse(convertedEvents, OsgpResultType.valueOf(source.getResult().name()),
+                        source.getException(), source.getResultString());
+            } else {
+                return new EventMessagesResponse(null, OsgpResultType.valueOf(source.getResult().name()),
+                        source.getException(), source.getResultString());
+            }
         }
         return null;
     }
