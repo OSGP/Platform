@@ -22,6 +22,12 @@ public class EventMessagesResponse extends ActionResponse implements Serializabl
         this.events = events;
     }
 
+    public EventMessagesResponse(final List<Event> events, final OsgpResultType result, final String exception,
+            final String resultString) {
+        super(result, exception, resultString);
+        this.events = events;
+    }
+
     public List<Event> getEvents() {
         return this.events;
     }
