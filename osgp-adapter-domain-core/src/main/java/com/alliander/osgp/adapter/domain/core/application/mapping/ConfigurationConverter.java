@@ -66,7 +66,7 @@ public class ConfigurationConverter
         configuration.setCommonNameString(source.getCommonNameString());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
         configuration.setOsgpIpAddress(source.getOsgpIpAddres());
-        configuration.setNtpIpAddress(source.getNtpIpAddress());
+        configuration.setNtpHost(source.getNtpHost());
         configuration.setNtpEnabled(source.getNtpEnabled());
         configuration.setNtpSyncInterval(source.getNtpSyncInterval());
         configuration.setRelayRefreshing(source.isRelayRefreshing());
@@ -134,7 +134,7 @@ public class ConfigurationConverter
         configuration.setCommonNameString(source.getCommonNameString());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
         configuration.setOsgpIpAddress(source.getOsgpIpAddress());
-        configuration.setNtpIpAddress(source.getNtpIpAddress());
+        configuration.setNtpHost(source.getNtpHost());
         configuration.setNtpEnabled(source.getNtpEnabled());
         configuration.setNtpSyncInterval(source.getNtpSyncInterval());
         configuration.setRelayRefreshing(source.isRelayRefreshing());

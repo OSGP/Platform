@@ -73,7 +73,7 @@ public class Configuration implements Serializable {
 
     private Integer osgpPortNumber;
 
-    private String ntpIpAddress;
+    private String ntpHost;
 
     private Boolean ntpEnabled;
 
@@ -232,12 +232,12 @@ public class Configuration implements Serializable {
         this.osgpPortNumber = osgpPortNumber;
     }
 
-    public String getNtpIpAddress() {
-        return this.ntpIpAddress;
+    public String getNtpHost() {
+        return this.ntpHost;
     }
 
-    public void setNtpIpAddress(final String ntpIpAddress) {
-        this.ntpIpAddress = ntpIpAddress;
+    public void setNtpHost(final String ntpHost) {
+        this.ntpHost = ntpHost;
     }
 
     public Boolean getNtpEnabled() {
