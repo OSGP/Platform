@@ -10,17 +10,15 @@ package com.alliander.osgp.adapter.domain.core.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cxf.common.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ssld;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -41,9 +39,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class ConfigurationManagementService extends AbstractService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationManagementService.class);
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     /**
      * Constructor
