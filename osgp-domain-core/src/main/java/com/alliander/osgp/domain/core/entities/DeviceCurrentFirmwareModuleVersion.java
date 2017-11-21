@@ -16,17 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 
 /**
- * FirmwareModule entity class holds the description of a specific firmware
- * module of which different versions can be part of firmware files that are
- * installed on devices.
+ * DeviceCurrentFirmwareModuleVersion entity class is a view, which holds a
+ * firmware module description and firmware module version for a device.
  */
 @Entity
 @IdClass(DeviceFirmwareModuleVersionId.class)
 public class DeviceCurrentFirmwareModuleVersion implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -5820728527642412085L;
 
     @Id
