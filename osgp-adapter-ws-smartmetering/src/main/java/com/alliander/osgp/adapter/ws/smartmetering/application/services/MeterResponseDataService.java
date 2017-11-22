@@ -35,8 +35,8 @@ public class MeterResponseDataService {
      * @param meterResponseData
      */
     public void enqueue(final MeterResponseData meterResponseData) {
-
-        if (this.meterResponseDataRepository.findSingleResultByCorrelationUid(meterResponseData.getCorrelationUid()) == null) {
+        if (this.meterResponseDataRepository
+                .findSingleResultByCorrelationUid(meterResponseData.getCorrelationUid()) == null) {
             this.meterResponseDataRepository.save(meterResponseData);
         } else {
             LOGGER.warn(

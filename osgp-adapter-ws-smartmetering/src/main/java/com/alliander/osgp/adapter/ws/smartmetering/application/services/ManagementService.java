@@ -108,6 +108,18 @@ public class ManagementService {
         return correlationUid;
     }
 
+    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
+            throws FunctionalException {
+
+        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
+                pageNumber);
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+
+        final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+        return this.deviceRepository.findAllAuthorized(organisation, request);
+    }
+
     public List<Event> findEventsByCorrelationUid(final String organisationIdentification, final String correlationUid)
             throws OsgpException {
 
@@ -151,18 +163,6 @@ public class ManagementService {
 
         LOGGER.info("returning a list containing {} events", events.size());
         return events;
-    }
-
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
-
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-
-        final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
-        return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,

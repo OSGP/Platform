@@ -123,7 +123,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public FindEventsResponse getFindEventsResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindEventsAsyncRequest request) throws OsgpException {
-
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
@@ -138,15 +137,15 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
                     correlationUid);
 
-            LOGGER.info("getFindEventsResponse() number of events: {}", events.size());
+            LOGGER.info("Get find events response: number of events: {}", events.size());
             for (final Event event : events) {
-                LOGGER.info("event.eventCode: {} event.timestamp: {} event.eventCounter: {}", event.getEventCode(),
+                LOGGER.info("EventCode: {}, Timestamp: {}, EventCounter: {}", event.getEventCode(),
                         event.getTimestamp(), event.getEventCounter());
             }
-            LOGGER.info("mapping events to schema type...");
+
             response.getEvents().addAll(this.managementMapper.mapAsList(events,
                     com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
-            LOGGER.info("mapping done, sending response...");
+
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
@@ -154,6 +153,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
             this.handleException(e);
         }
+
         return response;
     }
 

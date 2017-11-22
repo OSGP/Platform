@@ -14,20 +14,29 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceModelRepository;
+import com.alliander.osgp.domain.core.repositories.ManufacturerRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceModel;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -56,6 +65,12 @@ public class InstallationService {
     private SmartMeterRepository smartMeteringDeviceRepository;
 
     @Autowired
+    private ManufacturerRepository manufacturerRepository;
+
+    @Autowired
+    private DeviceModelRepository deviceModelRepository;
+
+    @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
@@ -73,18 +88,23 @@ public class InstallationService {
     @Autowired
     private MBusGatewayService mBusGatewayService;
 
+    @Autowired
+    private CommonMapper commonMapper;
+
     public InstallationService() {
         // Parameterless constructor required for transactions...
     }
 
     public void addMeter(final DeviceMessageMetadata deviceMessageMetadata,
-            final SmartMeteringDevice smartMeteringDeviceValueObject) throws FunctionalException {
+            final AddSmartMeterRequest addSmartMeterRequest) throws FunctionalException {
 
         LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         SmartMeter device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
+        final SmartMeteringDevice smartMeteringDeviceValueObject = addSmartMeterRequest.getDevice();
+
         if (device == null) {
 
             /*
@@ -102,6 +122,12 @@ public class InstallationService {
             }
 
             device.updateProtocol(protocolInfo);
+
+            final DeviceModel deviceModelValueObject = addSmartMeterRequest.getDeviceModel();
+            final Manufacturer manufacturer = this.manufacturerRepository
+                    .findByCode(deviceModelValueObject.getManufacturer());
+            device.setDeviceModel(this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
+                    deviceModelValueObject.getModelCode()));
 
             device = this.smartMeteringDeviceRepository.save(device);
 
@@ -162,6 +188,11 @@ public class InstallationService {
         this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
+    public void coupleMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final CoupleMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.coupleMbusDeviceByChannel(deviceMessageMetadata, requestData);
+    }
+
     public void handleCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException exception,
             final MbusChannelElementsResponseDto dataObject) throws FunctionalException {
@@ -178,6 +209,21 @@ public class InstallationService {
             this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
         }
         this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    public void handleCoupleMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final CoupleMbusDeviceByChannelResponseDto dataObject) throws FunctionalException {
+        this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata, dataObject);
+
+        final CoupleMbusDeviceByChannelResponse response = this.commonMapper.map(dataObject,
+                CoupleMbusDeviceByChannelResponse.class);
+
+        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                responseMessageResultType, osgpException, response, deviceMessageMetadata.getMessagePriority());
+
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     public void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
