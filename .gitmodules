@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-1534-refactor-constructor-has-too-many-parameters
+	branch = development
 
