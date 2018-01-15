@@ -24,6 +24,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService;
+import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -74,6 +75,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
@@ -114,6 +116,9 @@ public class FirmwareManagementEndpoint {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public FirmwareManagementEndpoint(
@@ -218,6 +223,11 @@ public class FirmwareManagementEndpoint {
             }
         } catch (final Exception e) {
             this.handleException(e);
+        }
+
+        if (OsgpResultType.OK.equals(response.getResult())) {
+            this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
+                    request.getAsyncRequest().getDeviceId());
         }
 
         return response;
@@ -468,6 +478,11 @@ public class FirmwareManagementEndpoint {
             }
         } catch (final Exception e) {
             this.handleException(e);
+        }
+
+        if (OsgpResultType.OK.equals(response.getResult())) {
+            this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
+                    request.getAsyncRequest().getDeviceId());
         }
 
         return response;

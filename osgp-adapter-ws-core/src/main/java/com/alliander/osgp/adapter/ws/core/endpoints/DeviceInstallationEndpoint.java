@@ -21,6 +21,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceInstallationService;
+import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -42,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -69,6 +71,9 @@ public class DeviceInstallationEndpoint {
     private DeviceInstallationService deviceInstallationService;
     private DeviceInstallationMapper deviceInstallationMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public DeviceInstallationEndpoint() {
     }
 
@@ -90,8 +95,8 @@ public class DeviceInstallationEndpoint {
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
         try {
-            final String correlationUid = this.deviceInstallationService.enqueueGetStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService
+                    .enqueueGetStatusRequest(organisationIdentification, request.getDeviceIdentification());
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -114,8 +119,8 @@ public class DeviceInstallationEndpoint {
         final GetStatusResponse response = new GetStatusResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService.dequeueGetStatusResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService
+                    .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
 
@@ -166,8 +171,8 @@ public class DeviceInstallationEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(), request
-                .getUpdatedDevice().getDeviceIdentification());
+        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(),
+                request.getUpdatedDevice().getDeviceIdentification());
 
         try {
             final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
@@ -183,6 +188,9 @@ public class DeviceInstallationEndpoint {
                     request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
             this.handleException(e);
         }
+
+        this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
+                request.getDeviceIdentification());
 
         return new UpdateDeviceResponse();
     }
@@ -200,9 +208,8 @@ public class DeviceInstallationEndpoint {
         try {
             final List<Device> recentDevices = this.deviceInstallationService
                     .findRecentDevices(organisationIdentification);
-            response.getDevices().addAll(
-                    this.deviceInstallationMapper.mapAsList(recentDevices,
-                            com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device.class));
+            response.getDevices().addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
+                    com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -229,8 +236,8 @@ public class DeviceInstallationEndpoint {
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService.enqueueStartDeviceTestRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService
+                    .enqueueStartDeviceTestRequest(organisationIdentification, request.getDeviceIdentification());
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
@@ -258,8 +265,8 @@ public class DeviceInstallationEndpoint {
         final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService.dequeueStartDeviceTestResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService
+                    .dequeueStartDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -285,8 +292,8 @@ public class DeviceInstallationEndpoint {
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService.enqueueStopDeviceTestRequest(
-                    organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.deviceInstallationService
+                    .enqueueStopDeviceTestRequest(organisationIdentification, request.getDeviceIdentification());
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
@@ -314,8 +321,8 @@ public class DeviceInstallationEndpoint {
         final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService.dequeueStopDeviceTestResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService
+                    .dequeueStopDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
