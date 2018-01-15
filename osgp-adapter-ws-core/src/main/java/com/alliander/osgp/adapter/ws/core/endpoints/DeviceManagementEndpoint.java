@@ -345,10 +345,6 @@ public class DeviceManagementEndpoint {
 
         updateDeviceResponse.setAsyncResponse(asyncResponse);
 
-        // this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED,
-        // organisationIdentification,
-        // request.getDeviceIdentification());
-
         return updateDeviceResponse;
     }
 

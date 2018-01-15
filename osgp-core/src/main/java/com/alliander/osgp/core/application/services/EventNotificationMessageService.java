@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.core.application.services;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,22 +16,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
-import com.alliander.osgp.core.infra.jms.domain.in.DomainRequestMessageJmsTemplateFactory;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
@@ -56,6 +49,8 @@ public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
+    private static final String EVENTS_FOR_DEVICE = "EVENTS_FOR_DEVICE";
+
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -64,9 +59,6 @@ public class EventNotificationMessageService {
 
     @Autowired
     private SsldRepository ssldRepository;
-
-    @Autowired
-    private DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory;
 
     @Autowired
     private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
@@ -205,7 +197,7 @@ public class EventNotificationMessageService {
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
 
-            this.sendRequestMessageToDomainCore(ssld.getDeviceIdentification());
+            this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -253,7 +245,7 @@ public class EventNotificationMessageService {
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
 
-            this.sendRequestMessageToDomainCore(ssld.getDeviceIdentification());
+            this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -274,6 +266,8 @@ public class EventNotificationMessageService {
         }
 
         this.deviceRepository.save(device);
+
+        this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, device.getDeviceIdentification(), null);
     }
 
     private void updateRelayStatus(final int index, final Device device, final Date dateTime,
@@ -307,61 +301,41 @@ public class EventNotificationMessageService {
         }
 
         try {
-            // Prepare message to send to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
-            final String deviceIdentification = device.getDeviceIdentification();
-            final String correlationUid = this.correlationIdProviderTimestampService
-                    .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
             final EventMessageDataContainer dataContainer = new EventMessageDataContainer(lightMeasurementDeviceEvents);
-            final RequestMessage requestMessage = new RequestMessage(correlationUid, this.netmanagementOrganisation,
-                    deviceIdentification, dataContainer);
-
-            // Get JmsTemplate.
-            final String key = "PUBLIC_LIGHTING-1.0";
-            final JmsTemplate jmsTemplate = this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(key);
-
-            // Send message.
-            jmsTemplate.send(new MessageCreator() {
-
-                @Override
-                public Message createMessage(final Session session) throws JMSException {
-                    final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
-                    objectMessage.setJMSType(DeviceFunction.SET_TRANSITION.name());
-                    return objectMessage;
-                }
-
-            });
+            this.sendRequestMessageToDomainPublicLighting(DeviceFunction.SET_TRANSITION.name(),
+                    device.getDeviceIdentification(), dataContainer);
         } catch (final Exception e) {
             LOGGER.error(String.format("Unexpected exception while handling events for light measurement device: %s",
                     device.getDeviceIdentification()), e);
         }
     }
 
-    private void sendRequestMessageToDomainCore(final String deviceIdentification) {
-        // final String key = "CORE-1.0";
-        // final JmsTemplate jmsTemplate =
-        // this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(key);
-        //
-        // // Send message.
-        // jmsTemplate.send(new MessageCreator() {
-        //
-        // @Override
-        // public Message createMessage(final Session session) throws
-        // JMSException {
-        // final ObjectMessage objectMessage =
-        // session.createObjectMessage(requestMessage);
-        // objectMessage.setJMSType(DeviceFunction.SET_TRANSITION.name());
-        // return objectMessage;
-        // }
-        //
-        // });
-
+    /**
+     * Send a request message to OSGP-ADAPTER-DOMAIN-CORE.
+     */
+    private void sendRequestMessageToDomainCore(final String messageType, final String deviceIdentification,
+            final Serializable dataObject) {
         final String correlationUid = this.correlationIdProviderTimestampService
                 .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
 
         final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
-                deviceIdentification, null);
-        final String messageType = "EVENTS_FOR_DEVICE";
+                deviceIdentification, dataObject);
         final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");
+
+        this.domainRequestService.send(message, messageType, domainInfo);
+    }
+
+    /**
+     * Send a request message to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
+     */
+    private void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
+            final Serializable dataObject) {
+        final String correlationUid = this.correlationIdProviderTimestampService
+                .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
+
+        final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
+                deviceIdentification, dataObject);
+        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("PUBLIC_LIGHTING", "1.0");
 
         this.domainRequestService.send(message, messageType, domainInfo);
     }
