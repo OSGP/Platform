@@ -380,9 +380,6 @@ public class DeviceManagementEndpoint {
 
         setDeviceAliasResponse.setAsyncResponse(asyncResponse);
 
-        this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                request.getDeviceIdentification());
-
         return setDeviceAliasResponse;
     }
 
@@ -409,9 +406,6 @@ public class DeviceManagementEndpoint {
 
         final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
         setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
-
-        this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                request.getDeviceIdentification());
 
         return setMaintenanceStatusResponse;
     }
