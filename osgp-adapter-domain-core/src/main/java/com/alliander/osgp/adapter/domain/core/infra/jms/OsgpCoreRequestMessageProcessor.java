@@ -41,7 +41,7 @@ public class OsgpCoreRequestMessageProcessor {
                 messageType, deviceIdentification, organisationIdentification, correlationUid,
                 dataObject == null ? "null" : dataObject.getClass().getCanonicalName());
 
-        if ("EVENTS_FOR_DEVICE".equals(messageType)) {
+        if ("RELAY_STATUS_UPDATED".equals(messageType)) {
             final RequestMessage requestMsg = new RequestMessage(correlationUid, organisationIdentification,
                     deviceIdentification, dataObject);
             this.webServiceRequestMessageSender.send(requestMsg, messageType);

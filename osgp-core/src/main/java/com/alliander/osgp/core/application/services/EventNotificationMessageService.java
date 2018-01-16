@@ -49,7 +49,7 @@ public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
-    private static final String EVENTS_FOR_DEVICE = "EVENTS_FOR_DEVICE";
+    private static final String EVENTS_FOR_DEVICE = "RELAY_STATUS_UPDATED";
 
     @Autowired
     private DeviceRepository deviceRepository;

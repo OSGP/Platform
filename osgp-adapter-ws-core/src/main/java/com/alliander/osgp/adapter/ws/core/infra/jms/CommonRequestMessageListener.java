@@ -38,7 +38,7 @@ public class CommonRequestMessageListener implements MessageListener {
             final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             final Serializable dataObject = objectMessage.getObject();
 
-            if ("EVENTS_FOR_DEVICE".equals(messageType)) {
+            if ("RELAY_STATUS_UPDATED".equals(messageType)) {
                 this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null,
                         correlationUid, null, NotificationType.DEVICE_UPDATED);
             } else {
