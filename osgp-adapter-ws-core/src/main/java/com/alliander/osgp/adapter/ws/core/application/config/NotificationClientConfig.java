@@ -96,13 +96,9 @@ public class NotificationClientConfig extends AbstractConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() {
-        if (this.webserviceNotificationEnabled) {
-            return new SendNotificationServiceClient(
-                    this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
-                    this.webserviceNotificationOrganisation, this.webserviceNotificationUsername);
-        } else {
-            return null;
-        }
+        return new SendNotificationServiceClient(
+                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
+                this.webserviceNotificationOrganisation, this.webserviceNotificationUsername);
     }
 
     @Bean
