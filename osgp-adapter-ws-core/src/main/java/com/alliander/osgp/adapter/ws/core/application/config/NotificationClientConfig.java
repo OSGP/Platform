@@ -80,6 +80,7 @@ public class NotificationClientConfig extends AbstractConfig {
         return new SaajSoapMessageFactory();
     }
 
+    @Bean
     public KeyStoreFactoryBean webServiceTrustStoreFactory() {
         final KeyStoreFactoryBean factory = new KeyStoreFactoryBean();
         factory.setType(this.webserviceTruststoreType);
