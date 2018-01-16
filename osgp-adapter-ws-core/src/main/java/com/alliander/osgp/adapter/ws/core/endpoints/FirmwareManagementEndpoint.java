@@ -74,8 +74,6 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
-import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceFirmwareFile;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
@@ -116,9 +114,6 @@ public class FirmwareManagementEndpoint {
 
     @Autowired
     private DeviceRepository deviceRepository;
-
-    @Autowired
-    private NotificationService notificationService;
 
     @Autowired
     public FirmwareManagementEndpoint(
@@ -223,16 +218,6 @@ public class FirmwareManagementEndpoint {
             }
         } catch (final Exception e) {
             this.handleException(e);
-        }
-
-        if (OsgpResultType.OK.equals(response.getResult())) {
-            try {
-                this.notificationService.sendNotification(organisationIdentification,
-                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
-                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
-            } catch (final Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
         }
 
         return response;
@@ -483,16 +468,6 @@ public class FirmwareManagementEndpoint {
             }
         } catch (final Exception e) {
             this.handleException(e);
-        }
-
-        if (OsgpResultType.OK.equals(response.getResult())) {
-            try {
-                this.notificationService.sendNotification(organisationIdentification,
-                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
-                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
-            } catch (final Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
         }
 
         return response;

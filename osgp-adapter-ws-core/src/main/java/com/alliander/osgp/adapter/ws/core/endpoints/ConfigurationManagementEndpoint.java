@@ -263,16 +263,6 @@ public class ConfigurationManagementEndpoint {
             this.handleException(e);
         }
 
-        if (OsgpResultType.OK.equals(response.getResult())) {
-            try {
-                this.notificationService.sendNotification(organisationIdentification,
-                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
-                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
-            } catch (final Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-
         return response;
     }
 
