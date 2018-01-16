@@ -21,7 +21,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.ConfigurationManagementService;
-import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -38,6 +37,7 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchC
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationResponse;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -134,8 +134,13 @@ public class ConfigurationManagementEndpoint {
         }
 
         if (OsgpResultType.OK.equals(response.getResult())) {
-            this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                    request.getAsyncRequest().getDeviceId());
+            try {
+                this.notificationService.sendNotification(organisationIdentification,
+                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
+                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return response;
@@ -259,8 +264,13 @@ public class ConfigurationManagementEndpoint {
         }
 
         if (OsgpResultType.OK.equals(response.getResult())) {
-            this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                    request.getAsyncRequest().getDeviceId());
+            try {
+                this.notificationService.sendNotification(organisationIdentification,
+                        request.getAsyncRequest().getDeviceId(), response.getResult().name(),
+                        request.getAsyncRequest().getCorrelationUid(), null, NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return response;

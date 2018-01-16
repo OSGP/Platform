@@ -25,7 +25,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService;
-import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -62,6 +61,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSs
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -575,8 +575,13 @@ public class DeviceManagementEndpoint {
         }
 
         if (OsgpResultType.OK.equals(response.getResult())) {
-            this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                    asyncRequest.getDeviceId());
+            try {
+                this.notificationService.sendNotification(organisationIdentification, asyncRequest.getDeviceId(),
+                        response.getResult().name(), asyncRequest.getCorrelationUid(), null,
+                        NotificationType.DEVICE_UPDATED);
+            } catch (final Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
 
         return response;

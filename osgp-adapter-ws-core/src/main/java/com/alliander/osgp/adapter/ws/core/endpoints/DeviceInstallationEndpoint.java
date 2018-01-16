@@ -21,7 +21,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.DeviceInstallationService;
-import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
@@ -44,6 +43,7 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.StopDeviceTe
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -67,6 +67,7 @@ public class DeviceInstallationEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private static final String EXCEPTION_WHILE_ADDING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";
+    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for organisation {}.";
 
     private DeviceInstallationService deviceInstallationService;
     private DeviceInstallationMapper deviceInstallationMapper;
@@ -153,13 +154,13 @@ public class DeviceInstallationEndpoint {
             this.deviceInstallationService.addDevice(organisationIdentification, device,
                     ownerOrganisationIdentification);
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, new Object[] { e.getMessage(),
-                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
+                    organisationIdentification, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, new Object[] { e.getMessage(),
-                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
+                    organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -171,8 +172,7 @@ public class DeviceInstallationEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(),
-                request.getUpdatedDevice().getDeviceIdentification());
+        LOGGER.info("Updating device: {}.", request.getDeviceIdentification());
 
         try {
             final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
@@ -184,13 +184,17 @@ public class DeviceInstallationEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, new Object[] { e.getMessage(),
-                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
+                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification, e);
             this.handleException(e);
         }
 
-        this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                request.getDeviceIdentification());
+        try {
+            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
+                    null, null, null, NotificationType.DEVICE_UPDATED);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
 
         return new UpdateDeviceResponse();
     }

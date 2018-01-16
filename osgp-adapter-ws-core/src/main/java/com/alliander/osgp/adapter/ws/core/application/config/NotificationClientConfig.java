@@ -10,7 +10,10 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
+import com.alliander.osgp.adapter.ws.core.application.services.NotificationServiceWsCore;
 import com.alliander.osgp.adapter.ws.core.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
@@ -93,8 +96,13 @@ public class NotificationClientConfig extends AbstractConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() {
-        return new SendNotificationServiceClient(
-                this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()));
+        if (this.webserviceNotificationEnabled) {
+            return new SendNotificationServiceClient(
+                    this.createWebServiceTemplateFactory(this.notificationSenderMarshaller()),
+                    this.webserviceNotificationOrganisation, this.webserviceNotificationUsername);
+        } else {
+            return null;
+        }
     }
 
     @Bean
@@ -111,5 +119,14 @@ public class NotificationClientConfig extends AbstractConfig {
         }
 
         return builder.build();
+    }
+
+    @Bean
+    public NotificationService notificationService() {
+        if (this.webserviceNotificationEnabled) {
+            return new NotificationServiceWsCore();
+        } else {
+            return new NotificationServiceBlackHole();
+        }
     }
 }

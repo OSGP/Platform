@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.core.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.UnknownMessageTypeException;
 
@@ -39,8 +39,8 @@ public class CommonRequestMessageListener implements MessageListener {
             final Serializable dataObject = objectMessage.getObject();
 
             if ("EVENTS_FOR_DEVICE".equals(messageType)) {
-                this.notificationService.sendNotification(NotificationType.DEVICE_UPDATED, organisationIdentification,
-                        deviceIdentification);
+                this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null,
+                        correlationUid, null, NotificationType.DEVICE_UPDATED);
             } else {
                 LOGGER.debug(
                         "Unknown message received. MessageType: {}, correlationUID: {}, organisation: {}, deviceIdentification: {}, dataObject: {}",

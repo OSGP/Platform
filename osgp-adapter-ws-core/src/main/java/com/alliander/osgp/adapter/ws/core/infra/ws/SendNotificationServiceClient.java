@@ -8,6 +8,7 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.alliander.osgp.adapter.ws.core.application.config.NotificationClientConfig;
@@ -25,6 +26,10 @@ public class SendNotificationServiceClient {
 
     private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
 
+    private final String organisationIdentification;
+
+    private final String userName;
+
     /**
      * An instance of this class is created by a bean function in an application
      * context class. See
@@ -32,9 +37,16 @@ public class SendNotificationServiceClient {
      *
      * @param webServiceTemplateFactory
      *            An instance of the web service template factory.
+     * @param organisationIdentification
+     *            The organization which will issue the SOAP requests.
+     * @param userName
+     *            The user which will issue the SOAP requests.
      */
-    public SendNotificationServiceClient(final DefaultWebServiceTemplateFactory webServiceTemplateFactory) {
+    public SendNotificationServiceClient(final DefaultWebServiceTemplateFactory webServiceTemplateFactory,
+            final String organisationIdentification, final String userName) {
         this.webServiceTemplateFactory = webServiceTemplateFactory;
+        this.organisationIdentification = organisationIdentification;
+        this.userName = userName;
     }
 
     public void sendNotification(final String organisationIdentification, final Notification notification)
@@ -42,10 +54,14 @@ public class SendNotificationServiceClient {
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
         sendNotificationRequest.setNotification(notification);
 
-        final String notImportantUserName = "OSGP-user";
+        String organisation;
+        if (StringUtils.isEmpty(organisationIdentification)) {
+            organisation = this.organisationIdentification;
+        } else {
+            organisation = organisationIdentification;
+        }
 
-        final WebServiceTemplate template = this.webServiceTemplateFactory.getTemplate(organisationIdentification,
-                notImportantUserName);
+        final WebServiceTemplate template = this.webServiceTemplateFactory.getTemplate(organisation, this.userName);
         template.marshalSendAndReceive(sendNotificationRequest);
     }
 
