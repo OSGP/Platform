@@ -49,7 +49,7 @@ public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
-    private static final String EVENTS_FOR_DEVICE = "RELAY_STATUS_UPDATED";
+    private static final String RELAY_STATUS_UPDATED_EVENTS = "RELAY_STATUS_UPDATED";
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -197,7 +197,7 @@ public class EventNotificationMessageService {
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
 
-            this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, ssld.getDeviceIdentification(), null);
+            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -245,7 +245,7 @@ public class EventNotificationMessageService {
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
             this.deviceRepository.save(device);
 
-            this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, ssld.getDeviceIdentification(), null);
+            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -267,7 +267,7 @@ public class EventNotificationMessageService {
 
         this.deviceRepository.save(device);
 
-        this.sendRequestMessageToDomainCore(EVENTS_FOR_DEVICE, device.getDeviceIdentification(), null);
+        this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, device.getDeviceIdentification(), null);
     }
 
     private void updateRelayStatus(final int index, final Device device, final Date dateTime,
