@@ -10,8 +10,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
+import com.alliander.osgp.adapter.ws.clients.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.core.application.services.NotificationServiceWsCore;
-import com.alliander.osgp.adapter.ws.core.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.shared.application.config.AbstractConfig;

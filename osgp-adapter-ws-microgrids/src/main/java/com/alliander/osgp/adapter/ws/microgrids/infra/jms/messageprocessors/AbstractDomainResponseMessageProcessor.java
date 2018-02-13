@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
-import com.alliander.osgp.adapter.ws.microgrids.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.schema.microgrids.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.ResponseDataService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -69,10 +69,9 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     }
 
     /**
-     * Initialization function executed after dependency injection has finished.
-     * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * Initialization function executed after dependency injection has finished. The
+     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
+     * key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -135,6 +134,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final String resultDescription, final Serializable dataObject) {
 
+        final short numberOfNotificationsSent = 0;
         Serializable responseDataObject;
         if (dataObject == null) {
             responseDataObject = resultDescription;
@@ -143,13 +143,13 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
         }
 
         final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
-                deviceIdentification, correlationUid, resultType, responseDataObject);
+                deviceIdentification, correlationUid, resultType, responseDataObject, numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      *
      * @param e
      *            The exception.

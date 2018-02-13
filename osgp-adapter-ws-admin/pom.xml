@@ -15,7 +15,7 @@
   <parent>
     <groupId>com.alliander.osgp</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>4.23.0</version>
+    <version>4.24.0</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -76,6 +76,10 @@
     <dependency>
       <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-ws-admin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-ws-core</artifactId>
     </dependency>
 
     <!-- Spring Framework -->

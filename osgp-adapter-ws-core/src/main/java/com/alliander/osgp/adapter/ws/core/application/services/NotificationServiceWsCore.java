@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.alliander.osgp.adapter.ws.clients.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.core.application.config.NotificationClientConfig;
-import com.alliander.osgp.adapter.ws.core.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.core.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.core.notification.NotificationType;

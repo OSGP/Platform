@@ -26,7 +26,6 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceModelRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -37,7 +36,6 @@ import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -75,9 +73,6 @@ public class DeviceInstallationService {
     private WritableSsldRepository writableSsldRepository;
 
     @Autowired
-    private WritableDeviceModelRepository deviceModelRepository;
-
-    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -85,15 +80,6 @@ public class DeviceInstallationService {
 
     @Autowired
     private CommonResponseMessageFinder commonResponseMessageFinder;
-
-    @Autowired
-    private String defaultProtocol;
-
-    @Autowired
-    private String defaultProtocolVersion;
-
-    @Autowired
-    private ProtocolInfoRepository protocolRepository;
 
     DeviceInstallationService() {
         // Parameterless constructor required for transactions
@@ -107,18 +93,34 @@ public class DeviceInstallationService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
         // If the device already exists, throw an exception.
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
-                .getDeviceIdentification());
-        if (existingDevice != null) {
+        final Device existingDevice = this.writableDeviceRepository
+                .findByDeviceIdentification(newDevice.getDeviceIdentification());
+
+        // Added additional check on device type: if device type is empty
+        // there has been no communication with the device yet
+        // and it should be possible to overwrite the existing device
+        // It would probably be better to use isActivated for this, however this
+        // would require additional changes in applications currently using this
+        // field
+        if (existingDevice != null && StringUtils.isNotBlank(existingDevice.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                     new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
         }
 
-        // Create a new SSLD instance.
-        final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
-                newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
-                newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
-                newDevice.getGpsLongitude());
+        Ssld ssld = null;
+        if (existingDevice != null) {
+            // Update existing device
+            ssld = this.writableSsldRepository.findByDeviceIdentification(newDevice.getDeviceIdentification());
+            ssld.updateMetaData(newDevice.getAlias(), newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
+                    newDevice.getContainerStreet(), newDevice.getContainerNumber(),
+                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+            ssld.getAuthorizations().clear();
+        } else {
+            // Create a new SSLD instance.
+            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(), newDevice.getContainerCity(),
+                    newDevice.getContainerPostalCode(), newDevice.getContainerStreet(), newDevice.getContainerNumber(),
+                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+        }
         ssld.setHasSchedule(false);
         ssld.setDeviceModel(newDevice.getDeviceModel());
 
@@ -136,7 +138,7 @@ public class DeviceInstallationService {
             LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
                     ownerOrganisationIdentification);
         } else {
-            // If the device doesn't exists yet, and the optional
+            // If the device doesn't exist yet, and the optional
             // ownerOrganisationIdentification is not given, create device
             // without owner device authorization.
             this.writableSsldRepository.save(ssld);
@@ -148,8 +150,8 @@ public class DeviceInstallationService {
     public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
-        final Ssld existingDevice = this.writableSsldRepository.findByDeviceIdentification(updateDevice
-                .getDeviceIdentification());
+        final Ssld existingDevice = this.writableSsldRepository
+                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
@@ -157,8 +159,8 @@ public class DeviceInstallationService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
-                existingDevice, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                .findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
 
         // Check organisation against owner of device
         boolean isOwner = false;
