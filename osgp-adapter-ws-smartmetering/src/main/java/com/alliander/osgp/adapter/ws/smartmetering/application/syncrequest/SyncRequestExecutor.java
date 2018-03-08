@@ -50,8 +50,8 @@ public abstract class SyncRequestExecutor {
     }
 
     /**
-     * To be called after a request was succesfully performed. This will hande the
-     * behaviour to act as a asynchronous request.
+     * To be called after a request was succesfully performed. This will hande
+     * the behaviour to act as a asynchronous request.
      *
      * @param organisationIdentification
      * @param deviceIdentification
@@ -101,8 +101,12 @@ public abstract class SyncRequestExecutor {
             final String correlationUid, final ResponseMessageResultType resultType, final Serializable data) {
         final short numberOfNotificationsSent = 0;
 
-        final ResponseData responseData = new ResponseData(organisationIdentification, this.getMessageType().name(),
-                deviceIdentification, correlationUid, resultType, data, numberOfNotificationsSent);
+        final ResponseData responseData = new ResponseData.Builder()
+                .withOrganisationIdentification(organisationIdentification)
+                .withMessageType(this.getMessageType().name()).withDeviceIdentification(deviceIdentification)
+                .withCorrelationUid(correlationUid).withResultType(resultType).withMessageData(data)
+                .withNumberOfNotificationsSent(numberOfNotificationsSent).build();
+
         this.responseDataService.enqueue(responseData);
     }
 

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.domain.entities.ResponseData;
+import com.alliander.osgp.adapter.ws.domain.repositories.ResponseDataRepository;
 import com.alliander.osgp.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.SendNotificationRequest;
@@ -33,6 +35,9 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
     @Autowired
     private ResponseUrlService responseUrlService;
 
+    @Autowired
+    private ResponseDataRepository responseDataRepository;
+
     private final DefaultWebServiceTemplateFactory webServiceTemplateFactory;
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
@@ -49,9 +54,22 @@ public class NotificationServiceWs extends AbstractNotificationServiceWs impleme
         LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}, to organisation: {}",
                 this.notificationOrganisation, correlationUid, notificationType, organisationIdentification);
 
-        final String notifyUrl = this.retrieveNotificationUrl(this.responseUrlService, correlationUid);
-        final GenericSendNotificationRequest genericNotificationRequest = this.genericNotificationRequest(deviceIdentification,
-                result, correlationUid, message, ((NotificationType) notificationType).toString());
+        // try to get the response url from the response data
+        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
+        String notifyUrl = responseData.getResponseUrl();
+        if (notifyUrl == null) {
+            // handling the first notification, retrieve the url form the
+            // response url
+            notifyUrl = this.retrieveNotificationUrl(this.responseUrlService, correlationUid);
+
+            // store the url in the response data so it won't be lost
+            responseData.setResponseUrl(notifyUrl);
+            this.responseDataRepository.save(responseData);
+        }
+
+        final GenericSendNotificationRequest genericNotificationRequest = this.genericNotificationRequest(
+                deviceIdentification, result, correlationUid, message,
+                ((NotificationType) notificationType).toString());
         final SendNotificationRequest notificationRequest = this.mapperFactory.getMapperFacade()
                 .map(genericNotificationRequest, SendNotificationRequest.class);
         this.doSendNotification(this.webServiceTemplateFactory, organisationIdentification, this.notificationUsername,
