@@ -18,7 +18,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
-import com.alliander.osgp.shared.infra.db.DefaultConnectionPoolFactory;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Entity
