@@ -69,10 +69,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     }
 
     /**
-     * Initialization function executed after dependency injection has finished.
-     * The MessageProcessor Singleton is added to the HashMap of
-     * MessageProcessors. The key for the HashMap is the integer value of the
-     * enumeration member.
+     * Initialization function executed after dependency injection has finished. The
+     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
+     * key for the HashMap is the integer value of the enumeration member.
      */
     @PostConstruct
     public void init() {
@@ -144,18 +143,14 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             meterResponseObject = dataObject;
         }
 
-        final ResponseData responseData = new ResponseData.Builder()
-                .withOrganisationIdentification(organisationIdentification).withMessageType(messageType)
-                .withDeviceIdentification(deviceIdentification).withCorrelationUid(correlationUid)
-                .withResultType(resultType).withMessageData(meterResponseObject)
-                .withNumberOfNotificationsSent(numberOfNotificationsSent).build();
-
+        final ResponseData responseData = new ResponseData(organisationIdentification, messageType,
+                deviceIdentification, correlationUid, resultType, meterResponseObject, numberOfNotificationsSent);
         this.responseDataService.enqueue(responseData);
     }
 
     /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
+     * In case of an error, this function can be used to send a response containing
+     * the exception to the web-service-adapter.
      *
      * @param e
      *            The exception.

@@ -105,8 +105,11 @@ public abstract class AbstractResendNotificationService {
         try {
             this.resendNotification(responseData);
         } finally {
-            responseData.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));
-            this.responseDataRepository.save(responseData);
+            // responseData might be changed
+            final ResponseData data = this.responseDataRepository
+                    .findByCorrelationUid(responseData.getCorrelationUid());
+            data.setNumberOfNotificationsSent((short) (responseData.getNumberOfNotificationsSent() + 1));
+            this.responseDataRepository.save(data);
         }
     }
 

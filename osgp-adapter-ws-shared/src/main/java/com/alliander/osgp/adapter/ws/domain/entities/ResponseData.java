@@ -54,8 +54,21 @@ public class ResponseData extends AbstractEntity {
     @Type(type = "java.io.Serializable")
     private Serializable messageData;
 
+    @SuppressWarnings("unused")
     private ResponseData() {
 
+    }
+
+    public ResponseData(final String organisationIdentification, final String messageType,
+            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+            final Serializable messageData, final Short numberOfNotificationsSent) {
+        this.organisationIdentification = organisationIdentification;
+        this.messageType = messageType;
+        this.deviceIdentification = deviceIdentification;
+        this.correlationUid = correlationUid;
+        this.resultType = resultType;
+        this.messageData = messageData;
+        this.numberOfNotificationsSent = numberOfNotificationsSent;
     }
 
     public String getCorrelationUid() {
@@ -96,75 +109,6 @@ public class ResponseData extends AbstractEntity {
 
     public void setResponseUrl(final String responseUrl) {
         this.responseUrl = responseUrl;
-    }
-
-    /**
-     * Builder class which can construct an {@link DefaultConnectionPoolFactory}
-     * instance.}
-     */
-    public static class Builder {
-        private String organisationIdentification;
-        private String messageType;
-        private String deviceIdentification;
-        private String correlationUid;
-        private Short numberOfNotificationsSent = (short) 0;
-        private String responseUrl;
-        private ResponseMessageResultType resultType;
-        private Serializable messageData;
-
-        public Builder withOrganisationIdentification(final String organisationIdentification) {
-            this.organisationIdentification = organisationIdentification;
-            return this;
-        }
-
-        public Builder withMessageType(final String messageType) {
-            this.messageType = messageType;
-            return this;
-        }
-
-        public Builder withDeviceIdentification(final String deviceIdentification) {
-            this.deviceIdentification = deviceIdentification;
-            return this;
-        }
-
-        public Builder withCorrelationUid(final String correlationUid) {
-            this.correlationUid = correlationUid;
-            return this;
-        }
-
-        public Builder withNumberOfNotificationsSent(final Short numberOfNotificationsSent) {
-            this.numberOfNotificationsSent = numberOfNotificationsSent;
-            return this;
-        }
-
-        public Builder withResponseUrl(final String responseUrl) {
-            this.responseUrl = responseUrl;
-            return this;
-        }
-
-        public Builder withResultType(final ResponseMessageResultType resultType) {
-            this.resultType = resultType;
-            return this;
-        }
-
-        public Builder withMessageData(final Serializable messageData) {
-            this.messageData = messageData;
-            return this;
-        }
-
-        public ResponseData build() {
-            final ResponseData responseData = new ResponseData();
-            responseData.organisationIdentification = this.organisationIdentification;
-            responseData.messageType = this.messageType;
-            responseData.deviceIdentification = this.deviceIdentification;
-            responseData.correlationUid = this.correlationUid;
-            responseData.numberOfNotificationsSent = this.numberOfNotificationsSent;
-            responseData.responseUrl = this.responseUrl;
-            responseData.resultType = this.resultType;
-            responseData.messageData = this.messageData;
-
-            return responseData;
-        }
     }
 
 }
