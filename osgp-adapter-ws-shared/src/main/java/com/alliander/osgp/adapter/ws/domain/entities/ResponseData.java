@@ -44,6 +44,9 @@ public class ResponseData extends AbstractEntity {
     @Column
     private Short numberOfNotificationsSent;
 
+    @Column(length = 255)
+    private String responseUrl;
+
     @Enumerated(EnumType.STRING)
     private ResponseMessageResultType resultType;
 
@@ -98,4 +101,13 @@ public class ResponseData extends AbstractEntity {
     public void setNumberOfNotificationsSent(final Short numberOfNotificationsSent) {
         this.numberOfNotificationsSent = numberOfNotificationsSent;
     }
+
+    public String getResponseUrl() {
+        return this.responseUrl;
+    }
+
+    public void setResponseUrl(final String responseUrl) {
+        this.responseUrl = responseUrl;
+    }
+
 }
