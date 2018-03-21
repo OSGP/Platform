@@ -247,21 +247,20 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.setTransition(organisationIdentification, device, correlationUid, transitionType, messageType);
+        this.setTransition(organisationIdentification, device, correlationUid, transitionType, transitionTime,
+                messageType);
     }
 
     private void setTransition(final String organisationIdentification, final Device device,
-            final String correlationUid, final TransitionType transitionType, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
+            final String messageType) {
 
         LOGGER.debug("Private setTransition called for device {} with organisation {}",
                 device.getDeviceIdentification(), organisationIdentification);
 
-        // Don't send a time stamp to the switch device.
-        final DateTime dateTime = null;
         final TransitionMessageDataContainerDto transitionMessageDataContainerDto = new TransitionMessageDataContainerDto(
                 this.domainCoreMapper.map(transitionType, com.alliander.osgp.dto.valueobjects.TransitionTypeDto.class),
-                dateTime);
+                transitionTime);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 device.getDeviceIdentification(), transitionMessageDataContainerDto), messageType,
@@ -368,12 +367,14 @@ public class AdHocManagementService extends AbstractService {
 
     private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,
             final String correlationUid, final TransitionType transitionType) {
+        // Don't send time stamp to switch device.
+        final DateTime transitionTime = null;
         for (final Ssld ssld : ssldsToTransition) {
             try {
-                this.setTransition(organisationIdentification, ssld, correlationUid, transitionType,
+                this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
                         DeviceFunction.SET_TRANSITION.name());
-            } catch (final FunctionalException e) {
-                LOGGER.error("Caught unexpected FunctionalException", e);
+            } catch (final Exception e) {
+                LOGGER.error("Caught unexpected Exception", e);
             }
         }
     }
