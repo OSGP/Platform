@@ -250,7 +250,7 @@ public class AdHocManagementService extends AbstractService {
 
     private void setTransition(final String organisationIdentification, final Device device,
             final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
-            final String messageType) throws FunctionalException {
+            final String messageType) {
 
         LOGGER.debug("Private setTransition called for device {} with organisation {}",
                 device.getDeviceIdentification(), organisationIdentification);
@@ -315,8 +315,7 @@ public class AdHocManagementService extends AbstractService {
         final TransitionType transitionType = this.determineTransitionTypeForEvent(event);
 
         // Send SET_TRANSITION messages to the SSLDs.
-        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType,
-                DateTime.now());
+        this.transitionSslds(ssldsToTransition, organisationIdentification, correlationUid, transitionType);
     }
 
     private LightMeasurementDevice updateLmdLastCommunicationTime(final LightMeasurementDevice lmd) {
@@ -364,13 +363,15 @@ public class AdHocManagementService extends AbstractService {
     }
 
     private void transitionSslds(final List<Ssld> ssldsToTransition, final String organisationIdentification,
-            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime) {
+            final String correlationUid, final TransitionType transitionType) {
+        // Don't send time stamp to switch device.
+        final DateTime transitionTime = null;
         for (final Ssld ssld : ssldsToTransition) {
             try {
                 this.setTransition(organisationIdentification, ssld, correlationUid, transitionType, transitionTime,
                         DeviceFunction.SET_TRANSITION.name());
-            } catch (final FunctionalException e) {
-                LOGGER.error("Caught unexpected FunctionalException", e);
+            } catch (final Exception e) {
+                LOGGER.error("Caught unexpected Exception", e);
             }
         }
     }
