@@ -8,7 +8,7 @@
 
   <artifactId>parent-platform</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>4.25.0</version>
+  <version>4.26.0</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -27,20 +27,6 @@
   <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
   <url>${maven.site.url}</url>
   <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-releases</id>
-      <name>Smart Society Release Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
-      <layout>default</layout>
-    </repository>
-    <snapshotRepository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>smartsociety-snapshots</id>
-      <name>Smart Society Development Repo</name>
-      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
-      <layout>default</layout>
-    </snapshotRepository>
     <site>
       <id>platform</id>
       <name>platform</name>
@@ -52,7 +38,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <shared.version>4.25.0</shared.version>
+    <shared.version>4.26.0</shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>

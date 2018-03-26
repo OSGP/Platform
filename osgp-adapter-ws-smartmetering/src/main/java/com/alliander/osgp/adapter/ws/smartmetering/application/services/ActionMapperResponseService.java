@@ -18,10 +18,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsGasResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AllResponses;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Response;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.CommonMapper;
@@ -40,12 +50,14 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FaultResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ProfileGenericDataResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -100,34 +112,28 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(ProfileGenericDataResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
     }
 
     /**
      * Specifies to which ws object the core object needs to be mapped.
      */
     static {
-        CLASS_MAP.put(MeterReadsGas.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsGasResponse.class);
-        CLASS_MAP.put(MeterReads.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse.class);
-        CLASS_MAP.put(EventMessagesResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FindEventsResponse.class);
+        CLASS_MAP.put(MeterReadsGas.class, ActualMeterReadsGasResponse.class);
+        CLASS_MAP.put(MeterReads.class, ActualMeterReadsResponse.class);
+        CLASS_MAP.put(EventMessagesResponse.class, FindEventsResponse.class);
         CLASS_MAP.put(ActionResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ActionResponse.class);
         CLASS_MAP.put(FaultResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.FaultResponse.class);
-        CLASS_MAP.put(AlarmRegister.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.ReadAlarmRegisterResponse.class);
-        CLASS_MAP.put(AdministrativeStatusTypeResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.AdministrativeStatusResponse.class);
-        CLASS_MAP.put(PeriodicMeterReadsContainer.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse.class);
-        CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse.class);
+        CLASS_MAP.put(AlarmRegister.class, ReadAlarmRegisterResponse.class);
+        CLASS_MAP.put(AdministrativeStatusTypeResponse.class, AdministrativeStatusResponse.class);
+        CLASS_MAP.put(PeriodicMeterReadsContainer.class, PeriodicMeterReadsResponse.class);
+        CLASS_MAP.put(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class);
         CLASS_MAP.put(GetAllAttributeValuesResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesResponse.class);
-        CLASS_MAP.put(FirmwareVersionResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse.class);
+        CLASS_MAP.put(FirmwareVersionResponse.class, GetFirmwareVersionResponse.class);
         CLASS_MAP.put(UpdateFirmwareResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareResponse.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
@@ -139,6 +145,10 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, GetMbusEncryptionKeyStatusResponse.class);
+        CLASS_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class,
+                GetMbusEncryptionKeyStatusByChannelResponse.class);
+        CLASS_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class,
+                SetDeviceLifecycleStatusByChannelResponse.class);
     }
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {
