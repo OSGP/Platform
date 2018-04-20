@@ -11,10 +11,10 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
-import com.alliander.osgp.domain.core.valueobjects.Schedule;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 
-public class ScheduleConstraintsValidator implements ConstraintValidator<ScheduleConstraints, Schedule> {
+public class ScheduleConstraintsValidator implements ConstraintValidator<ScheduleConstraints, ScheduleEntry> {
 
     private static final String CHECK_START_DAY_MESSAGE = "startDay may not be null when weekDay is set to ABSOLUTEDAY";
     private static final String CHECK_START_DAY_AFTER_END_DAY_MESSAGE = "startDay may not be later than endDay when weekDay is set to ABSOLUTEDAY";
@@ -29,7 +29,7 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
     }
 
     @Override
-    public boolean isValid(final Schedule schedule, final ConstraintValidatorContext context) {
+    public boolean isValid(final ScheduleEntry schedule, final ConstraintValidatorContext context) {
         final ValidatorHelper helper = new ValidatorHelper();
         this.checkStartDay(helper, schedule);
         this.checkTime(helper, schedule);
@@ -38,7 +38,7 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
         return helper.isValid(context);
     }
 
-    private void checkStartDay(final ValidatorHelper helper, final Schedule schedule) {
+    private void checkStartDay(final ValidatorHelper helper, final ScheduleEntry schedule) {
         if (schedule.getWeekDay() == WeekDayType.ABSOLUTEDAY) {
             // When weekDay is ABSOLUTEDAY then startDay may not be null
             if (schedule.getStartDay() == null) {
@@ -54,14 +54,14 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
         }
     }
 
-    private void checkTime(final ValidatorHelper helper, final Schedule schedule) {
+    private void checkTime(final ValidatorHelper helper, final ScheduleEntry schedule) {
         // When actionTime is ABSOLUTETIME then time may not be null
         if (schedule.getActionTime() == ActionTimeType.ABSOLUTETIME && schedule.getTime() == null) {
             helper.addMessage(CHECK_TIME_MESSAGE);
         }
     }
 
-    private void checkTriggerWindow(final ValidatorHelper helper, final Schedule schedule) {
+    private void checkTriggerWindow(final ValidatorHelper helper, final ScheduleEntry schedule) {
         if (schedule.getActionTime() == ActionTimeType.SUNRISE || schedule.getActionTime() == ActionTimeType.SUNSET) {
             // When actionTime is SUNRISE or SUNSET then triggerWindow may not
             // be null
