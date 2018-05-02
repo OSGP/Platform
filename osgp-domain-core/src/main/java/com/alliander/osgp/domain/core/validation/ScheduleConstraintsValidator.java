@@ -12,6 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
 import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
+import com.alliander.osgp.domain.core.valueobjects.TriggerType;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 
 public class ScheduleConstraintsValidator implements ConstraintValidator<ScheduleConstraints, ScheduleEntry> {
@@ -19,7 +20,7 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
     private static final String CHECK_START_DAY_MESSAGE = "startDay may not be null when weekDay is set to ABSOLUTEDAY";
     private static final String CHECK_START_DAY_AFTER_END_DAY_MESSAGE = "startDay may not be later than endDay when weekDay is set to ABSOLUTEDAY";
     private static final String CHECK_TIME_MESSAGE = "time may not be null when actionTime is set to ABSOLUTETIME";
-    private static final String CHECK_TRIGGER_WINDOW_MESSAGE = "triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET";
+    private static final String CHECK_TRIGGER_WINDOW_MESSAGE = "triggerWindow may not be null when actionTime is set to SUNRISE or SUNSET and triggerType is LIGHT_TRIGGER";
     private static final String CHECK_TRIGGER_WINDOW_MINUTES_BEFORE_MESSAGE = "triggerWindow minutesBefore must be between 0 and 1440 minutes";
     private static final String CHECK_TRIGGER_WINDOW_MINUTES_AFTER_MESSAGE = "triggerWindow minutesAfter must be between 0 and 1440 minutes";
 
@@ -62,8 +63,11 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
     }
 
     private void checkTriggerWindow(final ValidatorHelper helper, final ScheduleEntry schedule) {
-        if (schedule.getActionTime() == ActionTimeType.SUNRISE || schedule.getActionTime() == ActionTimeType.SUNSET) {
-            // When actionTime is SUNRISE or SUNSET then triggerWindow may not
+        if ((ActionTimeType.SUNRISE.equals(schedule.getActionTime())
+                || ActionTimeType.SUNSET.equals(schedule.getActionTime()))
+                && TriggerType.LIGHT_TRIGGER.equals(schedule.getTriggerType())) {
+            // When actionTime is SUNRISE or SUNSET and triggertype is
+            // LIGHT_TRIGGER then triggerWindow may not
             // be null
             if (schedule.getTriggerWindow() == null) {
                 helper.addMessage(CHECK_TRIGGER_WINDOW_MESSAGE);

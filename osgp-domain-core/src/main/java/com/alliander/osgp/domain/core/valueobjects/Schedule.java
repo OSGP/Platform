@@ -10,6 +10,8 @@ package com.alliander.osgp.domain.core.valueobjects;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.validation.Valid;
+
 public class Schedule implements Serializable {
 
     /**
@@ -20,6 +22,7 @@ public class Schedule implements Serializable {
     private final Short astronomicalSunriseOffset;
     private final Short astronomicalSunsetOffset;
 
+    @Valid
     private final List<ScheduleEntry> scheduleEntries;
 
     public Schedule(final List<ScheduleEntry> scheduleEntries) {
