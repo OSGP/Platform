@@ -73,10 +73,10 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final Schedule tariffScheduleMessageDataContainer = (Schedule) dataObject;
+            final Schedule tariffSchedule = (Schedule) dataObject;
 
             this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification,
-                    correlationUid, tariffScheduleMessageDataContainer.getScheduleEntries(), scheduleTime, messageType);
+                    correlationUid, tariffSchedule.getScheduleEntries(), scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

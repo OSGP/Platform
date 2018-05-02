@@ -77,13 +77,13 @@ public class ScheduleManagementService extends AbstractService {
 
         final List<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto> schedulesDto = this.domainCoreMapper.mapAsList(
                 schedules, com.alliander.osgp.dto.valueobjects.ScheduleEntryDto.class);
-        final ScheduleDto scheduleMessageDataContainerDto = new ScheduleDto(
+        final ScheduleDto scheduleDto = new ScheduleDto(
                 schedulesDto);
 
         LOGGER.info("Sending message");
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainerDto), messageType, device.getIpAddress(),
+                deviceIdentification, scheduleDto), messageType, device.getIpAddress(),
                 scheduleTime);
     }
 }

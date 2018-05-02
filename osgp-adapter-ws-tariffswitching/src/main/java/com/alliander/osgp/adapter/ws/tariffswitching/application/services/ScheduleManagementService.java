@@ -78,11 +78,11 @@ public class ScheduleManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final Schedule scheduleMessageDataContainer = new Schedule(mapAsList);
+        final Schedule schedule = new Schedule(mapAsList);
 
         final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(
                 TariffSwitchingRequestMessageType.SET_TARIFF_SCHEDULE, correlationUid, organisationIdentification,
-                deviceIdentification, scheduleMessageDataContainer, scheduledTime);
+                deviceIdentification, schedule, scheduledTime);
 
         this.tariffSwitchingRequestMessageSender.send(message);
 
