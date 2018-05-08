@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = release-4.26.0
+	branch = release-4.26.1
 
