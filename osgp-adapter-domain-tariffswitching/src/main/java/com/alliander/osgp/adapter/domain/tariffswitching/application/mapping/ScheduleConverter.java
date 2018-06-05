@@ -9,7 +9,7 @@ package com.alliander.osgp.adapter.domain.tariffswitching.application.mapping;
 
 import com.alliander.osgp.domain.core.valueobjects.ActionTimeType;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
-import com.alliander.osgp.domain.core.valueobjects.Schedule;
+import com.alliander.osgp.domain.core.valueobjects.ScheduleEntry;
 import com.alliander.osgp.domain.core.valueobjects.TriggerType;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 import com.alliander.osgp.domain.core.valueobjects.WindowType;
@@ -19,13 +19,13 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 public class ScheduleConverter
-        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleDto, Schedule> {
+        extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto, ScheduleEntry> {
 
     @Override
-    public Schedule convertTo(final com.alliander.osgp.dto.valueobjects.ScheduleDto source,
-            final Type<Schedule> destinationType, final MappingContext context) {
+    public ScheduleEntry convertTo(final com.alliander.osgp.dto.valueobjects.ScheduleEntryDto source,
+            final Type<ScheduleEntry> destinationType, final MappingContext context) {
 
-        final Schedule schedule = new Schedule();
+        final ScheduleEntry schedule = new ScheduleEntry();
         schedule.setActionTime(this.mapperFacade.map(source.getActionTime(), ActionTimeType.class));
         schedule.setEndDay(source.getEndDay());
         schedule.setLightValue(this.mapperFacade.mapAsList(source.getLightValue(), LightValue.class));
@@ -42,10 +42,10 @@ public class ScheduleConverter
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.ScheduleDto convertFrom(final Schedule source,
-            final Type<com.alliander.osgp.dto.valueobjects.ScheduleDto> destinationType, final MappingContext context) {
+    public com.alliander.osgp.dto.valueobjects.ScheduleEntryDto convertFrom(final ScheduleEntry source,
+            final Type<com.alliander.osgp.dto.valueobjects.ScheduleEntryDto> destinationType, final MappingContext context) {
 
-        final com.alliander.osgp.dto.valueobjects.ScheduleDto schedule = new com.alliander.osgp.dto.valueobjects.ScheduleDto();
+        final com.alliander.osgp.dto.valueobjects.ScheduleEntryDto schedule = new com.alliander.osgp.dto.valueobjects.ScheduleEntryDto();
         schedule.setActionTime(this.mapperFacade.map(source.getActionTime(),
                 com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto.class));
         schedule.setEndDay(source.getEndDay());
