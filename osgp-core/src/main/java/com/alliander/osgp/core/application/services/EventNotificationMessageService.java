@@ -100,6 +100,8 @@ public class EventNotificationMessageService {
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
             throws UnknownEntityException {
 
+        LOGGER.info("handleEvent() called for device: {} with event: {}", deviceIdentification, event);
+
         final Date dateTime = event.getDateTime() != null ? event.getDateTime().toDate() : DateTime.now().toDate();
         final EventType eventType = EventType.valueOf(event.getEventType().name());
         final String description = event.getDescription();
@@ -114,6 +116,9 @@ public class EventNotificationMessageService {
 
         LOGGER.info("handleEvents() called for device: {} with eventNotifications.size(): {}", deviceIdentification,
                 eventNotifications.size());
+        for (final EventNotificationDto event : eventNotifications) {
+            LOGGER.info("  event: {}", event);
+        }
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
@@ -126,8 +131,7 @@ public class EventNotificationMessageService {
          * relay). Handling light switching events, only update the relay status
          * once for the last switching in the list.
          */
-        final List<Event> lightSwitchingEvents = new ArrayList<>();
-        final List<Event> tariffSwitchingEvents = new ArrayList<>();
+        final List<Event> switchDeviceEvents = new ArrayList<>();
         final List<Event> lightMeasurementDeviceEvents = new ArrayList<>();
 
         for (final EventNotificationDto eventNotification : eventNotifications) {
@@ -136,30 +140,28 @@ public class EventNotificationMessageService {
             final Event event = new Event(device, eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
                     eventType, eventNotification.getDescription(), eventNotification.getIndex());
 
-            LOGGER.info("Saving event with eventType: {} eventTime: {} description: {} index: {}", eventType.name(),
-                    eventTime, eventNotification.getDescription(), eventNotification.getIndex());
+            LOGGER.info("Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
+                    deviceIdentification, eventType.name(), eventTime, eventNotification.getDescription(),
+                    eventNotification.getIndex());
             this.eventRepository.save(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON)
-                    || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)) {
-                lightSwitchingEvents.add(event);
-            } else if (eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
+                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
-                tariffSwitchingEvents.add(event);
+                switchDeviceEvents.add(event);
             } else if (eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
                     || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT)) {
                 lightMeasurementDeviceEvents.add(event);
             }
         }
 
-        this.handleLightSwitchingEvents(device, lightSwitchingEvents);
-        this.handleTariffSwitchingEvents(device, tariffSwitchingEvents);
+        this.handleSwitchDeviceEvents(device, switchDeviceEvents);
         this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
     }
 
-    private void handleLightSwitchingEvents(final Device device, final List<Event> lightSwitchingEvents) {
+    private void handleSwitchDeviceEvents(final Device device, final List<Event> lightSwitchingEvents) {
 
-        LOGGER.info("handleLightSwitchingEvents() called for device: {} with lightSwitchingEvents.size(): {}",
+        LOGGER.info("handleSwitchDeviceEvents() called for device: {} with lightSwitchingEvents.size(): {}",
                 device.getDeviceIdentification(), lightSwitchingEvents.size());
 
         if (lightSwitchingEvents.isEmpty()) {
@@ -169,14 +171,21 @@ public class EventNotificationMessageService {
         // Determine light relays for SSLD.
         final Ssld ssld = this.ssldRepository.findOne(device.getId());
         final Set<Integer> indexesLightRelays = new TreeSet<>();
+        final Set<Integer> indexesTariffRelays = new TreeSet<>();
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
             if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
                 indexesLightRelays.add(deviceOutputSetting.getExternalId());
+            }
+            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
+                indexesTariffRelays.add(deviceOutputSetting.getExternalId());
             }
         }
 
         for (final int index : indexesLightRelays) {
             LOGGER.info("  indexesLightRelays: {}", index);
+        }
+        for (final int index : indexesTariffRelays) {
+            LOGGER.info("  indexesTariffRelays: {}", index);
         }
 
         final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
@@ -218,34 +227,6 @@ public class EventNotificationMessageService {
                 .after(lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
             lastRelayStatusPerIndex.put(relayIndex,
                     new RelayStatus(device, relayIndex, isRelayOn, switchingEvent.getDateTime()));
-        }
-    }
-
-    private void handleTariffSwitchingEvents(final Device device, final List<Event> tariffSwitchingEvents) {
-
-        if (tariffSwitchingEvents.isEmpty()) {
-            return;
-        }
-
-        final Ssld ssld = this.ssldRepository.findOne(device.getId());
-        final Set<Integer> indexesTariffRelays = new TreeSet<>();
-        for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
-                indexesTariffRelays.add(deviceOutputSetting.getExternalId());
-            }
-        }
-
-        final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
-        for (final Event tariffSwitchingEvent : tariffSwitchingEvents) {
-            this.createRelayStatus(device, tariffSwitchingEvent, tariffSwitchingEvent.getIndex(),
-                    lastRelayStatusPerIndex);
-        }
-
-        if (!lastRelayStatusPerIndex.isEmpty()) {
-            ssld.updateRelayStatusses(lastRelayStatusPerIndex);
-            this.deviceRepository.save(device);
-
-            this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
     }
 
@@ -295,7 +276,7 @@ public class EventNotificationMessageService {
     private void handleLightMeasurementDeviceEvents(final Device device,
             final List<Event> lightMeasurementDeviceEvents) {
         if (lightMeasurementDeviceEvents.isEmpty()) {
-            LOGGER.info("List of events is empty for device: {}, not needed to process events.",
+            LOGGER.info("List of events is empty for LMD: {}, not needed to process events.",
                     device.getDeviceIdentification());
             return;
         }
