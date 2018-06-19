@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -31,10 +30,6 @@ import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
-import com.alliander.osgp.domain.core.repositories.EventRepository;
-import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderTimestampService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.EventMessageDataContainer;
@@ -44,21 +39,11 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Service
-@Transactional
 public class EventNotificationMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageService.class);
 
     private static final String RELAY_STATUS_UPDATED_EVENTS = "RELAY_STATUS_UPDATED";
-
-    @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private SsldRepository ssldRepository;
 
     @Autowired
     private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
@@ -70,30 +55,23 @@ public class EventNotificationMessageService {
     private DomainRequestService domainRequestService;
 
     @Autowired
-    private DomainInfoRepository domainInfoRepository;
+    private EventNotificationHelperService eventNotificationHelperService;
 
-    @Transactional(value = "transactionManager")
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final String description, final Integer index) throws UnknownEntityException {
 
         // Lookup device
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = this.eventNotificationHelperService.findDevice(deviceIdentification);
+        // If the event belongs to an existing device, then save it,
+        // otherwise don't.
+        this.eventNotificationHelperService.saveEvent(new Event(device,
+                dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index));
 
-        if (device != null) {
-            // If the event belonged to an existing device, then save it,
-            // otherwise don't.
-            this.eventRepository.save(new Event(device, dateTime != null ? dateTime : DateTime.now().toDate(),
-                    eventType, description, index));
-
-            // Checking to see if it was a switching event
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
-                this.handleSwitchingEvent(device, dateTime, eventType, index);
-            }
-
-        } else {
-            throw new UnknownEntityException(Device.class, deviceIdentification);
+        // Check if it was a switching event.
+        if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+            this.handleSwitchingEvent(device, dateTime, eventType, index);
         }
     }
 
@@ -110,7 +88,6 @@ public class EventNotificationMessageService {
         this.handleEvent(deviceIdentification, dateTime, eventType, description, index);
     }
 
-    @Transactional(value = "transactionManager")
     public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
             throws UnknownEntityException {
 
@@ -120,10 +97,7 @@ public class EventNotificationMessageService {
             LOGGER.info("  event: {}", event);
         }
 
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new UnknownEntityException(Device.class, deviceIdentification);
-        }
+        final Device device = this.eventNotificationHelperService.findDevice(deviceIdentification);
 
         /*
          * A list of bundled events may contain events that occurred over a
@@ -143,7 +117,7 @@ public class EventNotificationMessageService {
             LOGGER.info("Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
                     deviceIdentification, eventType.name(), eventTime, eventNotification.getDescription(),
                     eventNotification.getIndex());
-            this.eventRepository.save(event);
+            this.eventNotificationHelperService.saveEvent(event);
 
             if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
                     || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
@@ -155,11 +129,16 @@ public class EventNotificationMessageService {
             }
         }
 
-        this.handleSwitchDeviceEvents(device, switchDeviceEvents);
-        this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
+        if (!switchDeviceEvents.isEmpty()) {
+            this.handleSwitchDeviceEvents(device, switchDeviceEvents);
+        }
+        if (!lightMeasurementDeviceEvents.isEmpty()) {
+            this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
+        }
     }
 
-    private void handleSwitchDeviceEvents(final Device device, final List<Event> lightSwitchingEvents) {
+    private void handleSwitchDeviceEvents(final Device device, final List<Event> lightSwitchingEvents)
+            throws UnknownEntityException {
 
         LOGGER.info("handleSwitchDeviceEvents() called for device: {} with lightSwitchingEvents.size(): {}",
                 device.getDeviceIdentification(), lightSwitchingEvents.size());
@@ -168,8 +147,8 @@ public class EventNotificationMessageService {
             return;
         }
 
-        // Determine light relays for SSLD.
-        final Ssld ssld = this.ssldRepository.findOne(device.getId());
+        // Determine light and tariff relays for SSLD.
+        final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
         final Set<Integer> indexesLightRelays = new TreeSet<>();
         final Set<Integer> indexesTariffRelays = new TreeSet<>();
         for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
@@ -199,12 +178,16 @@ public class EventNotificationMessageService {
             }
         }
 
+        for (final Integer key : lastRelayStatusPerIndex.keySet()) {
+            LOGGER.info("key: {}, value: {}", key, lastRelayStatusPerIndex.get(key));
+        }
+
         if (!lastRelayStatusPerIndex.isEmpty()) {
             LOGGER.info("calling ssld.updateRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
                     ssld.getDeviceIdentification(), lastRelayStatusPerIndex.size());
 
             ssld.updateRelayStatusses(lastRelayStatusPerIndex);
-            this.deviceRepository.save(device);
+            this.eventNotificationHelperService.saveSsld(ssld);
 
             this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, ssld.getDeviceIdentification(), null);
         }
@@ -220,8 +203,9 @@ public class EventNotificationMessageService {
     private void createRelayStatus(final Device device, final Event switchingEvent, final Integer relayIndex,
             final Map<Integer, RelayStatus> lastRelayStatusPerIndex) {
 
-        final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(switchingEvent.getEventType())
-                || EventType.TARIFF_EVENTS_TARIFF_ON.equals(switchingEvent.getEventType());
+        final EventType eventType = switchingEvent.getEventType();
+        final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
+                || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         if (lastRelayStatusPerIndex.get(relayIndex) == null || switchingEvent.getDateTime()
                 .after(lastRelayStatusPerIndex.get(relayIndex).getLastKnowSwitchingTime())) {
@@ -231,12 +215,12 @@ public class EventNotificationMessageService {
     }
 
     private void handleSwitchingEvent(final Device device, final Date dateTime, final EventType eventType,
-            final int index) {
+            final int index) throws UnknownEntityException {
 
-        // if the index == 0 handle all LIGHT relays, otherwise just handle the
-        // index
+        // If the index == 0 handle all LIGHT relays, otherwise just handle the
+        // index.
         if (index == 0) {
-            final Ssld ssld = this.ssldRepository.findOne(device.getId());
+            final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
                     this.updateRelayStatus(deviceOutputSetting.getExternalId(), device, dateTime, eventType);
@@ -246,20 +230,20 @@ public class EventNotificationMessageService {
             this.updateRelayStatus(index, device, dateTime, eventType);
         }
 
-        this.deviceRepository.save(device);
+        this.eventNotificationHelperService.saveDevice(device);
 
         this.sendRequestMessageToDomainCore(RELAY_STATUS_UPDATED_EVENTS, device.getDeviceIdentification(), null);
     }
 
-    private void updateRelayStatus(final int index, final Device device, final Date dateTime,
-            final EventType eventType) {
+    private void updateRelayStatus(final int index, final Device device, final Date dateTime, final EventType eventType)
+            throws UnknownEntityException {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
 
         // Only handle the event if the relay doesn't have a status yet, or
-        // if the state changed
-        final Ssld ssld = this.ssldRepository.findOne(device.getId());
+        // if the state has changed.
+        final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
         if ((ssld.getRelayStatusByIndex(index) == null)
                 || (ssld.getRelayStatusByIndex(index).isLastKnownState() != isRelayOn)) {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
@@ -301,7 +285,7 @@ public class EventNotificationMessageService {
 
         final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
                 deviceIdentification, dataObject);
-        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("CORE", "1.0");
+        final DomainInfo domainInfo = this.eventNotificationHelperService.findDomainInfo("CORE", "1.0");
 
         this.domainRequestService.send(message, messageType, domainInfo);
     }
@@ -316,7 +300,7 @@ public class EventNotificationMessageService {
 
         final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
                 deviceIdentification, dataObject);
-        final DomainInfo domainInfo = this.domainInfoRepository.findByDomainAndDomainVersion("PUBLIC_LIGHTING", "1.0");
+        final DomainInfo domainInfo = this.eventNotificationHelperService.findDomainInfo("PUBLIC_LIGHTING", "1.0");
 
         this.domainRequestService.send(message, messageType, domainInfo);
     }
