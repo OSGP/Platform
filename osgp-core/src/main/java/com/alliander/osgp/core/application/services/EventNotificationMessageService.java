@@ -129,21 +129,31 @@ public class EventNotificationMessageService {
             }
         }
 
+        this.checkSwitchDeviceEvents(device, switchDeviceEvents);
+        this.checkLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
+    }
+
+    private void checkSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
+            throws UnknownEntityException {
         if (!switchDeviceEvents.isEmpty()) {
             this.handleSwitchDeviceEvents(device, switchDeviceEvents);
         }
+    }
+
+    private void checkLightMeasurementDeviceEvents(final Device device,
+            final List<Event> lightMeasurementDeviceEvents) {
         if (!lightMeasurementDeviceEvents.isEmpty()) {
             this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
         }
     }
 
-    private void handleSwitchDeviceEvents(final Device device, final List<Event> lightSwitchingEvents)
+    private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
             throws UnknownEntityException {
 
         LOGGER.info("handleSwitchDeviceEvents() called for device: {} with lightSwitchingEvents.size(): {}",
-                device.getDeviceIdentification(), lightSwitchingEvents.size());
+                device.getDeviceIdentification(), switchDeviceEvents.size());
 
-        if (lightSwitchingEvents.isEmpty()) {
+        if (switchDeviceEvents.isEmpty()) {
             return;
         }
 
@@ -159,16 +169,10 @@ public class EventNotificationMessageService {
                 indexesTariffRelays.add(deviceOutputSetting.getExternalId());
             }
         }
-
-        for (final int index : indexesLightRelays) {
-            LOGGER.info("  indexesLightRelays: {}", index);
-        }
-        for (final int index : indexesTariffRelays) {
-            LOGGER.info("  indexesTariffRelays: {}", index);
-        }
+        this.printRelayIndexes(indexesLightRelays, indexesTariffRelays, device.getDeviceIdentification());
 
         final Map<Integer, RelayStatus> lastRelayStatusPerIndex = new TreeMap<>();
-        for (final Event lightSwitchingEvent : lightSwitchingEvents) {
+        for (final Event lightSwitchingEvent : switchDeviceEvents) {
             final Integer index = lightSwitchingEvent.getIndex();
             if (index == 0) {
                 this.handleLightSwitchingEventForIndex0(indexesLightRelays, device, lightSwitchingEvent,
@@ -177,10 +181,7 @@ public class EventNotificationMessageService {
                 this.createRelayStatus(device, lightSwitchingEvent, index, lastRelayStatusPerIndex);
             }
         }
-
-        for (final Integer key : lastRelayStatusPerIndex.keySet()) {
-            LOGGER.info("key: {}, value: {}", key, lastRelayStatusPerIndex.get(key));
-        }
+        this.printRelayStatuses(lastRelayStatusPerIndex, device.getDeviceIdentification());
 
         if (!lastRelayStatusPerIndex.isEmpty()) {
             LOGGER.info("calling ssld.updateRelayStatuses() for device: {} with lastRelayStatusPerIndex.size(): {}",
@@ -303,5 +304,24 @@ public class EventNotificationMessageService {
         final DomainInfo domainInfo = this.eventNotificationHelperService.findDomainInfo("PUBLIC_LIGHTING", "1.0");
 
         this.domainRequestService.send(message, messageType, domainInfo);
+    }
+
+    private void printRelayIndexes(final Set<Integer> indexesLightRelays, final Set<Integer> indexesTariffRelays,
+            final String deviceIdentification) {
+        LOGGER.info("relay indexes for device: {}", deviceIdentification);
+        for (final int index : indexesLightRelays) {
+            LOGGER.info("  indexesLightRelays: {}", index);
+        }
+        for (final int index : indexesTariffRelays) {
+            LOGGER.info("  indexesTariffRelays: {}", index);
+        }
+    }
+
+    private void printRelayStatuses(final Map<Integer, RelayStatus> lastRelayStatusPerIndex,
+            final String deviceIdentification) {
+        LOGGER.info("print relay statuses for device: {}", deviceIdentification);
+        for (final Integer key : lastRelayStatusPerIndex.keySet()) {
+            LOGGER.info("key: {}, value: {}", key, lastRelayStatusPerIndex.get(key));
+        }
     }
 }
