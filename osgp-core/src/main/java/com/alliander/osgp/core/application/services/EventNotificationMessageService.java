@@ -165,7 +165,8 @@ public class EventNotificationMessageService {
             if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
                 indexesLightRelays.add(deviceOutputSetting.getExternalId());
             }
-            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)) {
+            if (deviceOutputSetting.getOutputType().equals(RelayType.TARIFF)
+                    || deviceOutputSetting.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
                 indexesTariffRelays.add(deviceOutputSetting.getExternalId());
             }
         }

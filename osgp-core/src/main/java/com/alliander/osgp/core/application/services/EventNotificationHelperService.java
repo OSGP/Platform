@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +21,11 @@ import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
+/**
+ * Service class which encapsulates data access and transaction management. The
+ * main service class {#link EventNotificationMessageService} uses this helper
+ * class.
+ */
 @Service
 public class EventNotificationHelperService {
 
