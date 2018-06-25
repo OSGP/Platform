@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.admin.application.services;
 
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -233,11 +232,6 @@ public class DeviceManagementService {
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @NotNull final DeviceFunctionGroup group) throws FunctionalException {
 
-        if (group == DeviceFunctionGroup.OWNER) {
-            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_OWNER, ComponentType.WS_ADMIN,
-                    new OperationNotSupportedException("Owner not allowed to set via this method."));
-        }
-
         // Check input data and authorization
         final Organisation organisation = this.findOrganisation(organisationIdentification);
 
@@ -264,17 +258,11 @@ public class DeviceManagementService {
 
         LOGGER.info("Organisation {} now has authorization for function group {} on device {}",
                 organisationIdentification, group, deviceIdentification);
-
     }
 
     public void removeDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @NotNull final DeviceFunctionGroup group) throws FunctionalException {
-
-        if (group == DeviceFunctionGroup.OWNER) {
-            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_OWNER, ComponentType.WS_ADMIN,
-                    new OperationNotSupportedException("Owner not allowed to set via this method."));
-        }
 
         // Check input data and authorization
         final Organisation organisation = this.findOrganisation(organisationIdentification);
