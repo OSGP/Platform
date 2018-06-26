@@ -49,7 +49,6 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
-import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -91,9 +90,6 @@ public class DeviceManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceSpecifications deviceSpecifications;
-
-    @Autowired
     private DeviceLogItemRepository logItemRepository;
 
     @Autowired
@@ -113,6 +109,9 @@ public class DeviceManagementService {
 
     @Autowired
     private ProtocolInfoRepository protocolRepository;
+
+    @Autowired
+    private String netMangementOrganisation;
 
     /**
      * Constructor
@@ -272,6 +271,15 @@ public class DeviceManagementService {
         final Device device = this.findDevice(deviceIdentification);
 
         this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+
+        // Never remove the OWNER authorization for the net management
+        // organization.
+        if (this.netMangementOrganisation.equals(organisationIdentification)
+                && DeviceFunctionGroup.OWNER.equals(group)) {
+            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for net management organisation: {}",
+                    this.netMangementOrganisation);
+            return;
+        }
 
         // All checks pass, remove authorization
         device.removeAuthorization(organisation, group);
