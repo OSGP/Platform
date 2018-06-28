@@ -221,13 +221,10 @@ public class PublicLightingAdHocManagementEndpoint {
                     .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
-                                com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class));
-                    }
+                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
+                            com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {

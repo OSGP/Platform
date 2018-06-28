@@ -138,13 +138,10 @@ public class TariffSwitchingAdHocManagementEndpoint {
                     .dequeueGetTariffStatusResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
-                                com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
-                    }
+                final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
+                if (deviceStatus != null) {
+                    response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
+                            com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
                 }
             }
         } catch (final Exception e) {
