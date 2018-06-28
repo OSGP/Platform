@@ -77,6 +77,7 @@ public class TariffSwitchingRequestMessageSender {
     private void sendMessage(final TariffSwitchingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the tariff switching requests queue");
 
+        this.tariffSwitchingRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.tariffSwitchingRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -89,8 +90,8 @@ public class TariffSwitchingRequestMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
-                    objectMessage
-                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME,
+                            requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }

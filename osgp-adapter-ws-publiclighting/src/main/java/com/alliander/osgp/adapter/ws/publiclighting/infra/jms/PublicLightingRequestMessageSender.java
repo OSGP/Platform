@@ -77,6 +77,7 @@ public class PublicLightingRequestMessageSender {
     private void sendMessage(final PublicLightingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the public lighting requests queue");
 
+        this.publicLightingRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.publicLightingRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -89,8 +90,8 @@ public class PublicLightingRequestMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
-                    objectMessage
-                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME,
+                            requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }

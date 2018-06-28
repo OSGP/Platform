@@ -77,6 +77,7 @@ public class CommonRequestMessageSender {
     private void sendMessage(final CommonRequestMessage requestMessage) {
         LOGGER.info("Sending request message to common requests queue");
 
+        this.commonRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.commonRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -89,8 +90,8 @@ public class CommonRequestMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
-                    objectMessage
-                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME,
+                            requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }
