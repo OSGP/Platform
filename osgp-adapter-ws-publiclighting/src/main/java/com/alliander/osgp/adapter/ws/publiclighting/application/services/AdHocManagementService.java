@@ -41,7 +41,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Service(value = "wsPublicLightingAdHocManagementService")
 @Transactional(value = "transactionManager")
@@ -226,6 +225,8 @@ public class AdHocManagementService {
      *            The SSLD.
      * @param lightMeasurementDeviceIdentification
      *            The light measurement device.
+     * @param messagePriority
+     *            The priority of the message.
      *
      * @return Correlation UID.
      *
@@ -234,8 +235,8 @@ public class AdHocManagementService {
      *             can not be found.
      */
     public String coupleLightMeasurementDeviceForSsld(final String organisationIdentification,
-            final String deviceIdentification, final String lightMeasurementDeviceIdentification)
-            throws FunctionalException {
+            final String deviceIdentification, final String lightMeasurementDeviceIdentification,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findDevice(deviceIdentification);
@@ -249,8 +250,7 @@ public class AdHocManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(),
-                MessagePriorityEnum.DEFAULT.getPriority());
+                PublicLightingRequestMessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(), messagePriority);
 
         final PublicLightingRequestMessage message = new PublicLightingRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(lightMeasurementDeviceIdentification).build();

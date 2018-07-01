@@ -31,6 +31,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
     @Override
     public void send(final ResponseMessage responseMessage) {
 
+        this.commonWsResponsesJmsTemplate.setPriority(responseMessage.getMessagePriority());
         this.commonWsResponsesJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -43,8 +44,8 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION,
+                            responseMessage.getOsgpException().getMessage());
                 }
                 return objectMessage;
             }

@@ -368,18 +368,20 @@ public class PublicLightingAdHocManagementEndpoint {
     @ResponsePayload
     public SetLightMeasurementDeviceResponse setLightMeasurementDevice(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightMeasurementDeviceRequest request) throws OsgpException {
+            @RequestPayload final SetLightMeasurementDeviceRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
         LOGGER.info(
-                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {}.",
+                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {} with message priority: {}",
                 organisationIdentification, request.getDeviceIdentification(),
-                request.getLightMeasurementDeviceIdentification());
+                request.getLightMeasurementDeviceIdentification(), messagePriority);
 
         final SetLightMeasurementDeviceResponse response = new SetLightMeasurementDeviceResponse();
 
         try {
             this.adHocManagementService.coupleLightMeasurementDeviceForSsld(organisationIdentification,
-                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification());
+                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setResult(OsgpResultType.OK);
         } catch (final Exception e) {

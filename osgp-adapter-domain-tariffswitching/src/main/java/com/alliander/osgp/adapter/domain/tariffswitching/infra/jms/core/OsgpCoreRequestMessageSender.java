@@ -29,13 +29,15 @@ public class OsgpCoreRequestMessageSender {
     @Qualifier("domainTariffSwitchingOutgoingOsgpCoreRequestsJmsTemplate")
     private JmsTemplate outgoingOsgpCoreRequestsJmsTemplate;
 
-    public void send(final RequestMessage requestMessage, final String messageType, final String ipAddress) {
-        this.send(requestMessage, messageType, ipAddress, null);
+    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
+            final String ipAddress) {
+        this.send(requestMessage, messageType, messagePriority, ipAddress, null);
     }
 
-    public void send(final RequestMessage requestMessage, final String messageType, final String ipAddress,
-            final Long scheduleTime) {
+    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
+            final String ipAddress, final Long scheduleTime) {
 
+        this.outgoingOsgpCoreRequestsJmsTemplate.setPriority(messagePriority);
         this.outgoingOsgpCoreRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
