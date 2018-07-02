@@ -40,6 +40,7 @@ import com.alliander.osgp.adapter.ws.microgrids.application.services.Notificatio
 import com.alliander.osgp.adapter.ws.shared.services.NotificationService;
 import com.alliander.osgp.adapter.ws.shared.services.NotificationServiceBlackHole;
 import com.alliander.osgp.shared.application.config.AbstractConfig;
+import com.alliander.osgp.shared.infra.ws.CircuitBreaker;
 import com.alliander.osgp.shared.infra.ws.DefaultWebServiceTemplateFactory;
 
 @Configuration
@@ -101,6 +102,18 @@ public class WebServiceConfig extends AbstractConfig {
 
     @Value("${web.service.connection.timeout:120000}")
     private int webserviceConnectionTimeout;
+
+    @Value("${web.service.notification.circuitbreaker.threshold:3}")
+    private short circuitBreakerThreshold;
+
+    @Value("${web.service.notification.circuitbreaker.duration.initial:15000}")
+    private int circuitBreakerDurationInitial;
+
+    @Value("${web.service.notification.circuitbreaker.duration.maximum:300000}")
+    private int circuitBreakerDurationMaximum;
+
+    @Value("${web.service.notification.circuitbreaker.duration.multiplier:2}")
+    private short circuitBreakerDurationMultiplier;
 
     private static final String SERVER = "SERVER";
 
@@ -255,6 +268,14 @@ public class WebServiceConfig extends AbstractConfig {
         return marshaller;
     }
 
+    @Bean
+    public CircuitBreaker notificationCircuitBreaker() {
+        return new CircuitBreaker.Builder().withThreshold(this.circuitBreakerThreshold)
+                .withInitialDuration(this.circuitBreakerDurationInitial)
+                .withMaximumDuration(this.circuitBreakerDurationMaximum)
+                .withMultiplier(this.circuitBreakerDurationMultiplier).build();
+    }
+
     private DefaultWebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
         return new DefaultWebServiceTemplateFactory.Builder().setMarshaller(marshaller)
                 .setMessageFactory(this.messageFactory()).setTargetUri(this.webserviceNotificationUrl)
@@ -263,6 +284,7 @@ public class WebServiceConfig extends AbstractConfig {
                 .setTrustStoreFactory(this.webServiceTrustStoreFactory()).setApplicationName("ZownStream")
                 .setMaxConnectionsPerRoute(this.webserviceMaxConnectionsPerRoute)
                 .setMaxConnectionsTotal(this.webserviceMaxConnectionsTotal)
-                .setConnectionTimeout(this.webserviceConnectionTimeout).build();
+                .setConnectionTimeout(this.webserviceConnectionTimeout)
+                .setCircuitBreaker(this.notificationCircuitBreaker()).build();
     }
 }
