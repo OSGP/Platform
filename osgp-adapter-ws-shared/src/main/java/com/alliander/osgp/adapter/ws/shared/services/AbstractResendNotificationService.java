@@ -69,7 +69,9 @@ public abstract class AbstractResendNotificationService {
             try {
                 this.resendNotifications((short) notificationsResent, createdBefore);
             } catch (final CircuitBreakerOpenException exc) {
-                LOGGER.warn("Processing notifications for this run stopped, because the circuit breaker is open.", exc);
+                LOGGER.warn(
+                        "Processing notifications for this run will be stopped, because the circuit breaker is open.",
+                        exc);
                 break;
             }
         }
