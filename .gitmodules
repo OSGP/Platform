@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = feature/ZS-349-add-circuit-breaker 
+	branch = feature/ZS-349-add-circuit-breaker
 
