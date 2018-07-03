@@ -99,7 +99,7 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public String netMangementOrganisation() {
+    public String netManagementOrganisation() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION);
     }
 }

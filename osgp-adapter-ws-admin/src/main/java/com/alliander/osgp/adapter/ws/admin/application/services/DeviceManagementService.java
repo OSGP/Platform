@@ -111,7 +111,7 @@ public class DeviceManagementService {
     private ProtocolInfoRepository protocolRepository;
 
     @Autowired
-    private String netMangementOrganisation;
+    private String netManagementOrganisation;
 
     /**
      * Constructor
@@ -274,10 +274,10 @@ public class DeviceManagementService {
 
         // Never remove the OWNER authorization for the net management
         // organization.
-        if (this.netMangementOrganisation.equals(organisationIdentification)
+        if (this.netManagementOrganisation.equals(organisationIdentification)
                 && DeviceFunctionGroup.OWNER.equals(group)) {
             LOGGER.info("Not removing DeviceFunctionGroup.OWNER for net management organisation: {}",
-                    this.netMangementOrganisation);
+                    this.netManagementOrganisation);
             return;
         }
 
