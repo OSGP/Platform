@@ -83,8 +83,7 @@ public class ConfigurationManagementEndpoint {
 
         LOGGER.info(
                 "Set Configuration Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), request.getScheduledTime(),
-                messagePriority);
+                organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final SetConfigurationAsyncResponse response = new SetConfigurationAsyncResponse();
 
