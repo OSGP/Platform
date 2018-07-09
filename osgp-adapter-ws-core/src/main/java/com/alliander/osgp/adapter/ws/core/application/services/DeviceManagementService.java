@@ -151,6 +151,24 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "transactionManager")
+    public Organisation findOrganisation(@Identification final String organisationIdentification,
+            @Identification final String organisationIdentificationToFind) throws FunctionalException {
+
+        LOGGER.debug("findOrganisation called with organisation {} and trying to find {}", organisationIdentification,
+                organisationIdentificationToFind);
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
+
+        if (this.netManagementOrganisation.equals(organisationIdentification)
+                || organisationIdentification.equals(organisationIdentificationToFind)) {
+            return this.organisationRepository.findByOrganisationIdentification(organisationIdentificationToFind);
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional(value = "transactionManager")
     public List<Organisation> findAllOrganisations(@Identification final String organisationIdentification)
             throws FunctionalException {
 
@@ -260,6 +278,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
             final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
+
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
@@ -298,6 +317,7 @@ public class DeviceManagementService {
         Page<Device> devices = null;
         try {
             if (!this.netManagementOrganisation.equals(organisationIdentification)) {
+                // Municipality organization.
                 if (deviceFilter == null) {
                     final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                             null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
@@ -309,6 +329,7 @@ public class DeviceManagementService {
                     devices = this.applyFilter(deviceFilter, organisation, request);
                 }
             } else {
+                // Net management organization.
                 devices = this.applyFilter(deviceFilter, organisation, request);
             }
         } catch (final ArgumentNullOrEmptyException e) {
