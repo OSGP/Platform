@@ -77,7 +77,6 @@ public class TariffSwitchingRequestMessageSender {
     private void sendMessage(final TariffSwitchingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the tariff switching requests queue");
 
-        this.tariffSwitchingRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.tariffSwitchingRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -85,6 +84,7 @@ public class TariffSwitchingRequestMessageSender {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType().toString());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,

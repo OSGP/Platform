@@ -46,12 +46,12 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
             this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
         }
 
-        this.webServiceResponsesJmsTemplate.setPriority(responseMessage.getMessagePriority());
         this.webServiceResponsesJmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
+                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());

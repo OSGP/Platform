@@ -77,7 +77,6 @@ public class PublicLightingRequestMessageSender {
     private void sendMessage(final PublicLightingRequestMessage requestMessage) {
         LOGGER.info("Sending message to the public lighting requests queue");
 
-        this.publicLightingRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.publicLightingRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -85,6 +84,7 @@ public class PublicLightingRequestMessageSender {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(requestMessage.getMessageType().toString());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
