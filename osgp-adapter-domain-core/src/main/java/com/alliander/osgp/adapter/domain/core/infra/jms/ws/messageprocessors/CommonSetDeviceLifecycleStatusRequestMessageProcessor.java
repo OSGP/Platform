@@ -25,7 +25,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common set device verification key request messages
- *
  */
 @Component("domainCoreCommonSetDeviceLifecycleStatusRequestMessageProcessor")
 public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {

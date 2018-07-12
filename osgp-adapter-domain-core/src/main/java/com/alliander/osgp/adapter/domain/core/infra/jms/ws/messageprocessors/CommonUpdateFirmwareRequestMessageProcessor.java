@@ -25,7 +25,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common update firmware request messages
- *
  */
 @Component("domainCoreCommonUpdateFirmwareRequestMessageProcessor")
 public class CommonUpdateFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {

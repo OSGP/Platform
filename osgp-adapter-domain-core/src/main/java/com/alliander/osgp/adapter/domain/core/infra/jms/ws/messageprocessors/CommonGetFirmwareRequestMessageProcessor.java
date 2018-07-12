@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get firmware request messages
- *
- * @author CGI
- *
  */
 @Component("domainCoreCommonGetFirmwareRequestMessageProcessor")
 public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {

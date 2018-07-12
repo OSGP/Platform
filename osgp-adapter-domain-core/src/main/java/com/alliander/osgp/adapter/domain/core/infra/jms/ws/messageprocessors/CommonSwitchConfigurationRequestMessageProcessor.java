@@ -24,7 +24,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common switch configuration request messages
- *
  */
 @Component("domainCoreCommonSwitchConfigurationRequestMessageProcessor")
 public class CommonSwitchConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {

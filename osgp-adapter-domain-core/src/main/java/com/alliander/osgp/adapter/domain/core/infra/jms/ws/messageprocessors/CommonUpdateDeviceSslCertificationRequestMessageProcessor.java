@@ -25,7 +25,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common update device ssl certification request messages
- *
  */
 @Component("domainCoreCommonUpdateDeviceSslCertificationRequestMessageProcessor")
 public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends WebServiceRequestMessageProcessor {

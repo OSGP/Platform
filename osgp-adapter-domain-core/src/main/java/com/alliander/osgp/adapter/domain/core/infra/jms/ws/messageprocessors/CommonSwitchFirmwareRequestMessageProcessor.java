@@ -24,7 +24,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common switch firmware request messages
- *
  */
 @Component("domainCoreCommonSwitchFirmwareRequestMessageProcessor")
 public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {

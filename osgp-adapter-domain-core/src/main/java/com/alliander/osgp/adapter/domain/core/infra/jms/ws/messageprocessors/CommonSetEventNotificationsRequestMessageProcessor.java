@@ -25,9 +25,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common set event notifications request messages
- *
- * @author CGI
- *
  */
 @Component("domainCoreCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {

@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common stop device test request message
- *
- * @author CGI
- *
  */
 @Component("domainCoreCommonStopDeviceTestRequestMessageProcessor")
 public class CommonStopDeviceTestRequestMessageProcessor extends WebServiceRequestMessageProcessor {

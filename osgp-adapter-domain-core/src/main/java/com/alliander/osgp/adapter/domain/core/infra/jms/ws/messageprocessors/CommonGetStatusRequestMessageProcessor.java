@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 /**
  * Class for processing common get status request messages
- *
- * @author CGI
- *
  */
 @Component("domainCoreCommonGetStatusRequestMessageProcessor")
 public class CommonGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
