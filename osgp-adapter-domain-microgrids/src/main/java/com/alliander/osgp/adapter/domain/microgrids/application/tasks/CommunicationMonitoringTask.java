@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.microgrids.application.tasks;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -45,8 +47,16 @@ public class CommunicationMonitoringTask implements Runnable {
     @Autowired
     private Integer maximumTimeWithoutCommunication;
 
+    @Autowired
+    private Long initialDelay;
+
     @Override
     public void run() {
+        if (!this.hasInitialDelayExpired()) {
+            LOGGER.info("Skipping communication monitoring task because the initial delay has not yet expired.");
+            return;
+        }
+
         LOGGER.info("Running communication monitoring task.");
 
         Task task = this.loadTask();
@@ -129,6 +139,15 @@ public class CommunicationMonitoringTask implements Runnable {
                 .minusMinutes(this.maximumTimeWithoutCommunication);
         return this.rtuDeviceRepository.findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
                 DeviceLifecycleStatus.IN_USE, lastCommunicationTime.toDate());
+    }
+
+    /**
+     * Determine the up time of the JVM and test if the initial delay has
+     * expired.
+     */
+    protected boolean hasInitialDelayExpired() {
+        final RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
+        return mx.getUptime() > this.initialDelay;
     }
 
 }
