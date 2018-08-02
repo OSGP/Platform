@@ -60,6 +60,7 @@ import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
+import com.alliander.osgp.domain.core.valueobjects.Container;
 import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceExternalManagedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
@@ -69,6 +70,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -559,10 +561,12 @@ public class DeviceManagementService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
-                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
-                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
-                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
+        existingDevice.updateMetaData(updateDevice.getAlias(),
+                new Container(updateDevice.getContainer().getCity(), updateDevice.getContainer().getPostalCode(),
+                        updateDevice.getContainer().getStreet(), updateDevice.getContainer().getNumber(),
+                        updateDevice.getContainer().getMunicipality()),
+                new GpsCoordinates(updateDevice.getGpsCoordinates().getLatitude(),
+                        updateDevice.getGpsCoordinates().getLongitude()));
 
         existingDevice.setActivated(updateDevice.isActivated());
         existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());

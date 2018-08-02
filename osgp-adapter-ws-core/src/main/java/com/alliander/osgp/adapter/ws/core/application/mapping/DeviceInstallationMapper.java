@@ -18,6 +18,8 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceModel;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.Container;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
@@ -69,9 +71,11 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
             Device destination = null;
 
             if (source != null) {
-                destination = new Device(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
-                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
-                        source.getContainerMunicipality(), source.getGpsLatitude(), source.getGpsLongitude());
+                destination = new Device(source.getDeviceIdentification(), source.getAlias(),
+                        new Container(source.getContainerCity(), source.getContainerPostalCode(),
+                                source.getContainerStreet(), source.getContainerNumber(),
+                                source.getContainerMunicipality()),
+                        new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude()), null);
 
                 /*
                  * Model code does not uniquely identify a device model, which
@@ -108,13 +112,13 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                 destination = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setAlias(source.getAlias());
-                destination.setContainerCity(source.getContainerCity());
-                destination.setContainerPostalCode(source.getContainerPostalCode());
-                destination.setContainerStreet(source.getContainerStreet());
-                destination.setContainerNumber(source.getContainerNumber());
-                destination.setContainerMunicipality(source.getContainerMunicipality());
-                destination.setGpsLatitude(source.getGpsLatitude());
-                destination.setGpsLongitude(source.getGpsLongitude());
+                destination.setContainerCity(source.getContainer().getCity());
+                destination.setContainerPostalCode(source.getContainer().getPostalCode());
+                destination.setContainerStreet(source.getContainer().getStreet());
+                destination.setContainerNumber(source.getContainer().getNumber());
+                destination.setContainerMunicipality(source.getContainer().getMunicipality());
+                destination.setGpsLatitude(source.getGpsCoordinates().getLatitude());
+                destination.setGpsLongitude(source.getGpsCoordinates().getLongitude());
 
                 destination.setActivated(source.isActivated());
                 destination.setHasSchedule(this.ssldRepository.findOne(source.getId()).getHasSchedule());

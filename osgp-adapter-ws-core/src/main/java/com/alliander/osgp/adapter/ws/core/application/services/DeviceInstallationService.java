@@ -38,8 +38,10 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.Container;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -112,15 +114,22 @@ public class DeviceInstallationService {
         if (existingDevice != null) {
             // Update existing device
             ssld = this.writableSsldRepository.findByDeviceIdentification(newDevice.getDeviceIdentification());
-            ssld.updateMetaData(newDevice.getAlias(), newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
-                    newDevice.getContainerStreet(), newDevice.getContainerNumber(),
-                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+            ssld.updateMetaData(newDevice.getAlias(),
+                    new Container(newDevice.getContainer().getCity(), newDevice.getContainer().getPostalCode(),
+                            newDevice.getContainer().getStreet(), newDevice.getContainer().getNumber(),
+                            newDevice.getContainer().getMunicipality()),
+                    new GpsCoordinates(newDevice.getGpsCoordinates().getLatitude(),
+                            newDevice.getGpsCoordinates().getLongitude()));
             ssld.getAuthorizations().clear();
         } else {
             // Create a new SSLD instance.
-            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(), newDevice.getContainerCity(),
-                    newDevice.getContainerPostalCode(), newDevice.getContainerStreet(), newDevice.getContainerNumber(),
-                    newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
+                    new Container(newDevice.getContainer().getCity(), newDevice.getContainer().getPostalCode(),
+                            newDevice.getContainer().getStreet(), newDevice.getContainer().getNumber(),
+                            newDevice.getContainer().getMunicipality()),
+                    new GpsCoordinates(newDevice.getGpsCoordinates().getLatitude(),
+                            newDevice.getGpsCoordinates().getLongitude()),
+                    null);
         }
         ssld.setHasSchedule(false);
         ssld.setDeviceModel(newDevice.getDeviceModel());
@@ -178,10 +187,12 @@ public class DeviceInstallationService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
-                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
-                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
-                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
+        existingDevice.updateMetaData(updateDevice.getAlias(),
+                new Container(updateDevice.getContainer().getCity(), updateDevice.getContainer().getPostalCode(),
+                        updateDevice.getContainer().getStreet(), updateDevice.getContainer().getNumber(),
+                        updateDevice.getContainer().getMunicipality()),
+                new GpsCoordinates(updateDevice.getGpsCoordinates().getLatitude(),
+                        updateDevice.getGpsCoordinates().getLongitude()));
         existingDevice.setPublicKeyPresent(updateDevice.isPublicKeyPresent());
 
         this.writableSsldRepository.save(existingDevice);
@@ -283,7 +294,7 @@ public class DeviceInstallationService {
 
         LOGGER.debug("enqueueStopDeviceTestRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
-        
+
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 

@@ -11,6 +11,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
+import com.alliander.osgp.domain.core.valueobjects.Container;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
+
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class SmartMeter extends Device {
@@ -45,11 +48,9 @@ public class SmartMeter extends Device {
         // Default constructor for hibernate
     }
 
-    public SmartMeter(final String deviceIdentification, final String alias, final String containerCity,
-            final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
-        super(deviceIdentification, alias, containerCity, containerPostalCode, containerStreet, containerNumber,
-                containerMunicipality, gpsLatitude, gpsLongitude);
+    public SmartMeter(final String deviceIdentification, final String alias, final Container container,
+            final GpsCoordinates gpsCoordinates) {
+        super(deviceIdentification, alias, container, gpsCoordinates, null);
     }
 
     public SmartMeter(final String supplier, final Short channel) {

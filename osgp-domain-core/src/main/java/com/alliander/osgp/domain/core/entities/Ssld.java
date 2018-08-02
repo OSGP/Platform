@@ -29,6 +29,9 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.alliander.osgp.domain.core.valueobjects.CdmaCommunicationSettings;
+import com.alliander.osgp.domain.core.valueobjects.Container;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 @Entity
@@ -89,18 +92,9 @@ public class Ssld extends Device {
         this.hasSchedule = hasSchedule;
     }
 
-    public Ssld(final String deviceIdentification, final String alias, final String containerCity,
-            final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String containerMunicipality, final Float latitude, final Float longitude) {
-        this.deviceIdentification = deviceIdentification;
-        this.alias = alias;
-        this.containerCity = containerCity;
-        this.containerPostalCode = containerPostalCode;
-        this.containerStreet = containerStreet;
-        this.containerNumber = containerNumber;
-        this.containerMunicipality = containerMunicipality;
-        this.gpsLatitude = latitude;
-        this.gpsLongitude = longitude;
+    public Ssld(final String deviceIdentification, final String alias, final Container container,
+            final GpsCoordinates gpsCoordinates, final CdmaCommunicationSettings cdmaCommunicationSettings) {
+        super(deviceIdentification, alias, container, gpsCoordinates, cdmaCommunicationSettings);
     }
 
     @Override

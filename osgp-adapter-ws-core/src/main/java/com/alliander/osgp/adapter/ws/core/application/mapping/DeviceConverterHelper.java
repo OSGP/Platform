@@ -26,7 +26,9 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.LightMeasurementDevice;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.valueobjects.Container;
 import com.alliander.osgp.domain.core.valueobjects.DeviceLifecycleStatus;
+import com.alliander.osgp.domain.core.valueobjects.GpsCoordinates;
 
 class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.Device> {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
@@ -46,16 +48,16 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
             source.setGpsLongitude("0");
         }
         T destination;
+        final Container container = new Container(source.getContainerCity(), source.getContainerPostalCode(),
+                source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
+        final GpsCoordinates gpsCoordinates = new GpsCoordinates(Float.valueOf(source.getGpsLatitude()),
+                Float.valueOf(source.getGpsLongitude()));
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
-            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(),
-                    source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                    source.getContainerNumber(), source.getContainerMunicipality(),
-                    Float.valueOf(source.getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), container,
+                    gpsCoordinates);
         } else {
-            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
-                    source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
-                    source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()),
-                    Float.valueOf(source.getGpsLongitude()));
+            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), container, gpsCoordinates,
+                    null);
         }
 
         if (source.isActivated() != null) {
@@ -90,21 +92,21 @@ class DeviceConverterHelper<T extends com.alliander.osgp.domain.core.entities.De
         destination.setDeviceLifecycleStatus(
                 com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
                         .valueOf(source.getDeviceLifecycleStatus().name()));
-        destination.setContainerCity(source.getContainerCity());
-        destination.setContainerNumber(source.getContainerNumber());
-        destination.setContainerPostalCode(source.getContainerPostalCode());
-        destination.setContainerStreet(source.getContainerStreet());
-        destination.setContainerMunicipality(source.getContainerMunicipality());
+        destination.setContainerCity(source.getContainer().getCity());
+        destination.setContainerNumber(source.getContainer().getNumber());
+        destination.setContainerPostalCode(source.getContainer().getPostalCode());
+        destination.setContainerStreet(source.getContainer().getStreet());
+        destination.setContainerMunicipality(source.getContainer().getMunicipality());
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(
                 this.convertDateToXMLGregorianCalendar(source.getTechnicalInstallationDate()));
 
-        if (source.getGpsLatitude() != null) {
-            destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
+        if (source.getGpsCoordinates() != null && source.getGpsCoordinates().getLatitude() != null) {
+            destination.setGpsLatitude(Float.toString(source.getGpsCoordinates().getLatitude()));
         }
-        if (source.getGpsLongitude() != null) {
-            destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
+        if (source.getGpsCoordinates() != null && source.getGpsCoordinates().getLongitude() != null) {
+            destination.setGpsLongitude(Float.toString(source.getGpsCoordinates().getLongitude()));
         }
 
         destination
