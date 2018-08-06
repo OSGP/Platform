@@ -10,11 +10,6 @@ package org.opensmartgridplatform.adapter.domain.microgrids.application.tasks;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.CommunicatonRecoveryService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.microgrids.entities.RtuDevice;
@@ -22,6 +17,11 @@ import org.opensmartgridplatform.domain.microgrids.entities.Task;
 import org.opensmartgridplatform.domain.microgrids.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.domain.microgrids.repositories.TaskRepository;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.TaskStatusType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class CommunicationMonitoringTask implements Runnable {
@@ -46,6 +46,7 @@ public class CommunicationMonitoringTask implements Runnable {
     private Integer maximumTimeWithoutCommunication;
 
     @Override
+    @Transactional("transactionManager")
     public void run() {
         LOGGER.info("Running communication monitoring task.");
 

@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.microgrids.application.config;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
-
-import org.opensmartgridplatform.adapter.domain.microgrids.application.tasks.CommunicationMonitoringTask;
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 
 /**
  * An application context Java configuration class.
@@ -64,7 +62,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     private Environment environment;
 
     @Autowired
-    private CommunicationMonitoringTask communicationMonitoringTask;
+    private Runnable communicationMonitoringTask;
 
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
