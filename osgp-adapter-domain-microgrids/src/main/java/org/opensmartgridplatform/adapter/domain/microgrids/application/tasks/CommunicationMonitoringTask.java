@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class CommunicationMonitoringTask implements Runnable {
@@ -46,11 +45,17 @@ public class CommunicationMonitoringTask implements Runnable {
     private Integer maximumTimeWithoutCommunication;
 
     @Override
-    @Transactional("transactionManager")
     public void run() {
         LOGGER.info("Running communication monitoring task.");
 
-        Task task = this.loadTask();
+        Task task;
+
+        try {
+            task = this.loadTask();
+        } catch (final Exception e) {
+            LOGGER.warn("Loading the task failed, stop the current run", e);
+            return;
+        }
 
         if (this.taskAlreadyRunning(task)) {
             LOGGER.info("Communication Monitoring Task already running. Skipping this run.");
