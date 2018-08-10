@@ -47,6 +47,7 @@ import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
@@ -776,6 +777,36 @@ public class DeviceManagementService {
     }
 
     public ResponseMessage dequeueSetDeviceLifecycleStatusResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    public String enqueueUpdateDeviceCdmaSettingsRequest(final String organisationIdentification,
+            final String deviceIdentification, final CdmaSettings cdmaSettings) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.deviceDomainService.searchDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_DEVICE_CDMA_SETTINGS);
+
+        LOGGER.debug(
+                "enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentifcation {}, and {}",
+                organisationIdentification, deviceIdentification, cdmaSettings);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                CommonRequestMessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
+
+        final CommonRequestMessage message = new CommonRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(cdmaSettings).build();
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueUpdateDeviceCdmaSettingsResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 }

@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -41,7 +43,7 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.domain.core.validation.Identification;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaCommunicationSettings;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
@@ -108,19 +110,26 @@ public class Device implements Serializable {
      * Container information (address) of a device
      */
     @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "city", column = @Column(name = "container_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "container_street")),
+            @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code")),
+            @AttributeOverride(name = "number", column = @Column(name = "container_number")),
+            @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality")) })
     protected Container container;
 
     /**
      * Gps information of a device
      */
     @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "latitude", column = @Column(name = "gps_latitude")),
+            @AttributeOverride(name = "longitude", column = @Column(name = "gps_longitude")) })
     protected GpsCoordinates gpsCoordinates;
 
     /**
      * Cdma communication settings of a device
      */
     @Embedded
-    protected CdmaCommunicationSettings cdmaCommunicationSettings;
+    protected CdmaSettings cdmaSettings;
 
     /**
      * Indicates the type of the device. Example { @see Ssld.SSLD_TYPE }
@@ -204,12 +213,12 @@ public class Device implements Serializable {
     }
 
     public Device(final String deviceIdentification, final String alias, final Container container,
-            final GpsCoordinates gpsCoordinates, final CdmaCommunicationSettings cdmaCommunicationSettings) {
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaCommunicationSettings) {
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
         this.container = container;
         this.gpsCoordinates = gpsCoordinates;
-        this.cdmaCommunicationSettings = cdmaCommunicationSettings;
+        this.cdmaSettings = cdmaCommunicationSettings;
     }
 
     public DeviceAuthorization addAuthorization(final Organisation organisation,
@@ -258,28 +267,13 @@ public class Device implements Serializable {
         return this.authorizations;
     }
 
+    public CdmaSettings getCdmaSettings() {
+        return this.getCdmaSettings();
+    }
+
     public Container getContainer() {
         return this.getContainer();
     }
-    // public String getContainerCity() {
-    // return this.container.getCity();
-    // }
-    //
-    // public String getContainerMunicipality() {
-    // return this.container.getMunicipality();
-    // }
-    //
-    // public String getContainerNumber() {
-    // return this.container.getNumber();
-    // }
-    //
-    // public String getContainerPostalCode() {
-    // return this.container.getPostalCode();
-    // }
-    //
-    // public String getContainerStreet() {
-    // return this.container.getStreet();
-    // }
 
     public final Date getCreationTime() {
         return (Date) this.creationTime.clone();
@@ -296,14 +290,6 @@ public class Device implements Serializable {
     public String getDeviceType() {
         return this.deviceType;
     }
-
-    // public Float getGpsLatitude() {
-    // return this.gpsCoordinates.getLatitude();
-    // }
-    //
-    // public Float getGpsLongitude() {
-    // return this.gpsCoordinates.getLongitude();
-    // }
 
     public final Long getId() {
         return this.id;
@@ -417,6 +403,10 @@ public class Device implements Serializable {
 
     public void setAlias(final String alias) {
         this.alias = alias;
+    }
+
+    public void updateCdmaSettings(final CdmaSettings cdmaSettings) {
+        this.cdmaSettings = cdmaSettings;
     }
 
     public void updateMetaData(final String alias, final Container container, final GpsCoordinates gpsCoordinates) {

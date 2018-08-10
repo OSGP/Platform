@@ -28,7 +28,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.opensmartgridplatform.domain.core.valueobjects.CdmaCommunicationSettings;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -92,7 +92,7 @@ public class Ssld extends Device {
     }
 
     public Ssld(final String deviceIdentification, final String alias, final Container container,
-            final GpsCoordinates gpsCoordinates, final CdmaCommunicationSettings cdmaCommunicationSettings) {
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaCommunicationSettings) {
         super(deviceIdentification, alias, container, gpsCoordinates, cdmaCommunicationSettings);
     }
 
