@@ -49,7 +49,7 @@ public class GpsCoordinates implements Serializable {
         }
 
         final GpsCoordinates other = (GpsCoordinates) obj;
-        return Objects.equals(this.latitude, other.latitude) && Objects.equals(this.longitude, other.latitude);
+        return Objects.equals(this.latitude, other.latitude) && Objects.equals(this.longitude, other.longitude);
     }
 
     @Override

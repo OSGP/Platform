@@ -1,6 +1,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -62,14 +63,7 @@ public class Container implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.city == null) ? 0 : this.city.hashCode());
-        result = prime * result + ((this.municipality == null) ? 0 : this.municipality.hashCode());
-        result = prime * result + ((this.number == null) ? 0 : this.number.hashCode());
-        result = prime * result + ((this.postalCode == null) ? 0 : this.postalCode.hashCode());
-        result = prime * result + ((this.street == null) ? 0 : this.street.hashCode());
-        return result;
+        return Objects.hash(this.city, this.postalCode, this.street, this.number, this.municipality);
     }
 
     @Override
@@ -77,49 +71,15 @@ public class Container implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+
+        if (!(obj instanceof Container)) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
+
         final Container other = (Container) obj;
-        if (this.city == null) {
-            if (other.city != null) {
-                return false;
-            }
-        } else if (!this.city.equals(other.city)) {
-            return false;
-        }
-        if (this.municipality == null) {
-            if (other.municipality != null) {
-                return false;
-            }
-        } else if (!this.municipality.equals(other.municipality)) {
-            return false;
-        }
-        if (this.number == null) {
-            if (other.number != null) {
-                return false;
-            }
-        } else if (!this.number.equals(other.number)) {
-            return false;
-        }
-        if (this.postalCode == null) {
-            if (other.postalCode != null) {
-                return false;
-            }
-        } else if (!this.postalCode.equals(other.postalCode)) {
-            return false;
-        }
-        if (this.street == null) {
-            if (other.street != null) {
-                return false;
-            }
-        } else if (!this.street.equals(other.street)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.city, other.city) && Objects.equals(this.postalCode, other.postalCode)
+                && Objects.equals(this.street, other.street) && Objects.equals(this.number, other.number)
+                && Objects.equals(this.municipality, other.municipality);
     }
 
 }

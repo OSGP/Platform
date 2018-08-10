@@ -268,7 +268,7 @@ public class Device implements Serializable {
     }
 
     public CdmaSettings getCdmaSettings() {
-        return this.getCdmaSettings();
+        return this.cdmaSettings;
     }
 
     public Container getContainer() {

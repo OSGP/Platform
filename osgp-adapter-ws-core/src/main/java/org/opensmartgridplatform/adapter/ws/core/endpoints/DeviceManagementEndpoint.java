@@ -47,6 +47,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEven
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsResponse;
@@ -680,7 +681,7 @@ public class DeviceManagementEndpoint {
     @ResponsePayload
     public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceLifecycleStatusAsyncRequest asyncRequest) throws OsgpException {
+            @RequestPayload final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest) throws OsgpException {
 
         LOGGER.info("GetUpdateDeviceCdmaSettingsResponse received from organisation: {} with correlationUid: {}.",
                 organisationIdentification, asyncRequest.getCorrelationUid());
