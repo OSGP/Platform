@@ -272,7 +272,7 @@ public class Device implements Serializable {
     }
 
     public Container getContainer() {
-        return this.getContainer();
+        return this.container;
     }
 
     public final Date getCreationTime() {
