@@ -16,8 +16,9 @@ public class DeviceInstallationMapperTest {
     private final static String STREET = "street";
     private final static String NUMBER = "number";
     private final static String MUNICIPALITY = "municipality";
-    private final static Float GPS_LATITUDE = 50f;
-    private final static Float GPS_LONGITUDE = 5f;
+    private final static float GPS_LATITUDE = 50f;
+    private final static float GPS_LONGITUDE = 5f;
+    private final static boolean PUBLIC_KEY_PRESENT = true;
 
     DeviceInstallationMapper mapper = new DeviceInstallationMapper();
 
@@ -35,9 +36,14 @@ public class DeviceInstallationMapperTest {
         final Ssld ssld = this.mapper.map(device, Ssld.class);
 
         // then
+        assertThat(ssld.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
+        assertThat(ssld.getAlias()).isEqualTo(ALIAS);
         assertThat(ssld.getContainer()).isNotNull();
         assertThat(ssld.getContainer().getCity()).isEqualTo(CITY);
         assertThat(ssld.getContainer().getPostalCode()).isEqualTo(POSTAL_CODE);
+        assertThat(ssld.getGpsCoordinates().getLatitude()).isEqualTo(GPS_LATITUDE);
+        assertThat(ssld.getGpsCoordinates().getLongitude()).isEqualTo(GPS_LONGITUDE);
+        assertThat(ssld.isPublicKeyPresent()).isEqualTo(PUBLIC_KEY_PRESENT);
     }
 
     private Device createDevice() {
@@ -51,6 +57,7 @@ public class DeviceInstallationMapperTest {
         device.setContainerMunicipality(MUNICIPALITY);
         device.setGpsLatitude(GPS_LATITUDE);
         device.setGpsLongitude(GPS_LONGITUDE);
+        device.setPublicKeyPresent(PUBLIC_KEY_PRESENT);
         return device;
     }
 }
