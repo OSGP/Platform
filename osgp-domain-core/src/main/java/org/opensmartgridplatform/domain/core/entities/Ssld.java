@@ -92,8 +92,8 @@ public class Ssld extends Device {
     }
 
     public Ssld(final String deviceIdentification, final String alias, final Container container,
-            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaCommunicationSettings) {
-        super(deviceIdentification, alias, container, gpsCoordinates, cdmaCommunicationSettings);
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
+        super(deviceIdentification, alias, container, gpsCoordinates, cdmaSettings);
     }
 
     @Override
