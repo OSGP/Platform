@@ -33,7 +33,9 @@ class WsInstallationDeviceToSsldConverter extends CustomConverter<Device, Ssld> 
         final Container container = new Container(source.getContainerCity(), source.getContainerPostalCode(),
                 source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude());
-        return new Ssld(deviceIdentification, alias, container, gpsCoordinates, null);
+        final Ssld ssld = new Ssld(deviceIdentification, alias, container, gpsCoordinates, null);
+        ssld.setPublicKeyPresent(source.isPublicKeyPresent());
+        return ssld;
     }
 
 }
