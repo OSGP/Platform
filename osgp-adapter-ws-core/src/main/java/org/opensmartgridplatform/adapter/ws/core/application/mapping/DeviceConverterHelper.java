@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -91,11 +92,13 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.setDeviceLifecycleStatus(
                 org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
                         .valueOf(source.getDeviceLifecycleStatus().name()));
-        destination.setContainerCity(source.getContainer().getCity());
-        destination.setContainerNumber(source.getContainer().getNumber());
-        destination.setContainerPostalCode(source.getContainer().getPostalCode());
-        destination.setContainerStreet(source.getContainer().getStreet());
-        destination.setContainerMunicipality(source.getContainer().getMunicipality());
+        if (!Objects.isNull(source.getContainer())) {
+            destination.setContainerCity(source.getContainer().getCity());
+            destination.setContainerNumber(source.getContainer().getNumber());
+            destination.setContainerPostalCode(source.getContainer().getPostalCode());
+            destination.setContainerStreet(source.getContainer().getStreet());
+            destination.setContainerMunicipality(source.getContainer().getMunicipality());
+        }
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(
