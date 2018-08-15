@@ -24,7 +24,7 @@ public class CdmaSettings implements Serializable {
     private Short batchNumber;
 
     protected CdmaSettings() {
-        // Default constructor
+        // Default constructor for hibernate
     }
 
     public CdmaSettings(final String mastSegment, final Short batchNumber) {

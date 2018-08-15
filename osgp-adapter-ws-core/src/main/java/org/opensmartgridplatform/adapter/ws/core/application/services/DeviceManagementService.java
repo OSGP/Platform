@@ -49,7 +49,6 @@ import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceExternalManagedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter;
@@ -59,7 +58,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceInMaintenanceFil
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
-import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
@@ -561,12 +559,8 @@ public class DeviceManagementService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getAlias(),
-                new Container(updateDevice.getContainer().getCity(), updateDevice.getContainer().getPostalCode(),
-                        updateDevice.getContainer().getStreet(), updateDevice.getContainer().getNumber(),
-                        updateDevice.getContainer().getMunicipality()),
-                new GpsCoordinates(updateDevice.getGpsCoordinates().getLatitude(),
-                        updateDevice.getGpsCoordinates().getLongitude()));
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerAddress(),
+                updateDevice.getGpsCoordinates());
 
         existingDevice.setActivated(updateDevice.isActivated());
         existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
@@ -788,7 +782,7 @@ public class DeviceManagementService {
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_DEVICE_CDMA_SETTINGS);
 
         LOGGER.debug(
-                "enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentifcation {}, and {}",
+                "enqueueUpdateDeviceCdmaSettingsRequest called with organisation {}, deviceIdentification {}, and {}",
                 organisationIdentification, deviceIdentification, cdmaSettings);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

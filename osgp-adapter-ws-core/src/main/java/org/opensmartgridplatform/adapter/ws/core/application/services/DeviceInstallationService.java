@@ -31,10 +31,8 @@ import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.validation.Identification;
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
-import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -110,25 +108,16 @@ public class DeviceInstallationService {
         }
 
         Ssld ssld = null;
+
         if (existingDevice != null) {
             // Update existing device
             ssld = this.writableSsldRepository.findByDeviceIdentification(newDevice.getDeviceIdentification());
-            ssld.updateMetaData(newDevice.getAlias(),
-                    new Container(newDevice.getContainer().getCity(), newDevice.getContainer().getPostalCode(),
-                            newDevice.getContainer().getStreet(), newDevice.getContainer().getNumber(),
-                            newDevice.getContainer().getMunicipality()),
-                    new GpsCoordinates(newDevice.getGpsCoordinates().getLatitude(),
-                            newDevice.getGpsCoordinates().getLongitude()));
+            ssld.updateMetaData(newDevice.getAlias(), newDevice.getContainerAddress(), newDevice.getGpsCoordinates());
             ssld.getAuthorizations().clear();
         } else {
             // Create a new SSLD instance.
-            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
-                    new Container(newDevice.getContainer().getCity(), newDevice.getContainer().getPostalCode(),
-                            newDevice.getContainer().getStreet(), newDevice.getContainer().getNumber(),
-                            newDevice.getContainer().getMunicipality()),
-                    new GpsCoordinates(newDevice.getGpsCoordinates().getLatitude(),
-                            newDevice.getGpsCoordinates().getLongitude()),
-                    null);
+            ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(), newDevice.getContainerAddress(),
+                    newDevice.getGpsCoordinates(), null);
         }
         ssld.setHasSchedule(false);
         ssld.setDeviceModel(newDevice.getDeviceModel());
@@ -186,12 +175,8 @@ public class DeviceInstallationService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getAlias(),
-                new Container(updateDevice.getContainer().getCity(), updateDevice.getContainer().getPostalCode(),
-                        updateDevice.getContainer().getStreet(), updateDevice.getContainer().getNumber(),
-                        updateDevice.getContainer().getMunicipality()),
-                new GpsCoordinates(updateDevice.getGpsCoordinates().getLatitude(),
-                        updateDevice.getGpsCoordinates().getLongitude()));
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerAddress(),
+                updateDevice.getGpsCoordinates());
         existingDevice.setPublicKeyPresent(updateDevice.isPublicKeyPresent());
 
         this.writableSsldRepository.save(existingDevice);

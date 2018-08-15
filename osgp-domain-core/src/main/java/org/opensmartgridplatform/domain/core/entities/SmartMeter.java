@@ -11,7 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 @Entity
@@ -48,9 +48,9 @@ public class SmartMeter extends Device {
         // Default constructor for hibernate
     }
 
-    public SmartMeter(final String deviceIdentification, final String alias, final Container container,
+    public SmartMeter(final String deviceIdentification, final String alias, final Address containerAddress,
             final GpsCoordinates gpsCoordinates) {
-        super(deviceIdentification, alias, container, gpsCoordinates, null);
+        super(deviceIdentification, alias, containerAddress, gpsCoordinates, null);
     }
 
     public SmartMeter(final String supplier, final Short channel) {

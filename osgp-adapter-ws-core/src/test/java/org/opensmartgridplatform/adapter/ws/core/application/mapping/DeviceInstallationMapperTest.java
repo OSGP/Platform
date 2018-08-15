@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,9 +45,9 @@ public class DeviceInstallationMapperTest {
         // then
         assertThat(ssld.getDeviceIdentification()).isEqualTo(DEVICE_IDENTIFICATION);
         assertThat(ssld.getAlias()).isEqualTo(ALIAS);
-        assertThat(ssld.getContainer()).isNotNull();
-        assertThat(ssld.getContainer().getCity()).isEqualTo(CITY);
-        assertThat(ssld.getContainer().getPostalCode()).isEqualTo(POSTAL_CODE);
+        assertThat(ssld.getContainerAddress()).isNotNull();
+        assertThat(ssld.getContainerAddress().getCity()).isEqualTo(CITY);
+        assertThat(ssld.getContainerAddress().getPostalCode()).isEqualTo(POSTAL_CODE);
         assertThat(ssld.getGpsCoordinates().getLatitude()).isEqualTo(GPS_LATITUDE);
         assertThat(ssld.getGpsCoordinates().getLongitude()).isEqualTo(GPS_LONGITUDE);
         assertThat(ssld.isPublicKeyPresent()).isEqualTo(PUBLIC_KEY_PRESENT);

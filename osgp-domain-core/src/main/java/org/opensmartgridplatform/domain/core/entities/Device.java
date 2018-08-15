@@ -43,8 +43,8 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
@@ -107,7 +107,7 @@ public class Device implements Serializable {
     protected String alias;
 
     /**
-     * Container information (address) of a device
+     * Address of a device
      */
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "city", column = @Column(name = "container_city")),
@@ -115,7 +115,7 @@ public class Device implements Serializable {
             @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code")),
             @AttributeOverride(name = "number", column = @Column(name = "container_number")),
             @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality")) })
-    protected Container container;
+    protected Address containerAddress;
 
     /**
      * Gps information of a device
@@ -212,13 +212,13 @@ public class Device implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String alias, final Container container,
-            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaCommunicationSettings) {
+    public Device(final String deviceIdentification, final String alias, final Address containerAddress,
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
-        this.container = container;
+        this.containerAddress = containerAddress;
         this.gpsCoordinates = gpsCoordinates;
-        this.cdmaSettings = cdmaCommunicationSettings;
+        this.cdmaSettings = cdmaSettings;
     }
 
     public DeviceAuthorization addAuthorization(final Organisation organisation,
@@ -271,8 +271,12 @@ public class Device implements Serializable {
         return this.cdmaSettings;
     }
 
-    public Container getContainer() {
-        return this.container;
+    public Address getContainerAddress() {
+        return this.containerAddress;
+    }
+
+    public void setContainerAddress(final Address containerAddress) {
+        this.containerAddress = containerAddress;
     }
 
     public final Date getCreationTime() {
@@ -409,9 +413,9 @@ public class Device implements Serializable {
         this.cdmaSettings = cdmaSettings;
     }
 
-    public void updateMetaData(final String alias, final Container container, final GpsCoordinates gpsCoordinates) {
+    public void updateMetaData(final String alias, final Address address, final GpsCoordinates gpsCoordinates) {
         this.alias = alias;
-        this.container = container;
+        this.containerAddress = address;
         this.gpsCoordinates = gpsCoordinates;
     }
 

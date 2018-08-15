@@ -14,7 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Container implements Serializable {
+public class Address implements Serializable {
 
     private static final long serialVersionUID = -4694887724278796555L;
 
@@ -24,16 +24,16 @@ public class Container implements Serializable {
     private String postalCode;
     @Column(length = 255)
     private String street;
-    @Column(length = 255)
+    @Column(length = 10)
     private String number;
     @Column(length = 255)
     private String municipality;
 
-    public Container() {
-        // Default constructor
+    public Address() {
+        // Default constructor for hibernate
     }
 
-    public Container(final String city, final String postalCode, final String street, final String number,
+    public Address(final String city, final String postalCode, final String street, final String number,
             final String municipality) {
         this.city = city;
         this.postalCode = postalCode;
@@ -64,7 +64,7 @@ public class Container implements Serializable {
 
     @Override
     public String toString() {
-        return "Container [city=" + this.city + ", postalCode=" + this.postalCode + ", street=" + this.street
+        return "Address [city=" + this.city + ", postalCode=" + this.postalCode + ", street=" + this.street
                 + ", number=" + this.number + ", municipality=" + this.municipality + "]";
     }
 
@@ -79,14 +79,13 @@ public class Container implements Serializable {
             return true;
         }
 
-        if (!(obj instanceof Container)) {
+        if (!(obj instanceof Address)) {
             return false;
         }
 
-        final Container other = (Container) obj;
+        final Address other = (Address) obj;
         return Objects.equals(this.city, other.city) && Objects.equals(this.postalCode, other.postalCode)
                 && Objects.equals(this.street, other.street) && Objects.equals(this.number, other.number)
                 && Objects.equals(this.municipality, other.municipality);
     }
-
 }

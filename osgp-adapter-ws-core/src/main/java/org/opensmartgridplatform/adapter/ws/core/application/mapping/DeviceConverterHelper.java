@@ -24,7 +24,7 @@ import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.slf4j.Logger;
@@ -48,15 +48,15 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             source.setGpsLongitude("0");
         }
         T destination;
-        final Container container = new Container(source.getContainerCity(), source.getContainerPostalCode(),
+        final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
                 source.getContainerStreet(), source.getContainerNumber(), source.getContainerMunicipality());
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(Float.valueOf(source.getGpsLatitude()),
                 Float.valueOf(source.getGpsLongitude()));
         if (this.clazz.isAssignableFrom(SmartMeter.class)) {
-            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), container,
+            destination = (T) new SmartMeter(source.getDeviceIdentification(), source.getAlias(), containerAddress,
                     gpsCoordinates);
         } else {
-            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), container, gpsCoordinates,
+            destination = (T) new Ssld(source.getDeviceIdentification(), source.getAlias(), containerAddress, gpsCoordinates,
                     null);
         }
 
@@ -92,23 +92,27 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.setDeviceLifecycleStatus(
                 org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceLifecycleStatus
                         .valueOf(source.getDeviceLifecycleStatus().name()));
-        if (!Objects.isNull(source.getContainer())) {
-            destination.setContainerCity(source.getContainer().getCity());
-            destination.setContainerNumber(source.getContainer().getNumber());
-            destination.setContainerPostalCode(source.getContainer().getPostalCode());
-            destination.setContainerStreet(source.getContainer().getStreet());
-            destination.setContainerMunicipality(source.getContainer().getMunicipality());
+        if (!Objects.isNull(source.getContainerAddress())) {
+            final Address containerAddress = source.getContainerAddress();
+            destination.setContainerCity(containerAddress.getCity());
+            destination.setContainerNumber(containerAddress.getNumber());
+            destination.setContainerPostalCode(containerAddress.getPostalCode());
+            destination.setContainerStreet(containerAddress.getStreet());
+            destination.setContainerMunicipality(containerAddress.getMunicipality());
         }
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(
                 this.convertDateToXMLGregorianCalendar(source.getTechnicalInstallationDate()));
 
-        if (source.getGpsCoordinates() != null && source.getGpsCoordinates().getLatitude() != null) {
-            destination.setGpsLatitude(Float.toString(source.getGpsCoordinates().getLatitude()));
-        }
-        if (source.getGpsCoordinates() != null && source.getGpsCoordinates().getLongitude() != null) {
-            destination.setGpsLongitude(Float.toString(source.getGpsCoordinates().getLongitude()));
+        if (!Objects.isNull(source.getGpsCoordinates())) {
+            final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
+            if (gpsCoordinates.getLatitude() != null) {
+                destination.setGpsLatitude(Float.toString(gpsCoordinates.getLatitude()));
+            }
+            if (gpsCoordinates.getLongitude() != null) {
+                destination.setGpsLongitude(Float.toString(gpsCoordinates.getLongitude()));
+            }
         }
 
         destination

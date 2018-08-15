@@ -29,7 +29,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
-import org.opensmartgridplatform.domain.core.valueobjects.Container;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 
@@ -91,9 +91,9 @@ public class Ssld extends Device {
         this.hasSchedule = hasSchedule;
     }
 
-    public Ssld(final String deviceIdentification, final String alias, final Container container,
+    public Ssld(final String deviceIdentification, final String alias, final Address containerAddress,
             final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
-        super(deviceIdentification, alias, container, gpsCoordinates, cdmaSettings);
+        super(deviceIdentification, alias, containerAddress, gpsCoordinates, cdmaSettings);
     }
 
     @Override

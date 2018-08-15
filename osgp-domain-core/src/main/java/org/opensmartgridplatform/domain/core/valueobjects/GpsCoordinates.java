@@ -19,12 +19,12 @@ public class GpsCoordinates implements Serializable {
     private static final long serialVersionUID = 454785458685030204L;
 
     @Column
-    protected Float latitude;
+    private Float latitude;
     @Column
-    protected Float longitude;
+    private Float longitude;
 
     protected GpsCoordinates() {
-        // Default constructor
+        // Default constructor for hibernate
     }
 
     public GpsCoordinates(final Float latitude, final Float longitude) {
