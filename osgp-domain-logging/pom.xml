@@ -18,9 +18,9 @@
   <description>Domain entities module for logging domain.</description>
 
   <parent>
-    <groupId>com.alliander.osgp</groupId>
+    <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>4.29.0</version>
+    <version>4.30.0</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -29,9 +29,9 @@
   </properties>
 
   <dependencies>
-    <!-- Alliander -->
+    <!-- Open Smart Grid Platform -->
     <dependency>
-      <groupId>com.alliander.osgp</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>shared</artifactId>
     </dependency>
 
