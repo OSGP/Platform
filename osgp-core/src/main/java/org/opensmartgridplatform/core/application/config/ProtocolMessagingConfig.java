@@ -11,14 +11,6 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-
 import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolResponseMessageListenerContainerFactory;
@@ -28,6 +20,13 @@ import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMess
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @PropertySource("classpath:osgp-core.properties")
@@ -37,6 +36,7 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.protocol.activemq.broker.url";
+    private static final String PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE = "jms.protocol.activemq.messageroup.cachesize";
 
     private static final String PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY = "jms.protocol.default.initial.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES = "jms.protocol.default.maximum.redeliveries";
@@ -76,6 +76,13 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     @Autowired
     @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
     private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+
+    @Bean
+    public Integer messageGroupCacheSize() {
+        LOGGER.debug("Creating bean: messageGroupCacheSize");
+        return Integer
+                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_MESSAGEGROUP_CACHESIZE));
+    }
 
     @Bean(destroyMethod = "stop")
     public PooledConnectionFactory protocolPooledConnectionFactory() {
