@@ -33,8 +33,6 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageSender.class);
 
-    private static final int MESSAGE_GROUP_CACHE_SIZE = 1024;
-
     @Autowired
     private int messageGroupCacheSize;
 
@@ -128,7 +126,6 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
     }
 
     protected String getMessageGroupId(final String deviceIdentification) {
-        final int cacheSize = this.messageGroupCacheSize > 0 ? this.messageGroupCacheSize : MESSAGE_GROUP_CACHE_SIZE;
-        return String.valueOf(Math.abs(deviceIdentification.hashCode() % cacheSize));
+        return String.valueOf(Math.abs(deviceIdentification.hashCode() % this.messageGroupCacheSize));
     }
 }
