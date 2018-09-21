@@ -127,7 +127,7 @@ public class ProtocolInfo extends AbstractEntity {
         private Boolean parallelRequestsAllowed;
 
         public Builder() {
-
+            // Default constructor.
         }
 
         public Builder withProtocol(final String protocol) {
