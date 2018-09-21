@@ -15,11 +15,12 @@ import org.opensmartgridplatform.core.infra.jms.JmsTemplateSettings;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.ProtocolResponseMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageListenerContainerFactory;
-import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
 import org.opensmartgridplatform.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,9 @@ public class ProtocolMessagingConfig extends AbstractConfig {
 
     @Autowired
     @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
-    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+    public MessageProcessorMap protocolRequestMessageProcessorMap() {
+        return new BaseMessageProcessorMap("ProtocolRequestMessageProcessorMap");
+    }
 
     @Bean
     public Integer messageGroupCacheSize() {
@@ -187,10 +190,10 @@ public class ProtocolMessagingConfig extends AbstractConfig {
     // beans used for receiving incoming protocol request messages
 
     @Bean
-    public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer() {
+    public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer(
+            @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         final ProtocolRequestMessageListenerContainerFactory messageListenerContainer = new ProtocolRequestMessageListenerContainerFactory(
-                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(),
-                this.protocolRequestMessageProcessorMap);
+                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(), messageProcessorMap);
         messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
         messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_CONCURRENT_CONSUMERS)));
