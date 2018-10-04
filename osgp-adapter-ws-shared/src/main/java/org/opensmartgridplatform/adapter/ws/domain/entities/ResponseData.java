@@ -67,19 +67,6 @@ public class ResponseData extends AbstractEntity {
         this.numberOfNotificationsSent = numberOfNotificationsSent;
     }
 
-    // TODO (RvM): replace by above?
-    public ResponseData(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
-            final Serializable messageData, final Short numberOfNotificationsSent) {
-        this.organisationIdentification = organisationIdentification;
-        this.messageType = messageType;
-        this.deviceIdentification = deviceIdentification;
-        this.correlationUid = correlationUid;
-        this.resultType = resultType;
-        this.messageData = messageData;
-        this.numberOfNotificationsSent = numberOfNotificationsSent;
-    }
-
     public String getCorrelationUid() {
         return this.correlationUid;
     }

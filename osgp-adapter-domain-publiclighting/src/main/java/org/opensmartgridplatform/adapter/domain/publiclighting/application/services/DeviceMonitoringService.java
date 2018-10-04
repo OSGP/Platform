@@ -24,6 +24,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryRespo
 import org.opensmartgridplatform.domain.core.valueobjects.TimePeriod;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
+import org.opensmartgridplatform.shared.domain.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -76,12 +77,11 @@ public class DeviceMonitoringService extends AbstractService {
 
     public void handleGetPowerUsageHistoryResponse(
             final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainerDto,
-            final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final CorrelationIds ids, final String messageType, final int messagePriority,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse called for device: {} for organisation: {} for messageType: {}",
-                deviceIdentification, organisationIdentification, messageType);
+                ids.getDeviceIdentification(), ids.getOrganisationIdentification(), messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -103,10 +103,9 @@ public class DeviceMonitoringService extends AbstractService {
                     "Exception occurred while getting device power usage history", e);
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .withDataObject(powerUsageHistoryResponse).withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(osgpException).withDataObject(powerUsageHistoryResponse)
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage, this.getPowerUsageHistoryResponseTimeToLive);
     }
 }

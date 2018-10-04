@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.opensmartgridplatform.shared.domain.CorrelationIds;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -59,19 +60,17 @@ public class WebServiceMonitorLogItem extends AbstractEntity {
 
     }
 
-    public WebServiceMonitorLogItem(final Date timeStamp, final String organisationIdentification,
-            final String userName, final String applicationName, final String className, final String methodName,
-            final String requestDeviceId, final String correlationUid, final String responseResult,
+    public WebServiceMonitorLogItem(final Date timeStamp, final CorrelationIds ids, final String userName,
+            final String applicationName, final String className, final String methodName, final String responseResult,
             final int responseDataSize) {
-
         this.timeStamp = (Date) timeStamp.clone();
-        this.organisationIdentification = organisationIdentification;
+        this.organisationIdentification = ids.getOrganisationIdentification();
         this.userName = userName;
         this.applicationName = applicationName;
         this.className = className;
         this.methodName = methodName;
-        this.requestDeviceIdentification = requestDeviceId;
-        this.correlationUid = correlationUid;
+        this.requestDeviceIdentification = ids.getDeviceIdentification();
+        this.correlationUid = ids.getCorrelationUid();
         this.responseResult = responseResult;
         this.responseDataSize = responseDataSize;
     }

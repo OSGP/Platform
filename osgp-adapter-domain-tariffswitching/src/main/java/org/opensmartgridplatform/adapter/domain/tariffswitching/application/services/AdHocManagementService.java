@@ -22,6 +22,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.domain.core.valueobjects.TariffValue;
+import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.domain.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
@@ -88,9 +90,7 @@ public class AdHocManagementService extends AbstractService {
     }
 
     public void handleGetStatusResponse(
-            final org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto deviceStatusDto,
-            final DomainType allowedDomainType, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
+            final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType, final CorrelationIds ids,
             final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception)
             throws OsgpException {
 
@@ -103,7 +103,7 @@ public class AdHocManagementService extends AbstractService {
         } else {
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(ids.getDeviceIdentification());
 
             final List<DeviceOutputSetting> deviceOutputSettings = ssld.getOutputSettings();
 
@@ -130,8 +130,7 @@ public class AdHocManagementService extends AbstractService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
+                .withIds(ids).withResult(result).withOsgpException(osgpException)
                 .withDataObject(deviceStatusMapped).withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
@@ -139,13 +138,6 @@ public class AdHocManagementService extends AbstractService {
     /**
      * Updates the relay overview from a device based on the given device
      * status.
-     *
-     * @param deviceIdentification
-     *            The device to update.
-     * @param deviceStatus
-     *            The device status to update the relay overview with.
-     * @throws TechnicalException
-     *             Thrown when an invalid device identification is given.
      */
     private void updateDeviceRelayOverview(final Ssld device, final DeviceStatusMapped deviceStatusMapped) {
         final List<RelayStatus> relayStatuses = device.getRelayStatuses();
