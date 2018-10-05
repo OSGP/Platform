@@ -60,6 +60,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.PlatformFunction;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemRepository;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -211,7 +212,7 @@ public class DeviceManagementService {
 
     @Transactional(value = "transactionManager")
     public Page<Event> findEvents(@Identification final String organisationIdentification,
-            final String deviceIdentification, final Integer pageSize, final Integer pageNumber, final DateTime from,
+            final String deviceIdentification, final PageSpecifier pageSpecifier, final DateTime from,
             final DateTime until, final List<EventType> eventTypes) throws FunctionalException {
 
         LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
@@ -219,12 +220,12 @@ public class DeviceManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
+        this.pagingSettings.updatePagingSettings(pageSpecifier);
 
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
 
-        Specifications<Event> specifications = null;
+        Specifications<Event> specifications;
 
         try {
             if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
@@ -264,10 +265,8 @@ public class DeviceManagementService {
      *
      * @param organisationIdentification
      *            The organisation who performed the action
-     * @param pageSize
-     *            The page size
-     * @param pageNumber
-     *            the page to be returned.
+     * @param pageSpecifier
+     *            The page to be returned
      * @param deviceFilter
      *            the filter object
      *
@@ -276,12 +275,12 @@ public class DeviceManagementService {
      * @throws FunctionalException
      */
     @Transactional(value = "transactionManager")
-    public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize,
-            final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
+    public Page<Device> findDevices(@Identification final String organisationIdentification,
+            final PageSpecifier pageSpecifier, final DeviceFilter deviceFilter) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
-        this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
+        this.pagingSettings.updatePagingSettings(pageSpecifier);
         Sort.Direction sortDir = Sort.Direction.DESC;
         String sortedBy = "creationTime";
         if (deviceFilter != null) {
@@ -314,7 +313,7 @@ public class DeviceManagementService {
 
     private Page<Device> findDevices(final String organisationIdentification, final DeviceFilter deviceFilter,
             final Organisation organisation, final PageRequest request) {
-        Page<Device> devices = null;
+        Page<Device> devices;
         try {
             if (!this.netManagementOrganisation.equals(organisationIdentification)) {
                 // Municipality organization.

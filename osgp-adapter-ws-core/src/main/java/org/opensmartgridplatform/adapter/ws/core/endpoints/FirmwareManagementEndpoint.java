@@ -23,6 +23,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.FirmwareManagementMapper;
+import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileRequest;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -51,6 +52,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindD
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindDeviceModelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
@@ -742,10 +744,8 @@ public class FirmwareManagementEndpoint {
                     .map(request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
 
             this.firmwareManagementService.addFirmware(organisationIdentification,
-                    request.getFirmware().getDescription(), request.getFirmware().getFile(),
-                    request.getFirmware().getFilename(), request.getFirmware().getManufacturer(),
-                    request.getFirmware().getModelCode(), firmwareModuleData,
-                    request.getFirmware().isPushToNewDevices());
+                    firmwareFileRequestFor(request.getFirmware()), request.getFirmware().getFile(),
+                    request.getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -770,6 +770,11 @@ public class FirmwareManagementEndpoint {
         return addFirmwareResponse;
     }
 
+    private FirmwareFileRequest firmwareFileRequestFor(Firmware firmware) {
+        return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(),
+                firmware.isPushToNewDevices());
+    }
+
     @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)
     @ResponsePayload
     public ChangeFirmwareResponse changeFirmware(@OrganisationIdentification final String organisationIdentification,
@@ -782,9 +787,8 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.changeFirmware(organisationIdentification, request.getId(),
-                    request.getFirmware().getDescription(), request.getFirmware().getFilename(),
-                    request.getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData,
-                    request.getFirmware().isPushToNewDevices());
+                    firmwareFileRequestFor(request.getFirmware()),
+                    request.getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Changing firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

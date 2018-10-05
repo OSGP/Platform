@@ -67,6 +67,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -249,9 +250,9 @@ public class DeviceManagementEndpoint {
 
             // Get all events matching the request.
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
-                    .findEvents(organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
-                            request.getPage(), from, until,
-                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
+                    .findEvents(organisationIdentification, request.getDeviceIdentification(), pageFrom(request),
+                            from, until, this.deviceManagementMapper.mapAsList(request.getEventTypes(),
+                                    EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
@@ -269,6 +270,10 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
+    private PageSpecifier pageFrom(@RequestPayload final FindEventsRequest request) {
+        return new PageSpecifier(request.getPageSize(), request.getPage());
+    }
+
     @PayloadRoot(localPart = "FindDevicesRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public FindDevicesResponse findDevices(@OrganisationIdentification final String organisationIdentification,
@@ -279,8 +284,9 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
+            final PageSpecifier pageSpecifier = pageFrom(request);
             Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
+                    .findDevices(organisationIdentification, pageSpecifier,
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
 
@@ -296,8 +302,8 @@ public class DeviceManagementEndpoint {
                 int calls = 0;
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
-                    result = this.deviceManagementService.findDevices(organisationIdentification, request.getPageSize(),
-                            request.getPage(), this.deviceManagementMapper.map(request.getDeviceFilter(),
+                    result = this.deviceManagementService.findDevices(organisationIdentification, pageSpecifier,
+                            this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
                     response.getDevices()
                             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -313,6 +319,10 @@ public class DeviceManagementEndpoint {
         }
 
         return response;
+    }
+
+    private PageSpecifier pageFrom(@RequestPayload final FindDevicesRequest request) {
+        return new PageSpecifier(request.getPageSize(), request.getPage());
     }
 
     @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)

@@ -134,9 +134,9 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType,
-            final CorrelationIds ids, final String messageType, final int messagePriority,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final CorrelationIds ids,
+            final String messageType, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
         final GetStatusResponse response = new GetStatusResponse();
@@ -152,7 +152,7 @@ public class AdHocManagementService extends AbstractService {
                 if (LightMeasurementDevice.LMD_TYPE.equals(dev.getDeviceType())) {
                     this.handleLmd(status, response);
                 } else {
-                    this.handleSsld(ids.getDeviceIdentification(), status, allowedDomainType, response);
+                    this.handleSsld(ids.getDeviceIdentification(), status, DomainType.PUBLIC_LIGHTING, response);
                 }
             } catch (final FunctionalException e) {
                 LOGGER.error("Caught FunctionalException", e);
