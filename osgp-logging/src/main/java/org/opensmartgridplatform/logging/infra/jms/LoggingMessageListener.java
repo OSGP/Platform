@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.logging.domain.entities.WebServiceMonitorLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 // Fetch incoming log messages from the logging requests queue.

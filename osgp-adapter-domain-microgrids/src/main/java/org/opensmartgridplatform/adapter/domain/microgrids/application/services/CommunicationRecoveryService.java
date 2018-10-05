@@ -29,7 +29,7 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdenti
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementFilterDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SystemFilterDto;
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 

@@ -24,7 +24,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageHistoryRespo
 import org.opensmartgridplatform.domain.core.valueobjects.TimePeriod;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;

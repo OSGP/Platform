@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 

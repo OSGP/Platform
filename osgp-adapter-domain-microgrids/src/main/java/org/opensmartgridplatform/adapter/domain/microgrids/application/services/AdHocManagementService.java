@@ -22,7 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.EmptyResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.SetDataRequestDto;
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;

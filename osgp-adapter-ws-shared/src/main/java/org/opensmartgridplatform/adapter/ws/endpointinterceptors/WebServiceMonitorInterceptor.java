@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingRequestMessage;
 import org.opensmartgridplatform.domain.core.exceptions.WebServiceMonitorInterceptorException;
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 
 @Transactional(value = "transactionManager")
 public class WebServiceMonitorInterceptor implements EndpointInterceptor {

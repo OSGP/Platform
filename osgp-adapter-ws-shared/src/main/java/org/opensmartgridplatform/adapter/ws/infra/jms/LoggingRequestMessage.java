@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.ws.infra.jms;
 
 import java.util.Date;
 
-import org.opensmartgridplatform.shared.domain.CorrelationIds;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 
 public class LoggingRequestMessage {
 
