@@ -20,20 +20,20 @@ public class LoggingRequestMessage {
     private final String className;
     private final String methodName;
     private String responseResult;
-    private final int resposeDataSize;
+    private final int responseDataSize;
 
     // Logging items.
     public LoggingRequestMessage(final Date timeStamp, final CorrelationIds ids, final String userName,
-            final String applicationName, final String className, final String methodName, final String responseResult,
-            final int resposeDataSize) {
+            final String applicationName, EndpointClassAndMethod classAndMethod,
+            final ResponseResultAndDataSize responseResultAndDataSize) {
         this.ids = ids;
         this.timeStamp = (Date) timeStamp.clone();
         this.userName = userName;
         this.applicationName = applicationName;
-        this.className = className;
-        this.methodName = methodName;
-        this.responseResult = responseResult;
-        this.resposeDataSize = resposeDataSize;
+        this.className = classAndMethod.getClassName();
+        this.methodName = classAndMethod.getMethodName();
+        this.responseResult = responseResultAndDataSize.getResult();
+        this.responseDataSize = responseResultAndDataSize.getDataSize();
     }
 
     public Date getTimeStamp() {
@@ -72,8 +72,8 @@ public class LoggingRequestMessage {
         return this.responseResult;
     }
 
-    public int getResposeDataSize() {
-        return this.resposeDataSize;
+    public int getResponseDataSize() {
+        return this.responseDataSize;
     }
 
     public void setResponseResult(final String responseResult) {

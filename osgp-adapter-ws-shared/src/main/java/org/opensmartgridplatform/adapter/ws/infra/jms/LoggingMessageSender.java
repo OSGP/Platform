@@ -67,7 +67,7 @@ public class LoggingMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         loggingMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESPONSE_RESULT, loggingMessage.getResponseResult());
-                objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResposeDataSize());
+                objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResponseDataSize());
                 return objectMessage;
             }
         });
