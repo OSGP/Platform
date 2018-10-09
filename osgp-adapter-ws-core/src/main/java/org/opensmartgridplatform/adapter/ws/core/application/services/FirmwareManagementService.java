@@ -42,7 +42,7 @@ import org.opensmartgridplatform.domain.core.exceptions.ExistingEntityException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;

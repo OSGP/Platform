@@ -45,7 +45,7 @@ import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderServi
 import org.opensmartgridplatform.domain.core.services.DeviceDomainService;
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
-import org.opensmartgridplatform.domain.core.validation.Identification;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
