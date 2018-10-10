@@ -318,13 +318,16 @@ public class DeviceManagementService {
             if (!this.netManagementOrganisation.equals(organisationIdentification)) {
                 // Municipality organization.
                 if (deviceFilter == null) {
-                    final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                            null, null, DeviceExternalManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
-                            DeviceInMaintenanceFilterType.BOTH, null, null, false, null, null, null, null, null, null,
-                            false, null, null);
+                    final DeviceFilter df = new DeviceFilter();
+                    df.setOrganisationIdentification(organisationIdentification);
+                    df.setDeviceExternalManaged(DeviceExternalManagedFilterType.BOTH);
+                    df.setDeviceActivated(DeviceActivatedFilterType.BOTH);
+                    df.setDeviceInMaintenance(DeviceInMaintenanceFilterType.BOTH);
+                    df.setHasTechnicalInstallation(false);
+                    df.setExactMatch(false);
                     devices = this.applyFilter(df, organisation, request);
                 } else {
-                    deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                    deviceFilter.setOrganisationIdentification(organisationIdentification);
                     devices = this.applyFilter(deviceFilter, organisation, request);
                 }
             } else {
