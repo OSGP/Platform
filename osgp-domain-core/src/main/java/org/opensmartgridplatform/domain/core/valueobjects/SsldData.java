@@ -17,69 +17,57 @@ public class SsldData implements java.io.Serializable {
      */
     private static final long serialVersionUID = 4785387346353649099L;
 
-    private int actualCurrent1;
-    private int actualCurrent2;
-    private int actualCurrent3;
-    private int actualPower1;
-    private int actualPower2;
-    private int actualPower3;
-    private int averagePowerFactor1;
-    private int averagePowerFactor2;
-    private int averagePowerFactor3;
-    private List<RelayData> relayData = new ArrayList<RelayData>();
+    private final Relay relay1;
+    private final Relay relay2;
+    private final Relay relay3;
+    private final List<RelayData> relayData;
 
-    public SsldData(final int actualCurrent1, final int actualCurrent2, final int actualCurrent3,
-            final int actualPower1, final int actualPower2, final int actualPower3, final int averagePowerFactor1,
-            final int averagePowerFactor2, final int averagePowerFactor3, final List<RelayData> relayData) {
-        this.actualCurrent1 = actualCurrent1;
-        this.actualCurrent2 = actualCurrent2;
-        this.actualCurrent3 = actualCurrent3;
-        this.actualPower1 = actualPower1;
-        this.actualPower2 = actualPower2;
-        this.actualPower3 = actualPower3;
-        this.averagePowerFactor1 = averagePowerFactor1;
-        this.averagePowerFactor2 = averagePowerFactor2;
-        this.averagePowerFactor3 = averagePowerFactor3;
+    public SsldData(final Relay relay1, final Relay relay2, final Relay relay3,
+            final List<RelayData> relayData) {
+        this.relay1 = relay1;
+        this.relay2 = relay2;
+        this.relay3 = relay3;
         this.relayData = relayData;
     }
 
     public int getActualCurrent1() {
-        return this.actualCurrent1;
+        return this.relay1.getActualCurrent();
     }
 
     public int getActualCurrent2() {
-        return this.actualCurrent2;
+        return this.relay2.getActualCurrent();
     }
 
     public int getActualCurrent3() {
-        return this.actualCurrent3;
+        return this.relay3.getActualCurrent();
     }
 
     public int getActualPower1() {
-        return this.actualPower1;
+        return this.relay1.getActualPower();
     }
 
     public int getActualPower2() {
-        return this.actualPower2;
+        return this.relay2.getActualPower();
     }
 
     public int getActualPower3() {
-        return this.actualPower3;
+        return this.relay3.getActualPower();
     }
 
     public int getAveragePowerFactor1() {
-        return this.averagePowerFactor1;
+        return this.relay1.getAveragePowerFactor();
     }
 
     public int getAveragePowerFactor2() {
-        return this.averagePowerFactor2;
+        return this.relay2.getAveragePowerFactor();
     }
 
     public int getAveragePowerFactor3() {
-        return this.averagePowerFactor3;
+        return this.relay3.getAveragePowerFactor();
     }
 
     public List<RelayData> getRelayData() {
         return this.relayData;
     }
 }
+
