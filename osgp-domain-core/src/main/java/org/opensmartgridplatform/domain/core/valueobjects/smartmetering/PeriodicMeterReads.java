@@ -15,16 +15,9 @@ public class PeriodicMeterReads extends MeterReads {
 
     private final AmrProfileStatusCode amrProfileStatusCode;
 
-    /**
-     * Constructor taking all data. Use for conversion purposes, when all fields
-     * need to be copied.
-     */
-    public PeriodicMeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
-            final OsgpMeterValue activeEnergyExport, final OsgpMeterValue activeEnergyImportTariffOne,
-            final OsgpMeterValue activeEnergyImportTariffTwo, final OsgpMeterValue activeEnergyExportTariffOne,
-            final OsgpMeterValue activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode) {
-        super(logTime, new ActiveEnergyValues(activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo));
+    public PeriodicMeterReads(final Date logTime,
+            final ActiveEnergyValues activeEnergyValues, final AmrProfileStatusCode amrProfileStatusCode) {
+        super(logTime, activeEnergyValues);
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
 
@@ -33,7 +26,7 @@ public class PeriodicMeterReads extends MeterReads {
      */
     public PeriodicMeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
             final OsgpMeterValue activeEnergyExport, final AmrProfileStatusCode amrProfileStatusCode) {
-        this(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null, amrProfileStatusCode);
+        this(logTime, new ActiveEnergyValues(activeEnergyImport, activeEnergyExport, null, null, null, null), amrProfileStatusCode);
     }
 
     /**

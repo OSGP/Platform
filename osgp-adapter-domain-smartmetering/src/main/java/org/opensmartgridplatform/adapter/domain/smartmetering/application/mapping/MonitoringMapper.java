@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
@@ -14,6 +14,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicMeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ProfileEntryValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ReadAlarmRegisterDataConverter;
 
@@ -22,7 +23,6 @@ public class MonitoringMapper extends ConfigurableMapper {
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
-
         // This converter must be used: a multiplier might be needed when
         // mapping between DlmsMeterValue and OsgpMeterValue. Thus mapping must
         // never be attempted without using this converter!
@@ -30,6 +30,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
         mapperFactory.getConverterFactory().registerConverter(new DateToXmlGregorianCalendarConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseItemDtoConverter(mapperFactory));
     }
 
 }
