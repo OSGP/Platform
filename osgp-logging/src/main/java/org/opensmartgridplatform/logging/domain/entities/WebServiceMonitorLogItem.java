@@ -61,18 +61,17 @@ public class WebServiceMonitorLogItem extends AbstractEntity {
     }
 
     public WebServiceMonitorLogItem(final Date timeStamp, final CorrelationIds ids, final String userName,
-            final String applicationName, final String className, final String methodName, final String responseResult,
-            final int responseDataSize) {
+            final MethodResult methodResult) {
         this.timeStamp = (Date) timeStamp.clone();
         this.organisationIdentification = ids.getOrganisationIdentification();
         this.userName = userName;
-        this.applicationName = applicationName;
-        this.className = className;
-        this.methodName = methodName;
+        this.applicationName = methodResult.getApplicationName();
+        this.className = methodResult.getClassName();
+        this.methodName = methodResult.getMethodName();
         this.requestDeviceIdentification = ids.getDeviceIdentification();
         this.correlationUid = ids.getCorrelationUid();
-        this.responseResult = responseResult;
-        this.responseDataSize = responseDataSize;
+        this.responseResult = methodResult.getResponseResult();
+        this.responseDataSize = methodResult.getResponseDataSize();
     }
 
     public Date getTimeStamp() {
