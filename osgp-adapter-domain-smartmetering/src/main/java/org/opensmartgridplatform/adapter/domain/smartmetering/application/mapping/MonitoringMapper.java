@@ -8,12 +8,14 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.converter.builtin.DateAndTimeConverters.DateToXmlGregorianCalendarConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.MeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicMeterReadsResponseItemDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ProfileEntryValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ReadAlarmRegisterDataConverter;
@@ -26,11 +28,13 @@ public class MonitoringMapper extends ConfigurableMapper {
         // This converter must be used: a multiplier might be needed when
         // mapping between DlmsMeterValue and OsgpMeterValue. Thus mapping must
         // never be attempted without using this converter!
-        mapperFactory.getConverterFactory().registerConverter(new DlmsMeterValueConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
-        mapperFactory.getConverterFactory().registerConverter(new DateToXmlGregorianCalendarConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseItemDtoConverter(mapperFactory));
+        ConverterFactory converterFactory = mapperFactory.getConverterFactory();
+        converterFactory.registerConverter(new DlmsMeterValueConverter());
+        converterFactory.registerConverter(new ReadAlarmRegisterDataConverter());
+        converterFactory.registerConverter(new ProfileEntryValueConverter());
+        converterFactory.registerConverter(new DateToXmlGregorianCalendarConverter());
+        converterFactory.registerConverter(new PeriodicMeterReadsResponseItemDtoConverter(mapperFactory));
+        converterFactory.registerConverter(new MeterReadsResponseItemDtoConverter(mapperFactory));
     }
 
 }

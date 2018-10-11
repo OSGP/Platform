@@ -97,7 +97,7 @@ public class Configuration implements Serializable {
 
     private DateTime winterTimeDetails;
 
-    public Configuration(Configuration.Builder builder) {
+    private Configuration(Configuration.Builder builder) {
         this.lightType = builder.lightType;
         this.daliConfiguration = builder.daliConfiguration;
         this.relayConfiguration = builder.relayConfiguration;

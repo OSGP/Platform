@@ -8,12 +8,14 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -28,41 +30,44 @@ public class InstallationMapperTest {
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     @Test
-    public void testSmartMeteringDeviceToSmartMeterMapping() {
+    public void mapsSmartMeteringDeviceToSmartMeter() {
+        final SmartMeteringDevice source = new SmartMeteringDevice();
+        source.setDeviceIdentification("device1");
+        source.setDeviceType("typeA");
+        source.setCommunicationMethod("skype");
+        source.setCommunicationProvider("theInternet");
+        source.setICCId("value");
+        source.setDSMRVersion("latestVersion");
+        source.setMasterKey("masterKey".getBytes());
+        source.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
+        source.setAuthenticationKey("authenticationKey".getBytes());
+        source.setSupplier("supplier");
+        source.setHLS3Active(true);
+        source.setHLS4Active(true);
+        source.setHLS5Active(true);
+        source.setDeliveryDate(new Date());
+        source.setMbusIdentificationNumber(12345678L);
+        source.setMbusManufacturerIdentification("XYZ");
+        source.setMbusVersion((short) 66);
+        source.setMbusDeviceTypeIdentification((short) 3);
+        source.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
-        final SmartMeteringDevice smartMeteringDevice = new SmartMeteringDevice();
-        smartMeteringDevice.setDeviceIdentification("device1");
-        smartMeteringDevice.setDeviceType("typeA");
-        smartMeteringDevice.setCommunicationMethod("skype");
-        smartMeteringDevice.setCommunicationProvider("theInternet");
-        smartMeteringDevice.setICCId("value");
-        smartMeteringDevice.setDSMRVersion("latestVersion");
-        smartMeteringDevice.setMasterKey("masterKey".getBytes());
-        smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
-        smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
-        smartMeteringDevice.setSupplier("supplier");
-        smartMeteringDevice.setHLS3Active(true);
-        smartMeteringDevice.setHLS4Active(true);
-        smartMeteringDevice.setHLS5Active(true);
-        smartMeteringDevice.setDeliveryDate(new Date());
-        smartMeteringDevice.setMbusIdentificationNumber(12345678L);
-        smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
-        smartMeteringDevice.setMbusVersion((short) 66);
-        smartMeteringDevice.setMbusDeviceTypeIdentification((short) 3);
-        smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
+        final SmartMeter result = this.mapperFactory.getMapperFacade().map(source, SmartMeter.class);
 
-        final SmartMeter device = this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
+        SmartMeter expected = toSmartMeter(source);
+        assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
+    }
 
-        assertNotNull(device);
-
-        assertEquals(smartMeteringDevice.getDeviceIdentification(), device.getDeviceIdentification());
-        assertEquals(smartMeteringDevice.getSupplier(), device.getSupplier());
-        assertEquals(smartMeteringDevice.getDeviceType(), device.getDeviceType());
-        assertEquals(smartMeteringDevice.getMbusIdentificationNumber(), device.getMbusIdentificationNumber());
-        assertEquals(smartMeteringDevice.getMbusManufacturerIdentification(),
-                device.getMbusManufacturerIdentification());
-        assertEquals(smartMeteringDevice.getMbusVersion(), device.getMbusVersion());
-        assertEquals(smartMeteringDevice.getMbusDeviceTypeIdentification(), device.getMbusDeviceTypeIdentification());
+    private SmartMeter toSmartMeter(SmartMeteringDevice source) {
+        SmartMeter expected = new SmartMeter();
+        expected.setDeviceIdentification(source.getDeviceIdentification());
+        expected.setDeviceType(source.getDeviceType());
+        expected.setSupplier(source.getSupplier());
+        expected.setMbusIdentificationNumber(source.getMbusIdentificationNumber());
+        expected.setMbusManufacturerIdentification(source.getMbusManufacturerIdentification());
+        expected.setMbusVersion(source.getMbusVersion());
+        expected.setMbusDeviceTypeIdentification(source.getMbusDeviceTypeIdentification());
+        return expected;
     }
 
     @Test

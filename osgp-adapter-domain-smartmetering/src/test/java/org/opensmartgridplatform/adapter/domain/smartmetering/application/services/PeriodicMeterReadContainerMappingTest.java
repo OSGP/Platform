@@ -142,10 +142,10 @@ public class PeriodicMeterReadContainerMappingTest {
                 new DlmsMeterValueDto(new BigDecimal("12.39"), DlmsUnitTypeDto.M3));
         final AmrProfileStatusCodeDto amrProfileStatusCodeDto = new AmrProfileStatusCodeDto(new HashSet<>(asList(
                 AmrProfileStatusCodeFlagDto.CRITICAL_ERROR, AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)));
-        final PeriodicMeterReadsResponseItemDto readsDto = new PeriodicMeterReadsResponseItemDto(logTime, valuesDto,
+        final PeriodicMeterReadsResponseItemDto source = new PeriodicMeterReadsResponseItemDto(logTime, valuesDto,
                 amrProfileStatusCodeDto);
 
-        final PeriodicMeterReads readsResult = this.monitoringMapper.map(readsDto, PeriodicMeterReads.class);
+        final PeriodicMeterReads readsResult = this.monitoringMapper.map(source, PeriodicMeterReads.class);
 
         final ActiveEnergyValues expectedValues = new ActiveEnergyValues(
                 new OsgpMeterValue(new BigDecimal("12.340"), OsgpUnit.M3),

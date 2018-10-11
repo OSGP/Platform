@@ -65,6 +65,7 @@ import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
@@ -286,9 +287,7 @@ public class DeviceManagementEndpoint {
         try {
             final PageSpecifier pageSpecifier = pageFrom(request);
             Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, pageSpecifier,
-                            this.deviceManagementMapper.map(request.getDeviceFilter(),
-                                    org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
+                    .findDevices(organisationIdentification, pageSpecifier, deviceFilterFrom(request));
 
             if (result != null && response.getDevices() != null) {
                 response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -303,8 +302,7 @@ public class DeviceManagementEndpoint {
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
                     result = this.deviceManagementService.findDevices(organisationIdentification, pageSpecifier,
-                            this.deviceManagementMapper.map(request.getDeviceFilter(),
-                                    org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class));
+                            deviceFilterFrom(request));
                     response.getDevices()
                             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
                 }
@@ -319,6 +317,10 @@ public class DeviceManagementEndpoint {
         }
 
         return response;
+    }
+
+    private DeviceFilter deviceFilterFrom(@RequestPayload final FindDevicesRequest request) {
+        return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
     }
 
     private PageSpecifier pageFrom(@RequestPayload final FindDevicesRequest request) {
