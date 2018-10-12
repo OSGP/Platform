@@ -16,6 +16,9 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 
 import org.assertj.core.api.Assertions;
+import org.joda.time.DateTimeUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -28,6 +31,16 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class InstallationMapperTest {
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+
+    @Before
+    public void setUp() {
+        DateTimeUtils.setCurrentMillisFixed(123L * 1000 * 60 * 60 * 24);
+    }
+
+    @After
+    public void tearDown() {
+        DateTimeUtils.setCurrentMillisSystem();
+    }
 
     @Test
     public void mapsSmartMeteringDeviceToSmartMeter() {

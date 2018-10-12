@@ -42,6 +42,8 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
+import org.joda.time.DateTimeUtils;
+
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
@@ -76,14 +78,14 @@ public class Device implements Serializable {
      * this.prePersist() }.
      */
     @Column(nullable = false)
-    protected Date creationTime = new Date();
+    protected Date creationTime = new Date(DateTimeUtils.currentTimeMillis());
 
     /**
      * Modification time of this entity. This field is set by { @see
      * this.preUpdate() }.
      */
     @Column(nullable = false)
-    protected Date modificationTime = new Date();
+    protected Date modificationTime = new Date(DateTimeUtils.currentTimeMillis());
 
     /**
      * Version of this entity.
@@ -328,11 +330,9 @@ public class Device implements Serializable {
      * @return The organisation when an owner was set, null otherwise.
      */
     public Organisation getOwner() {
-        if (this.authorizations != null) {
-            for (final DeviceAuthorization authorization : this.authorizations) {
-                if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    return authorization.getOrganisation();
-                }
+        for (final DeviceAuthorization authorization : this.authorizations) {
+            if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
+                return authorization.getOrganisation();
             }
         }
 
