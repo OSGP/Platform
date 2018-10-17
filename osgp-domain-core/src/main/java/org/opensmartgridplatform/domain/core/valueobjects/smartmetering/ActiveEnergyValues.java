@@ -1,6 +1,13 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-public class ActiveEnergyValues {
+import java.io.Serializable;
+
+public class ActiveEnergyValues implements Serializable {
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 2837927976042182726L;
     private final OsgpMeterValue activeEnergyImport;
     private final OsgpMeterValue activeEnergyExport;
     private final OsgpMeterValue activeEnergyImportTariffOne;

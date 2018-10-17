@@ -1,6 +1,13 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
-public class Relay {
+import java.io.Serializable;
+
+public class Relay implements Serializable {
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 6780427560822971719L;
     private final int actualCurrent;
     private final int actualPower;
     private final int averagePowerFactor;
