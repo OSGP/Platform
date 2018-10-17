@@ -323,10 +323,6 @@ public class DeviceManagementEndpoint {
         return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
     }
 
-    private PageSpecifier pageFrom(@RequestPayload final FindDevicesRequest request) {
-        return new PageSpecifier(request.getPageSize(), request.getPage());
-    }
-
     @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public FindScheduledTasksResponse findScheduledTasks(
