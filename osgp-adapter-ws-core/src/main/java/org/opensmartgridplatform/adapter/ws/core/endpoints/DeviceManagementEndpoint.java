@@ -251,7 +251,7 @@ public class DeviceManagementEndpoint {
 
             // Get all events matching the request.
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
-                    .findEvents(organisationIdentification, request.getDeviceIdentification(), pageFrom(request),
+                    .findEvents(organisationIdentification, request.getDeviceIdentification(), this.pageFrom(request),
                             from, until, this.deviceManagementMapper.mapAsList(request.getEventTypes(),
                                     EventType.class));
 
@@ -285,7 +285,7 @@ public class DeviceManagementEndpoint {
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            final PageSpecifier pageSpecifier = pageFrom(request);
+            final PageSpecifier pageSpecifier = this.pageFrom(request);
             Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
                     .findDevices(organisationIdentification, pageSpecifier, deviceFilterFrom(request));
 
@@ -321,6 +321,10 @@ public class DeviceManagementEndpoint {
 
     private DeviceFilter deviceFilterFrom(@RequestPayload final FindDevicesRequest request) {
         return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
+    }
+
+    private PageSpecifier pageFrom(@RequestPayload final FindDevicesRequest request) {
+        return new PageSpecifier(request.getPageSize(), request.getPage());
     }
 
     @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
