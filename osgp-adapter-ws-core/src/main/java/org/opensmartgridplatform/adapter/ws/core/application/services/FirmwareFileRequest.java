@@ -1,7 +1,5 @@
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
-
 public class FirmwareFileRequest {
     private final String description;
     private final String fileName;
