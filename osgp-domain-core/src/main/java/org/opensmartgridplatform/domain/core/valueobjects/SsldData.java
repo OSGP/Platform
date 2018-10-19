@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SsldData implements java.io.Serializable {
@@ -22,8 +21,7 @@ public class SsldData implements java.io.Serializable {
     private final Relay relay3;
     private final List<RelayData> relayData;
 
-    public SsldData(final Relay relay1, final Relay relay2, final Relay relay3,
-            final List<RelayData> relayData) {
+    public SsldData(final Relay relay1, final Relay relay2, final Relay relay3, final List<RelayData> relayData) {
         this.relay1 = relay1;
         this.relay2 = relay2;
         this.relay3 = relay3;
@@ -70,4 +68,3 @@ public class SsldData implements java.io.Serializable {
         return this.relayData;
     }
 }
-

@@ -47,14 +47,12 @@ import javax.persistence.Version;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
-import org.joda.time.DateTimeUtils;
-
-import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.opensmartgridplatform.shared.validation.Identification;
 
 /**
  * Entity class which is the base for all smart devices. Other smart device
@@ -83,14 +81,14 @@ public class Device implements Serializable {
      * this.prePersist() }.
      */
     @Column(nullable = false)
-    protected Date creationTime = new Date(DateTimeUtils.currentTimeMillis());
+    protected Date creationTime = new Date();
 
     /**
      * Modification time of this entity. This field is set by { @see
      * this.preUpdate() }.
      */
     @Column(nullable = false)
-    protected Date modificationTime = new Date(DateTimeUtils.currentTimeMillis());
+    protected Date modificationTime = new Date();
 
     /**
      * Version of this entity.

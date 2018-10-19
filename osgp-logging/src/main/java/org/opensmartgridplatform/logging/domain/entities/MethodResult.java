@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.logging.domain.entities;
 
 public class MethodResult {
@@ -8,8 +15,7 @@ public class MethodResult {
     private final int responseDataSize;
 
     public MethodResult(final String applicationName, final String className, final String methodName,
-            final String responseResult,
-            int responseDataSize) {
+            final String responseResult, final int responseDataSize) {
         this.applicationName = applicationName;
         this.className = className;
         this.methodName = methodName;
@@ -18,22 +24,22 @@ public class MethodResult {
     }
 
     public String getApplicationName() {
-        return applicationName;
+        return this.applicationName;
     }
 
     public String getClassName() {
-        return className;
+        return this.className;
     }
 
     public String getMethodName() {
-        return methodName;
+        return this.methodName;
     }
 
     public String getResponseResult() {
-        return responseResult;
+        return this.responseResult;
     }
 
     public int getResponseDataSize() {
-        return responseDataSize;
+        return this.responseDataSize;
     }
 }

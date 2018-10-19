@@ -252,8 +252,8 @@ public class DeviceManagementEndpoint {
             // Get all events matching the request.
             final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
                     .findEvents(organisationIdentification, request.getDeviceIdentification(), this.pageFrom(request),
-                            from, until, this.deviceManagementMapper.mapAsList(request.getEventTypes(),
-                                    EventType.class));
+                            from, until,
+                            this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class));
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
@@ -271,7 +271,7 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
-    private PageSpecifier pageFrom(@RequestPayload final FindEventsRequest request) {
+    private PageSpecifier pageFrom(final FindEventsRequest request) {
         return new PageSpecifier(request.getPageSize(), request.getPage());
     }
 
@@ -287,7 +287,7 @@ public class DeviceManagementEndpoint {
         try {
             final PageSpecifier pageSpecifier = this.pageFrom(request);
             Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, pageSpecifier, deviceFilterFrom(request));
+                    .findDevices(organisationIdentification, pageSpecifier, this.deviceFilterFrom(request));
 
             if (result != null && response.getDevices() != null) {
                 response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
@@ -302,7 +302,7 @@ public class DeviceManagementEndpoint {
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
                     result = this.deviceManagementService.findDevices(organisationIdentification, pageSpecifier,
-                            deviceFilterFrom(request));
+                            this.deviceFilterFrom(request));
                     response.getDevices()
                             .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
                 }
@@ -319,11 +319,11 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
-    private DeviceFilter deviceFilterFrom(@RequestPayload final FindDevicesRequest request) {
+    private DeviceFilter deviceFilterFrom(final FindDevicesRequest request) {
         return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
     }
 
-    private PageSpecifier pageFrom(@RequestPayload final FindDevicesRequest request) {
+    private PageSpecifier pageFrom(final FindDevicesRequest request) {
         return new PageSpecifier(request.getPageSize(), request.getPage());
     }
 

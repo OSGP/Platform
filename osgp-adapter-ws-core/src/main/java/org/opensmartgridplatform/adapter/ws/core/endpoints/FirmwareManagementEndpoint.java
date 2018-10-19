@@ -13,15 +13,6 @@ import java.util.List;
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFileRequest;
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
@@ -94,6 +85,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -275,8 +274,8 @@ public class FirmwareManagementEndpoint {
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
 
         try {
-            ResponseMessage message = this.firmwareManagementService
-                .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.firmwareManagementService
+                    .dequeueGetFirmwareResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
@@ -744,7 +743,7 @@ public class FirmwareManagementEndpoint {
                     .map(request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
 
             this.firmwareManagementService.addFirmware(organisationIdentification,
-                    firmwareFileRequestFor(request.getFirmware()), request.getFirmware().getFile(),
+                    this.firmwareFileRequestFor(request.getFirmware()), request.getFirmware().getFile(),
                     request.getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
@@ -770,7 +769,7 @@ public class FirmwareManagementEndpoint {
         return addFirmwareResponse;
     }
 
-    private FirmwareFileRequest firmwareFileRequestFor(Firmware firmware) {
+    private FirmwareFileRequest firmwareFileRequestFor(final Firmware firmware) {
         return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(),
                 firmware.isPushToNewDevices());
     }
@@ -787,8 +786,8 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.changeFirmware(organisationIdentification, request.getId(),
-                    firmwareFileRequestFor(request.getFirmware()),
-                    request.getFirmware().getManufacturer(), request.getFirmware().getModelCode(), firmwareModuleData);
+                    this.firmwareFileRequestFor(request.getFirmware()), request.getFirmware().getManufacturer(),
+                    request.getFirmware().getModelCode(), firmwareModuleData);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Changing firmware: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

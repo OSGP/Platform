@@ -1,3 +1,10 @@
+/**
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import static java.util.Arrays.asList;
@@ -9,7 +16,6 @@ import static org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceFilter;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceActivatedFilterType;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceExternalManagedFilterType;
@@ -20,8 +26,8 @@ public class DeviceManagementMapperTest {
 
     @Before
     public void setUp() {
-        mapper = new DeviceManagementMapper();
-        mapper.initialize();
+        this.mapper = new DeviceManagementMapper();
+        this.mapper.initialize();
     }
 
     @Test
@@ -51,16 +57,15 @@ public class DeviceManagementMapperTest {
         deviceFilter.getDeviceIdentificationsToUse().addAll(asList("toUse1", "toUse2"));
         deviceFilter.getDeviceIdentificationsToExclude().addAll(asList("toExclude1", "toExclude2"));
 
-        org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter result =
-                mapper.map(deviceFilter, org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class);
+        final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter result = this.mapper.map(deviceFilter,
+                org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter.class);
 
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedMapped(deviceFilter));
+        assertThat(result).isEqualToComparingFieldByFieldRecursively(this.expectedMapped(deviceFilter));
     }
 
     private org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expectedMapped(
             final DeviceFilter deviceFilter) {
-        final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expected =
-                new org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter();
+        final org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter expected = new org.opensmartgridplatform.domain.core.valueobjects.DeviceFilter();
         expected.setOrganisationIdentification(deviceFilter.getOrganisationIdentification());
         expected.setAlias(deviceFilter.getAlias());
         expected.setDeviceIdentification(deviceFilter.getDeviceIdentification());

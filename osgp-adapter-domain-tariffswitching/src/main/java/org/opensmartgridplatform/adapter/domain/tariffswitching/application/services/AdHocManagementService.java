@@ -23,12 +23,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.domain.core.valueobjects.TariffValue;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -89,10 +89,9 @@ public class AdHocManagementService extends AbstractService {
                 deviceIdentification, allowedDomainTypeDto), messageType, messagePriority, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(
-            final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType, final CorrelationIds ids,
-            final int messagePriority, final ResponseMessageResultType deviceResult, final OsgpException exception)
-            throws OsgpException {
+    public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final DomainType allowedDomainType,
+            final CorrelationIds ids, final int messagePriority, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
         ResponseMessageResultType result = deviceResult;
         OsgpException osgpException = exception;
@@ -129,9 +128,9 @@ public class AdHocManagementService extends AbstractService {
             }
         }
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(ids).withResult(result).withOsgpException(osgpException)
-                .withDataObject(deviceStatusMapped).withMessagePriority(messagePriority).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withIds(ids)
+                .withResult(result).withOsgpException(osgpException).withDataObject(deviceStatusMapped)
+                .withMessagePriority(messagePriority).build();
         this.webServiceResponseMessageSender.send(responseMessage);
     }
 

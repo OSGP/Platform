@@ -15,12 +15,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
-import org.assertj.core.api.Assertions;
-import org.joda.time.DateTimeUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -31,16 +26,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 public class InstallationMapperTest {
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
-
-    @Before
-    public void setUp() {
-        DateTimeUtils.setCurrentMillisFixed(123L * 1000 * 60 * 60 * 24);
-    }
-
-    @After
-    public void tearDown() {
-        DateTimeUtils.setCurrentMillisSystem();
-    }
 
     @Test
     public void mapsSmartMeteringDeviceToSmartMeter() {
@@ -67,12 +52,12 @@ public class InstallationMapperTest {
 
         final SmartMeter result = this.mapperFactory.getMapperFacade().map(source, SmartMeter.class);
 
-        SmartMeter expected = toSmartMeter(source);
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expected);
+        final SmartMeter expected = this.toSmartMeter(source);
+        assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationTime", "modificationTime", "version");
     }
 
-    private SmartMeter toSmartMeter(SmartMeteringDevice source) {
-        SmartMeter expected = new SmartMeter();
+    private SmartMeter toSmartMeter(final SmartMeteringDevice source) {
+        final SmartMeter expected = new SmartMeter();
         expected.setDeviceIdentification(source.getDeviceIdentification());
         expected.setDeviceType(source.getDeviceType());
         expected.setSupplier(source.getSupplier());
