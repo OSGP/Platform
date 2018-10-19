@@ -9,7 +9,7 @@ package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
 
-public class Relay implements Serializable {
+public class PowerUsage implements Serializable {
 
     /**
      * Serial Version UID.
@@ -19,7 +19,7 @@ public class Relay implements Serializable {
     private final int actualPower;
     private final int averagePowerFactor;
 
-    public Relay(final int actualCurrent, final int actualPower, final int averagePowerFactor) {
+    public PowerUsage(final int actualCurrent, final int actualPower, final int averagePowerFactor) {
         this.actualCurrent = actualCurrent;
         this.actualPower = actualPower;
         this.averagePowerFactor = averagePowerFactor;

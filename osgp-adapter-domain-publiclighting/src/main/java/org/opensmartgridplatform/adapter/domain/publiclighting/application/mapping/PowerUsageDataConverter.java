@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.valueobjects.MeterType;
 import org.opensmartgridplatform.domain.core.valueobjects.PowerUsageData;
 import org.opensmartgridplatform.domain.core.valueobjects.PsldData;
-import org.opensmartgridplatform.domain.core.valueobjects.Relay;
+import org.opensmartgridplatform.domain.core.valueobjects.PowerUsage;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayData;
 import org.opensmartgridplatform.domain.core.valueobjects.SsldData;
 
@@ -63,9 +63,9 @@ public class PowerUsageDataConverter
                 relayData = this.mapperFacade.mapAsList(ssldData.getRelayData(), RelayData.class);
             }
 
-            ssldDataCopy = new SsldData(new Relay(actualCurrent1, actualPower1, averagePowerFactor1),
-                    new Relay(actualCurrent2, actualPower2, averagePowerFactor2),
-                    new Relay(actualCurrent3, actualPower3, averagePowerFactor3), relayData);
+            ssldDataCopy = new SsldData(new PowerUsage(actualCurrent1, actualPower1, averagePowerFactor1),
+                    new PowerUsage(actualCurrent2, actualPower2, averagePowerFactor2),
+                    new PowerUsage(actualCurrent3, actualPower3, averagePowerFactor3), relayData);
         }
 
         PsldData psldDataCopy = null;

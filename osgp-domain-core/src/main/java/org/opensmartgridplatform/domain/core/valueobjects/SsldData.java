@@ -16,52 +16,52 @@ public class SsldData implements java.io.Serializable {
      */
     private static final long serialVersionUID = 4785387346353649099L;
 
-    private final Relay relay1;
-    private final Relay relay2;
-    private final Relay relay3;
+    private final PowerUsage powerUsage1;
+    private final PowerUsage powerUsage2;
+    private final PowerUsage powerUsage3;
     private final List<RelayData> relayData;
 
-    public SsldData(final Relay relay1, final Relay relay2, final Relay relay3, final List<RelayData> relayData) {
-        this.relay1 = relay1;
-        this.relay2 = relay2;
-        this.relay3 = relay3;
+    public SsldData(final PowerUsage powerUsage1, final PowerUsage powerUsage2, final PowerUsage powerUsage3, final List<RelayData> relayData) {
+        this.powerUsage1 = powerUsage1;
+        this.powerUsage2 = powerUsage2;
+        this.powerUsage3 = powerUsage3;
         this.relayData = relayData;
     }
 
     public int getActualCurrent1() {
-        return this.relay1.getActualCurrent();
+        return this.powerUsage1.getActualCurrent();
     }
 
     public int getActualCurrent2() {
-        return this.relay2.getActualCurrent();
+        return this.powerUsage2.getActualCurrent();
     }
 
     public int getActualCurrent3() {
-        return this.relay3.getActualCurrent();
+        return this.powerUsage3.getActualCurrent();
     }
 
     public int getActualPower1() {
-        return this.relay1.getActualPower();
+        return this.powerUsage1.getActualPower();
     }
 
     public int getActualPower2() {
-        return this.relay2.getActualPower();
+        return this.powerUsage2.getActualPower();
     }
 
     public int getActualPower3() {
-        return this.relay3.getActualPower();
+        return this.powerUsage3.getActualPower();
     }
 
     public int getAveragePowerFactor1() {
-        return this.relay1.getAveragePowerFactor();
+        return this.powerUsage1.getAveragePowerFactor();
     }
 
     public int getAveragePowerFactor2() {
-        return this.relay2.getAveragePowerFactor();
+        return this.powerUsage2.getAveragePowerFactor();
     }
 
     public int getAveragePowerFactor3() {
-        return this.relay3.getAveragePowerFactor();
+        return this.powerUsage3.getAveragePowerFactor();
     }
 
     public List<RelayData> getRelayData() {
