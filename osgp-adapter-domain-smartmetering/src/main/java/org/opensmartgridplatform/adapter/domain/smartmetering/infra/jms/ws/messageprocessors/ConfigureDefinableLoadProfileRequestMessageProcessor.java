@@ -7,26 +7,28 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-
 @Component
-public class ConfigureDefinableLoadProfileRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class ConfigureDefinableLoadProfileRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
-    protected ConfigureDefinableLoadProfileRequestMessageProcessor() {
-        super(DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE);
+    @Autowired
+    protected ConfigureDefinableLoadProfileRequestMessageProcessor(
+            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(messageProcessorMap, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
     }
 
     @Override

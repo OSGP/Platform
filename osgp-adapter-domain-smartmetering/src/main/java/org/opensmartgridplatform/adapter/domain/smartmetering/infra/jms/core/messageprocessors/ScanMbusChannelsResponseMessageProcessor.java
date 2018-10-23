@@ -9,20 +9,21 @@ l * Copyright 2018 Smart Society Services B.V.
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.AdhocService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -31,8 +32,12 @@ public class ScanMbusChannelsResponseMessageProcessor extends OsgpCoreResponseMe
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    public ScanMbusChannelsResponseMessageProcessor() {
-        super(DeviceFunction.SCAN_MBUS_CHANNELS);
+    @Autowired
+    public ScanMbusChannelsResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SCAN_MBUS_CHANNELS,
+                ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

@@ -10,27 +10,29 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.m
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.ScheduleManagementService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.ScheduleManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing public lighting set schedule response messages
  */
 @Component("domainPublicLightingSetScheduleResponseMessageProcessor")
-public class PublicLightingSetScheduleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class PublicLightingSetScheduleResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -45,8 +47,12 @@ public class PublicLightingSetScheduleResponseMessageProcessor extends OsgpCoreR
     @Qualifier("domainPublicLightingDefaultDeviceResponseService")
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
-    protected PublicLightingSetScheduleResponseMessageProcessor() {
-        super(DeviceFunction.SET_LIGHT_SCHEDULE);
+    @Autowired
+    protected PublicLightingSetScheduleResponseMessageProcessor(
+            ResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_LIGHT_SCHEDULE,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

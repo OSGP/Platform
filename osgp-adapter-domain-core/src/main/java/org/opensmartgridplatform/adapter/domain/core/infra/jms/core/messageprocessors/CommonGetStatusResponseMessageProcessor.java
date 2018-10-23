@@ -10,27 +10,29 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageproc
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceInstallationService;
+import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceInstallationService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing common get status response messages
  */
 @Component("domainCoreCommonGetStatusResponseMessageProcessor")
-public class CommonGetStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class CommonGetStatusResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +42,12 @@ public class CommonGetStatusResponseMessageProcessor extends OsgpCoreResponseMes
     @Qualifier("domainCoreDeviceInstallationService")
     private DeviceInstallationService deviceInstallationService;
 
-    protected CommonGetStatusResponseMessageProcessor() {
-        super(DeviceFunction.GET_STATUS);
+    @Autowired
+    protected CommonGetStatusResponseMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainCoreOsgpCoreResponseMessageProcessorMap") MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.GET_STATUS,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override

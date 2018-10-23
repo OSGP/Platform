@@ -14,21 +14,20 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -49,53 +48,54 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
      * This is the message sender needed for the message processor implementation to
      * forward response messages to web service adapter.
      */
-    @Autowired
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+    protected final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     /**
-     * The hash map of message processor instances.
+     * The map of message processor instances.
      */
-    @Autowired
-    @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap")
-    protected OsgpCoreResponseMessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    protected final MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+    private final ComponentType componentType;
 
     /**
-     * The message type that a message processor implementation can handle.
+     * The message types that a message processor implementation can handle.
      */
-    protected List<DeviceFunction> deviceFunctions;
+    protected final List<MessageType> messageTypes = new ArrayList<>();
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
+     * @param componentType
      */
-    protected OsgpCoreResponseMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunctions = new ArrayList<>();
-        this.deviceFunctions.add(deviceFunction);
+    protected OsgpCoreResponseMessageProcessor(WebServiceResponseMessageSender webServiceResponseMessageSender,
+            MessageProcessorMap osgpCoreResponseMessageProcessorMap, final MessageType messageType, ComponentType componentType) {
+        this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+        this.osgpCoreResponseMessageProcessorMap = osgpCoreResponseMessageProcessorMap;
+        this.componentType = componentType;
+        this.messageTypes.add(messageType);
     }
 
     /**
      * In case a message processor instance can process multiple message types, a
      * message type can be added.
      *
-     * @param deviceFunction
+     * @param messageType
      *            The message type a message processor can handle.
      */
-    protected void addMessageType(final DeviceFunction deviceFunction) {
-        this.deviceFunctions.add(deviceFunction);
+    protected void addMessageType(final MessageType messageType) {
+        this.messageTypes.add(messageType);
     }
 
     /**
-     * Initialization function executed after dependency injection has finished. The
-     * MessageProcessor Singleton is added to the HashMap of MessageProcessors. The
-     * key for the HashMap is the integer value of the enumeration member.
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors.
      */
     @PostConstruct
     public void init() {
-        for (final DeviceFunction deviceFunction : this.deviceFunctions) {
-            this.osgpCoreResponseMessageProcessorMap.addMessageProcessor(deviceFunction.ordinal(),
-                    deviceFunction.name(), this);
+        for (final MessageType messageType : this.messageTypes) {
+            this.osgpCoreResponseMessageProcessorMap.addMessageProcessor(messageType, this);
         }
     }
 
@@ -106,17 +106,14 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         ResponseMessage responseMessage = null;
-        ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
 
         try {
             responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug(deviceMessageMetadata.toString());
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
@@ -221,6 +218,6 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.DOMAIN_SMART_METERING, "An unknown error occurred", e);
+        return new TechnicalException(componentType, "An unknown error occurred", e);
     }
 }

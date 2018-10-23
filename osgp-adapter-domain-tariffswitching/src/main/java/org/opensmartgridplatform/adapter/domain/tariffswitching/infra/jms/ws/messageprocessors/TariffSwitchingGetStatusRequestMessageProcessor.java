@@ -10,24 +10,26 @@ package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.me
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.AdHocManagementService;
+import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing tariff switching get status request messages
  */
 @Component("domainTariffSwitchingGetStatusRequestMessageProcessor")
-public class TariffSwitchingGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class TariffSwitchingGetStatusRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +39,12 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends WebServiceR
     @Qualifier("domainTariffSwitchingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public TariffSwitchingGetStatusRequestMessageProcessor() {
-        super(DeviceFunction.GET_TARIFF_STATUS);
+    @Autowired
+    public TariffSwitchingGetStatusRequestMessageProcessor(
+            ResponseMessageSender responseMessageSender,
+            @Qualifier("domainTariffSwitchingWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_TARIFF_STATUS,
+                ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 
     @Override

@@ -9,25 +9,28 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
 /**
  * Class for processing da get device model request messages
  */
 @Component("domainDistributionAutomationGetDeviceModelRequestMessageProcessor")
-public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+public class GetDeviceModelRequestMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,11 @@ public class GetDeviceModelRequestMessageProcessor extends AbstractWebServiceReq
     @Qualifier("domainDistributionAutomationAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public GetDeviceModelRequestMessageProcessor() {
-        super(DeviceFunction.GET_DEVICE_MODEL);
+    @Autowired
+    public GetDeviceModelRequestMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }
 
     @Override

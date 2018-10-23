@@ -10,26 +10,28 @@ package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.DefaultDeviceResponseService;
+import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.DefaultDeviceResponseService;
-import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing tariff switching set schedule response messages
  */
 @Component("domainTariffSwitchingSetScheduleResponseMessageProcessor")
-public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class TariffSwitchingSetScheduleResponseMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +42,12 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCore
     @Qualifier("domainTariffSwitchingDefaultDeviceResponseService")
     private DefaultDeviceResponseService defaultDeviceResponseService;
 
-    protected TariffSwitchingSetScheduleResponseMessageProcessor() {
-        super(DeviceFunction.SET_TARIFF_SCHEDULE);
+    @Autowired
+    protected TariffSwitchingSetScheduleResponseMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainTariffSwitchingOsgpCoreResponseMessageProcessorMap")MessageProcessorMap responseMessageProcessorMap) {
+        super(webServiceResponseMessageSender, responseMessageProcessorMap, MessageType.SET_TARIFF_SCHEDULE,
+                ComponentType.DOMAIN_TARIFF_SWITCHING);
     }
 
     @Override

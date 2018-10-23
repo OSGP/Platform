@@ -9,28 +9,30 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.core.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
+import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
+import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.adapter.domain.da.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.AbstractOsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.dto.da.GetDeviceModelResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
 /**
  * Class for processing da get device model response messages
  */
 @Component("domainDistributionAutomationGetDeviceModelResponseMessageProcessor")
-public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResponseMessageProcessor {
+public class GetDeviceModelResponseMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -40,8 +42,11 @@ public class GetDeviceModelResponseMessageProcessor extends AbstractOsgpCoreResp
     @Qualifier("domainDistributionAutomationAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    protected GetDeviceModelResponseMessageProcessor() {
-        super(DeviceFunction.GET_DEVICE_MODEL);
+    @Autowired
+    protected GetDeviceModelResponseMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationOsgpCoreResponseMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_DEVICE_MODEL);
     }
 
     @Override

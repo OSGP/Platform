@@ -14,7 +14,7 @@
 
   <artifactId>parent-platform</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>4.30.0</version>
+  <version>4.31.0</version>
   <packaging>pom</packaging>
   <name>parent-platform</name>
   <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -44,7 +44,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <shared.version>4.30.0</shared.version>
+    <shared.version>4.31.0</shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.3.5.RELEASE</spring.version>
@@ -55,7 +55,7 @@
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>4.2.16.Final</hibernate.version>
     <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
     <assertj.version>3.9.1</assertj.version>
     <mockito.version>1.10.19</mockito.version>
     <joda.version>2.4</joda.version>
@@ -324,6 +324,11 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <!-- Spring WS -->

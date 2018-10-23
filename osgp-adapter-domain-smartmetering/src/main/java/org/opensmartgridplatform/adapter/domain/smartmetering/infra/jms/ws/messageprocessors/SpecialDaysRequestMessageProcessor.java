@@ -9,26 +9,28 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-
 @Component
-public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class SpecialDaysRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
-    protected SpecialDaysRequestMessageProcessor() {
-        super(DeviceFunction.SET_SPECIAL_DAYS);
+    @Autowired
+    protected SpecialDaysRequestMessageProcessor(
+            @Qualifier("domainSmartMeteringWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(messageProcessorMap, MessageType.SET_SPECIAL_DAYS);
     }
 
     @Override

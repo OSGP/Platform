@@ -5,22 +5,18 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws;
+package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.AbstractRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -30,48 +26,34 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
  * MessageProcessors after dependency injection has completed.
  *
  */
-public abstract class WebServiceRequestMessageProcessor extends AbstractRequestMessageProcessor implements
-MessageProcessor {
+public abstract class BaseRequestMessageProcessor extends AbstractRequestMessageProcessor implements
+        MessageProcessor {
 
     /**
      * Logger for this class.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseRequestMessageProcessor.class);
 
     /**
-     * This is the message sender needed for the message processor
-     * implementations to handle the forwarding of messages to OSGP-CORE.
+     * The map of message processor instances.
      */
-    @Qualifier("domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
-    @Autowired
-    protected OsgpCoreRequestMessageSender coreRequestMessageSender;
-
-    /**
-     * This is the message sender needed for the message processor
-     * implementation to handle an error.
-     */
-    @Autowired
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-    /**
-     * The hash map of message processor instances.
-     */
-    @Autowired
-    protected WebServiceRequestMessageProcessorMap webServiceRequestMessageProcessorMap;
+    protected MessageProcessorMap messageProcessorMap;
 
     /**
      * The message type that a message processor implementation can handle.
      */
-    protected DeviceFunction deviceFunction;
+    protected MessageType messageType;
 
     /**
      * Construct a message processor instance by passing in the message type.
      *
-     * @param deviceFunction
-     *            The message type a message processor can handle.
+     * @param messageProcessorMap
+     * @param messageType
+ *            The message type a message processor can handle.
      */
-    protected WebServiceRequestMessageProcessor(final DeviceFunction deviceFunction) {
-        this.deviceFunction = deviceFunction;
+    protected BaseRequestMessageProcessor(MessageProcessorMap messageProcessorMap, final MessageType messageType) {
+        this.messageProcessorMap = messageProcessorMap;
+        this.messageType = messageType;
     }
 
     /**
@@ -82,8 +64,7 @@ MessageProcessor {
      */
     @PostConstruct
     public void init() {
-        this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
-                this.deviceFunction.name(), this);
+        this.messageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
     /**
@@ -113,13 +94,16 @@ MessageProcessor {
         try {
             LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
             if (this.messageContainsDataObject()) {
-                this.handleMessage(deviceMessageMetadata, dataObject);
+            this.handleMessage(deviceMessageMetadata, dataObject);
             } else {
                 this.handleMessage(deviceMessageMetadata);
             }
 
         } catch (final Exception e) {
-            this.handleError(e, deviceMessageMetadata, "An unknown error occurred");
+            this.handleError(e, deviceMessageMetadata.getCorrelationUid(),
+                    deviceMessageMetadata.getOrganisationIdentification(),
+                    deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getMessageType(),
+                    deviceMessageMetadata.getMessagePriority());
         }
     }
 

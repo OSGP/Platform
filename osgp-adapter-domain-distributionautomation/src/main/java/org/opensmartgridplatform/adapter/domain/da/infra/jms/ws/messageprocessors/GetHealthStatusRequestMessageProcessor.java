@@ -9,25 +9,28 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.messageprocessors;
 
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
 import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.da.infra.jms.ws.AbstractWebServiceRequestMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
 import org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
 /**
  * Class for processing da get health status request messages
  */
 @Component("domainDistributionAutomationGetHealthStatusRequestMessageProcessor")
-public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRequestMessageProcessor {
+public class GetHealthStatusRequestMessageProcessor extends BaseNotificationMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +40,11 @@ public class GetHealthStatusRequestMessageProcessor extends AbstractWebServiceRe
     @Qualifier("domainDistributionAutomationDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public GetHealthStatusRequestMessageProcessor() {
-        super(DeviceFunction.GET_HEALTH_STATUS);
+    @Autowired
+    public GetHealthStatusRequestMessageProcessor(
+            final NotificationResponseMessageSender responseMessageSender,
+            @Qualifier("domainDistributionAutomationWebServiceRequestMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_HEALTH_STATUS);
     }
 
     @Override

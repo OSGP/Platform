@@ -10,24 +10,26 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.mes
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
+import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
+import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing public lighting get status request messages
  */
 @Component("domainPublicLightingGetStatusRequestMessageProcessor")
-public class PublicLightingGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class PublicLightingGetStatusRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +39,12 @@ public class PublicLightingGetStatusRequestMessageProcessor extends WebServiceRe
     @Qualifier("domainPublicLightingAdHocManagementService")
     private AdHocManagementService adHocManagementService;
 
-    public PublicLightingGetStatusRequestMessageProcessor() {
-        super(DeviceFunction.GET_LIGHT_STATUS);
+    @Autowired
+    public PublicLightingGetStatusRequestMessageProcessor(
+            WebServiceResponseMessageSender webServiceResponseMessageSender,
+            @Qualifier("domainPublicLightingWebServiceRequestMessageProcessorMap") MessageProcessorMap webServiceRequestMessageProcessorMap) {
+        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.GET_LIGHT_STATUS,
+                ComponentType.DOMAIN_PUBLIC_LIGHTING);
     }
 
     @Override

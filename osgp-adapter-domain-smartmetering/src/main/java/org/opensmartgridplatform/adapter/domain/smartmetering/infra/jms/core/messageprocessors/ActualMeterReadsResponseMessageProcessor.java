@@ -7,17 +7,21 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -25,8 +29,12 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
     @Autowired
     private MonitoringService monitoringService;
 
-    protected ActualMeterReadsResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_ACTUAL_METER_DATA);
+    @Autowired
+    protected ActualMeterReadsResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringOsgpCoreResponseMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.REQUEST_ACTUAL_METER_DATA,
+                ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override

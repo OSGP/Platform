@@ -10,23 +10,25 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageproces
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing common switch configuration request messages
  */
 @Component("domainCoreCommonSwitchConfigurationRequestMessageProcessor")
-public class CommonSwitchConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonSwitchConfigurationRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -37,8 +39,12 @@ public class CommonSwitchConfigurationRequestMessageProcessor extends WebService
     @Qualifier("domainCoreConfigurationManagementService")
     private ConfigurationManagementService configurationManagementService;
 
-    public CommonSwitchConfigurationRequestMessageProcessor() {
-        super(DeviceFunction.SWITCH_CONFIGURATION_BANK);
+    @Autowired
+    public CommonSwitchConfigurationRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SWITCH_CONFIGURATION_BANK,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override

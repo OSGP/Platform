@@ -5,12 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.ws.microgrids.infra.jms;
+package org.opensmartgridplatform.domain.core.valueobjects;
 
-/**
- * Enumeration of microgrids request message types
- */
-public enum MicrogridsRequestMessageType {
-    GET_DATA,
-    SET_DATA
+public enum TaskStatusType {
+    AVAILABLE,
+    RUNNING;
 }

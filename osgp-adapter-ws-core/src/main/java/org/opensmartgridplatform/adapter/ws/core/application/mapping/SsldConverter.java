@@ -8,15 +8,8 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayType;
@@ -26,6 +19,8 @@ import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -81,7 +76,7 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
             }
             destination.getEans().addAll(eans);
 
-            this.addRelayStatusses(destination, ssld);
+            this.addRelayStatuses(destination, ssld);
         }
 
         return destination;
@@ -142,10 +137,11 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         return destination;
     }
 
-    private void addRelayStatusses(final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device destination,
+    private void addRelayStatuses(
+            final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device destination,
             final Ssld ssld) {
-        if (ssld.getRelayStatusses() != null) {
-            for (final org.opensmartgridplatform.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
+        if (ssld.getRelayStatuses() != null) {
+            for (final org.opensmartgridplatform.domain.core.entities.RelayStatus r : ssld.getRelayStatuses()) {
                 final org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayStatus temp = this
                         .convertRelayStatus(r);
                 if (temp != null) {
@@ -161,20 +157,13 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayStatus output = null;
 
         if (status != null) {
-
             output = new org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.RelayStatus();
             output.setIndex(status.getIndex());
             output.setLastKnownState(status.isLastKnownState());
-
-            final GregorianCalendar gCalendar = new GregorianCalendar();
-            gCalendar.setTime(status.getLastKnowSwitchingTime());
-
-            try {
-                output.setLastKnowSwitchingTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));
-            } catch (final DatatypeConfigurationException e) {
-                // This won't happen, so no further action is needed.
-                LOGGER.error("Bad date format in one of theRelay Status dates", e);
-            }
+            output.setLastSwitchingEventState(status.isLastSwitchingEventState());
+            output.setLastSwitchingEventTime(
+                    this.helper.convertDateToXMLGregorianCalendar(status.getLastSwitchingEventTime()));
+            output.setLastKnownStateTime(this.helper.convertDateToXMLGregorianCalendar(status.getLastKnownStateTime()));
         }
         return output;
     }

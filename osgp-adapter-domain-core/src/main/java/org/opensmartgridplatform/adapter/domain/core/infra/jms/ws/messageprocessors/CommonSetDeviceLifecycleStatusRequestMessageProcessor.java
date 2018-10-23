@@ -10,24 +10,26 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageproces
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceManagementService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing common set device verification key request messages
  */
 @Component("domainCoreCommonSetDeviceLifecycleStatusRequestMessageProcessor")
-public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends BaseMessageProcessor {
 
     /**
      * Logger for this class
@@ -39,8 +41,12 @@ public class CommonSetDeviceLifecycleStatusRequestMessageProcessor extends WebSe
     @Qualifier("domainCoreDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public CommonSetDeviceLifecycleStatusRequestMessageProcessor() {
-        super(DeviceFunction.SET_DEVICE_LIFECYCLE_STATUS);
+    @Autowired
+    public CommonSetDeviceLifecycleStatusRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.SET_DEVICE_LIFECYCLE_STATUS,
+                ComponentType.DOMAIN_CORE);
     }
 
     @Override

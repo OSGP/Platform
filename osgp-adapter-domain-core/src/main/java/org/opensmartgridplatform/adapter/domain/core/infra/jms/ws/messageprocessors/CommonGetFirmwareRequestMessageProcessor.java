@@ -10,23 +10,25 @@ package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageproces
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessor;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
+import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.adapter.domain.core.application.services.FirmwareManagementService;
-import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-
 /**
  * Class for processing common get firmware request messages
  */
 @Component("domainCoreCommonGetFirmwareRequestMessageProcessor")
-public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class CommonGetFirmwareRequestMessageProcessor extends BaseMessageProcessor {
     /**
      * Logger for this class
      */
@@ -36,8 +38,11 @@ public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestM
     @Qualifier("domainCoreFirmwareManagementService")
     private FirmwareManagementService firmwareManagementService;
 
-    public CommonGetFirmwareRequestMessageProcessor() {
-        super(DeviceFunction.GET_FIRMWARE_VERSION);
+    @Autowired
+    public CommonGetFirmwareRequestMessageProcessor(
+            @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender") ResponseMessageSender responseMessageSender,
+            @Qualifier("domainCoreWebServiceRequestMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.GET_FIRMWARE_VERSION, ComponentType.DOMAIN_CORE);
     }
 
     @Override
